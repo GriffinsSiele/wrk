@@ -1,0 +1,79 @@
+{
+  "home": {
+    "heroTitle": "Unlock Human Readiness, Recovery & Performance Intelligence",
+    "heroSubtitle": "Join Olynixx Academy to become a certified coach and empower organizations worldwide.",
+    "ctaLearn": "Learn More",
+    "ctaGetCertified": "Get Certified"
+  },
+  "focus": {
+    "title": "Our Three Pillars",
+    "pillar1": "Human Readiness – preparing individuals for peak performance.",
+    "pillar2": "Recovery Intelligence – data‑driven recovery strategies.",
+    "pillar3": "Performance Science – cutting‑edge coaching methodologies."
+  },
+  "certification": {
+    "title": "Certification Path",
+    "step1": "Study the curated curriculum",
+    "step2": "Pass the supervised online exam",
+    "step3": "Become a certified coach in our global pool"
+  },
+  "workWithUs": {
+    "title": "Become a Coach – Join Our Team",
+    "description": "We are looking for passionate coaches to deliver world‑class training. Apply now and make an impact."
+  },
+  "organisations": {
+    "title": "For Organisations",
+    "description": "Scale your workforce’s readiness with Olynixx Academy’s corporate programs."
+  },
+  "about": {
+    "title": "About Olynixx",
+    "mission": "Empowering individuals and organizations through science‑backed coaching."
+  },
+  "standards": {
+    "title": "Standards & Scope of Practice",
+    "content": "Our accreditation aligns with REPs UAE, ACE, and NASM standards."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "intro": "We’re here to help. Reach out with any questions or inquiries."
+  },
+  "navbar": {
+    "language": "Language",
+    "ourFocus": "Our Focus",
+    "getCertified": "Get Certified",
+    "forOrganisations": "For Organisations",
+    "about": "About",
+    "signIn": "Sign in",
+    "languageSwitcherLabel": "Select language",
+    "currentLanguage": "Current language",
+    "english": "English",
+    "arabic": "Arabic",
+    "french": "French",
+    "spanish": "Spanish",
+    "chinese": "Chinese"
+  },
+  "footer": {
+    "tagline": "Setting the standard in non-medical human readiness, recovery, and performance intelligence.",
+    "platform": "Platform",
+    "resources": "Resources",
+    "legal": "Legal",
+    "becomeCoach": "Become a Coach",
+    "standardsScope": "Standards & Scope",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "rightsReserved": "All rights reserved.",
+    "builtForHumanPerformance": "Built for human performance."
+  },
+  "login": {
+    "title": "Sign in",
+    "subtitle": "Access your portal",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "demoAccounts": "Demo accounts",
+    "backHome": "Return to homepage"
+  }
+}

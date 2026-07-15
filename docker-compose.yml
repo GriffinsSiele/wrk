@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: olynixx_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-olynixx}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-olynixx}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: olynixx_backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-olynixx}
+      - SECRET_KEY=${SECRET_KEY:-supersecretkey}
+      - REFRESH_SECRET_KEY=${REFRESH_SECRET_KEY:-change-me-refresh-secret-key}
+      - BUNNY_API_KEY=${BUNNY_API_KEY:-}
+      - BUNNY_LIBRARY_ID=${BUNNY_LIBRARY_ID:-}
+      - BUNNY_CDN_HOSTNAME=${BUNNY_CDN_HOSTNAME:-}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - EXAM_TIME_LIMIT_MINUTES=${EXAM_TIME_LIMIT_MINUTES:-60}
+      - EXAM_PASS_MARK=${EXAM_PASS_MARK:-70}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: olynixx_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      - INTERNAL_API_URL=${INTERNAL_API_URL:-http://backend:8000}
+    command: npm run dev
+
+volumes:
+  postgres_data:

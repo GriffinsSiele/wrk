@@ -1,0 +1,79 @@
+{
+  "home": {
+    "heroTitle": "Impulsa la preparacion humana, la recuperacion y la inteligencia del rendimiento",
+    "heroSubtitle": "Unete a Olynixx Academy para convertirte en coach certificado y apoyar a organizaciones en todo el mundo.",
+    "ctaLearn": "Mas informacion",
+    "ctaGetCertified": "Obtener certificacion"
+  },
+  "focus": {
+    "title": "Nuestros tres pilares",
+    "pillar1": "Preparacion humana - preparar a las personas para el maximo rendimiento.",
+    "pillar2": "Inteligencia de recuperacion - estrategias de recuperacion basadas en datos.",
+    "pillar3": "Ciencia del rendimiento - metodologias de coaching avanzadas."
+  },
+  "certification": {
+    "title": "Ruta de certificacion",
+    "step1": "Estudia el programa estructurado",
+    "step2": "Aprueba el examen presencial supervisado en EAU",
+    "step3": "Conviertete en coach certificado en nuestra red global"
+  },
+  "workWithUs": {
+    "title": "Conviertete en coach - Unete a nuestro equipo",
+    "description": "Buscamos coaches apasionados para ofrecer formacion de clase mundial."
+  },
+  "organisations": {
+    "title": "Para organizaciones",
+    "description": "Escala la preparacion de tu equipo con los programas corporativos de Olynixx Academy."
+  },
+  "about": {
+    "title": "Sobre Olynixx",
+    "mission": "Impulsamos a personas y organizaciones con coaching respaldado por la ciencia."
+  },
+  "standards": {
+    "title": "Normas y alcance de la practica",
+    "content": "Nuestra certificacion esta alineada con los estandares de REPs UAE, ACE y NASM."
+  },
+  "contact": {
+    "title": "Contacto",
+    "intro": "Estamos aqui para ayudarte. Escribenos para cualquier consulta."
+  },
+  "navbar": {
+    "language": "Idioma",
+    "ourFocus": "Nuestro enfoque",
+    "getCertified": "Certificarse",
+    "forOrganisations": "Para organizaciones",
+    "about": "Acerca de",
+    "signIn": "Iniciar sesion",
+    "languageSwitcherLabel": "Seleccionar idioma",
+    "currentLanguage": "Idioma actual",
+    "english": "Ingles",
+    "arabic": "Arabe",
+    "french": "Frances",
+    "spanish": "Espanol",
+    "chinese": "Chino"
+  },
+  "footer": {
+    "tagline": "Elevamos el estandar en preparacion humana no medica, recuperacion e inteligencia del rendimiento.",
+    "platform": "Plataforma",
+    "resources": "Recursos",
+    "legal": "Legal",
+    "becomeCoach": "Conviertete en coach",
+    "standardsScope": "Normas y alcance",
+    "faq": "Preguntas frecuentes",
+    "contact": "Contacto",
+    "privacyPolicy": "Politica de privacidad",
+    "termsOfService": "Terminos del servicio",
+    "rightsReserved": "Todos los derechos reservados.",
+    "builtForHumanPerformance": "Disenado para el rendimiento humano."
+  },
+  "login": {
+    "title": "Iniciar sesion",
+    "subtitle": "Accede a tu portal",
+    "emailLabel": "Correo electronico",
+    "passwordLabel": "Contrasena",
+    "submit": "Entrar",
+    "submitting": "Iniciando sesion...",
+    "demoAccounts": "Cuentas de demostracion",
+    "backHome": "Volver al inicio"
+  }
+}

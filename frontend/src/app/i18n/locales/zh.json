@@ -1,0 +1,79 @@
+{
+  "home": {
+    "heroTitle": "激活人体准备度 恢复力 与表现智能",
+    "heroSubtitle": "加入 Olynixx Academy，成为认证教练，赋能全球组织。",
+    "ctaLearn": "了解更多",
+    "ctaGetCertified": "获取认证"
+  },
+  "focus": {
+    "title": "我们的三大支柱",
+    "pillar1": "人体准备度 - 让个体为高水平表现做好准备。",
+    "pillar2": "恢复智能 - 数据驱动的恢复策略。",
+    "pillar3": "表现科学 - 前沿教练方法。"
+  },
+  "certification": {
+    "title": "认证路径",
+    "step1": "学习系统课程",
+    "step2": "通过在阿联酋进行的线下监考考试",
+    "step3": "加入我们的全球认证教练网络"
+  },
+  "workWithUs": {
+    "title": "成为教练 - 加入我们的团队",
+    "description": "我们正在寻找充满热情的教练，提供世界级训练。"
+  },
+  "organisations": {
+    "title": "面向组织",
+    "description": "通过 Olynixx Academy 企业项目提升团队准备度。"
+  },
+  "about": {
+    "title": "关于 Olynixx",
+    "mission": "以科学为基础的教练方法赋能个人与组织。"
+  },
+  "standards": {
+    "title": "标准与执业范围",
+    "content": "我们的认证与 REPs UAE、ACE、NASM 标准保持一致。"
+  },
+  "contact": {
+    "title": "联系我们",
+    "intro": "我们随时为你提供帮助，如有问题欢迎联系。"
+  },
+  "navbar": {
+    "language": "语言",
+    "ourFocus": "我们的重点",
+    "getCertified": "获取认证",
+    "forOrganisations": "面向组织",
+    "about": "关于我们",
+    "signIn": "登录",
+    "languageSwitcherLabel": "选择语言",
+    "currentLanguage": "当前语言",
+    "english": "英语",
+    "arabic": "阿拉伯语",
+    "french": "法语",
+    "spanish": "西班牙语",
+    "chinese": "中文"
+  },
+  "footer": {
+    "tagline": "我们为非医疗的人体准备度、恢复力与表现智能树立新标准。",
+    "platform": "平台",
+    "resources": "资源",
+    "legal": "法律",
+    "becomeCoach": "成为教练",
+    "standardsScope": "标准与范围",
+    "faq": "常见问题",
+    "contact": "联系",
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款",
+    "rightsReserved": "保留所有权利。",
+    "builtForHumanPerformance": "为人体表现而构建。"
+  },
+  "login": {
+    "title": "登录",
+    "subtitle": "进入你的门户",
+    "emailLabel": "邮箱地址",
+    "passwordLabel": "密码",
+    "submit": "登录",
+    "submitting": "正在登录...",
+    "demoAccounts": "演示账号",
+    "backHome": "返回首页"
+  }
+}
