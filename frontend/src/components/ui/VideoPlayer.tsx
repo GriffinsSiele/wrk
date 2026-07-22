@@ -23,14 +23,14 @@ export function VideoPlayer({ videoId, title }: VideoPlayerProps) {
         <div
           className="absolute inset-0 flex flex-col items-center justify-center gap-3"
           style={{
-            background: "linear-gradient(135deg, rgba(46,60,142,0.08), rgba(37,192,210,0.08))",
-            border: "1px solid rgba(26,26,26,0.06)",
-            borderRadius: "16px",
+            background: "rgba(12,15,18,0.04)",
+            border: "1px solid rgba(150,118,43,0.35)",
+            borderRadius: 2,
           }}
         >
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(37,192,210,0.1)" }}
+            className="w-16 h-16 flex items-center justify-center"
+            style={{ background: "rgba(217,172,74,0.12)", borderRadius: 2 }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M8 5v14l11-7L8 5z" fill="var(--ox-accent)" />
@@ -50,14 +50,14 @@ export function VideoPlayer({ videoId, title }: VideoPlayerProps) {
         <div
           className="absolute inset-0 z-10 flex items-center justify-center"
           style={{
-            background: "linear-gradient(135deg, rgba(46,60,142,0.06), rgba(37,192,210,0.06))",
-            borderRadius: "16px",
+            background: "rgba(12,15,18,0.04)",
+            borderRadius: 2,
           }}
         >
           <div className="flex flex-col items-center gap-3">
             <div
               className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-              style={{ borderColor: "var(--ox-accent)", borderTopColor: "transparent" }}
+              style={{ borderColor: "var(--gold)", borderTopColor: "transparent" }}
             />
             <span className="text-[12px]" style={{ color: "var(--ox-muted)" }}>
               Loading video...
@@ -75,17 +75,17 @@ export function VideoPlayer({ videoId, title }: VideoPlayerProps) {
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
             style={{
-              background: "rgba(255,255,255,0.95)",
-              boxShadow: "0 8px 32px rgba(10,10,10,0.2)",
+              background: "var(--gold)",
+              borderRadius: 2,
             }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M8 5v14l11-7L8 5z" fill="var(--ox-indigo)" />
+              <path d="M8 5v14l11-7L8 5z" fill="var(--ink)" />
             </svg>
           </div>
           <span
-            className="absolute bottom-4 left-4 text-[13px] font-medium px-3 py-1 rounded-full"
-            style={{ background: "rgba(255,255,255,0.86)", color: "var(--ox-indigo)", backdropFilter: "blur(8px)", border: "1px solid var(--ox-line)" }}
+            className="absolute bottom-4 left-4 text-[13px] font-display px-3 py-1"
+            style={{ background: "var(--cream)", color: "var(--ink)", border: "1px solid rgba(150,118,43,0.4)", borderRadius: 2 }}
           >
             {title}
           </span>

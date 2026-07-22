@@ -36,6 +36,7 @@ services:
       - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
       - EXAM_TIME_LIMIT_MINUTES=${EXAM_TIME_LIMIT_MINUTES:-60}
       - EXAM_PASS_MARK=${EXAM_PASS_MARK:-70}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
     depends_on:
       db:
         condition: service_healthy
@@ -53,6 +54,7 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
       - INTERNAL_API_URL=${INTERNAL_API_URL:-http://backend:8000}
     command: npm run dev
 

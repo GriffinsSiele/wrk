@@ -1,53 +1,76 @@
-# Olynixx Academy — Platform Source Code
+# Olynixx Praxis
 
-Full-stack certification & coaching platform built with **Next.js** (Frontend), **FastAPI** (Backend), and **PostgreSQL** (Database), orchestrated via **Docker Compose**.
+Full-stack specialisation, certification, and coach placement platform.
+
+**Stack:** Next.js (frontend) · FastAPI (backend) · PostgreSQL · Docker Compose
+
+> We don’t replace your certification. We specialise it.  
+> **Learn + Certify + Deploy**
 
 ---
 
-## 🚀 Quick Start
+## Quick start
 
 ### Prerequisites
 
 | Tool | Version |
 |------|---------|
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | 4.x+ |
-| Node.js *(local dev only)* | 18+ |
-| Python *(local dev only)* | 3.11+ |
+| Node.js *(local frontend only)* | 18+ |
+| Python *(local backend only)* | 3.11+ |
 
-### 1. Clone & Configure
-
-```bash
-git clone <repo-url> && cd olynixx_academy
-cp .env.example .env        # ← edit secrets before going to production
-```
-
-### 2. Start with Docker Compose
+### 1. Configure
 
 ```bash
-docker-compose up --build
+cd olynixx_academy
+cp .env.example .env   # change secrets before production
 ```
 
-This launches:
+### 2. Start the stack
+
+```bash
+docker compose up -d --build
+```
 
 | Service | URL |
 |---------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8000 |
+| API docs | http://localhost:8000/docs |
 | PostgreSQL | `localhost:5432` |
-| FastAPI Backend | `http://localhost:8000` |
-| Next.js Frontend | `http://localhost:3000` |
 
-### 3. Apply Migrations & Seed Data
+### 3. Migrations & seed
 
 ```bash
-docker-compose exec backend alembic upgrade head
-docker-compose exec backend python seed.py
+docker compose exec backend alembic upgrade head
+docker compose exec backend python seed.py --force
 ```
 
-### 4. Local Dev (without Docker)
+`SEED_MODE` controls volume (also `--mode demo|minimal`):
+
+| Mode | Use | Contents |
+|------|-----|----------|
+| `demo` (default) | Local / staging | Full cohort + multi-week dated activity so portal charts have real series |
+| `minimal` | Production bootstrap | Admin account + exam config only; charts stay empty until real activity |
+
+```bash
+# Demo (charts look alive, honestly)
+docker compose exec -e SEED_MODE=demo backend python seed.py --force
+
+# Prod-safe bootstrap
+docker compose exec -e SEED_MODE=minimal backend python seed.py
+```
+
+Portal dashboards read live DB counts only (no padded floors / hardcoded SVG trends). Empty periods render as zeros / “No activity”.
+
+### 4. Local dev (without Docker)
 
 ```bash
 # Backend
 cd backend
-python -m venv venv && source venv/bin/activate  # Windows: venv\Scripts\activate
+python -m venv venv
+# Windows: venv\Scripts\activate
+source venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 
@@ -56,179 +79,13 @@ cd frontend
 npm install && npm run dev
 ```
 
-> **Note:** When running locally without Docker, the backend defaults to SQLite (`olynixx.db`). Set `DATABASE_URL` in `.env` to point to your Postgres instance for full compatibility.
+When running backend outside Docker, it can fall back to SQLite (`olynixx.db`). Prefer `DATABASE_URL` pointing at Postgres for full compatibility.
 
 ---
 
-## 🔐 Environment Variables
+## Demo credentials (local / Docker seed only)
 
-All variables are defined in `.env.example`. Copy it to `.env` and fill in production values.
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `POSTGRES_USER` | Database username | `postgres` |
-| `POSTGRES_PASSWORD` | Database password | `postgres` |
-| `POSTGRES_DB` | Database name | `olynixx` |
-| `DATABASE_URL` | Full async DB connection string | `postgresql+asyncpg://...` |
-| `SECRET_KEY` | JWT signing key — **change in production** | — |
-| `REFRESH_SECRET_KEY` | Refresh token signing key | — |
-| `ALGORITHM` | JWT algorithm | `HS256` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | Access token TTL | `30` |
-| `REFRESH_TOKEN_EXPIRE_DAYS` | Refresh token TTL | `7` |
-| `NEXT_PUBLIC_API_URL` | API URL for the frontend | `http://localhost:8000` |
-| `BUNNY_LIBRARY_ID` | Bunny.net Stream library ID | — |
-| `BUNNY_API_KEY` | Bunny.net API key | — |
-| `BUNNY_CDN_HOSTNAME` | Bunny CDN hostname | — |
-| `BUNNY_TOKEN_AUTH_KEY` | Bunny token authentication key | — |
-| `REDIS_URL` | Redis connection string | `redis://localhost:6379/0` |
-| `CELERY_BROKER_URL` | Celery broker URL | `redis://localhost:6379/0` |
-| `EXAM_PASS_MARK` | Default exam pass percentage | `70` |
-| `EXAM_TIME_LIMIT_MINUTES` | Default exam duration | `60` |
-| `EXAM_MAX_ATTEMPTS` | Maximum exam attempts | `3` |
-| `EXAM_RANDOMISE` | Randomise exam questions | `true` |
-| `EXAM_DELIVERY_MODE` | Exam delivery mode (`online` or `in_person`) | `online` |
-
----
-
-## 📡 API Endpoint Summary
-
-Base path: `/api`
-
-### Auth
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| POST | `/auth/login` | Public | Login & get JWT |
-| POST | `/auth/register` | Public | Create account |
-| POST | `/auth/refresh` | User | Refresh access token |
-
-### Users & Profiles
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/users/me` | User | Current user profile |
-| PATCH | `/users/me` | User | Update profile |
-
-### Courses
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/courses/` | Public | List published courses |
-| GET | `/courses/all` | Admin | List all courses |
-| GET | `/courses/{id}` | Public | Course detail with modules |
-| POST | `/courses/` | Admin | Create course |
-| PATCH | `/courses/{id}` | Admin | Update course |
-| POST | `/courses/{id}/enroll` | User | Enroll in course |
-| POST | `/courses/{id}/progress` | User | Update lesson progress |
-| GET | `/courses/my/enrollments` | User | My enrollments |
-
-### Modules & Lessons
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| POST | `/courses/{id}/modules` | Admin | Create module |
-| PATCH | `/modules/{id}` | Admin | Update module |
-| DELETE | `/modules/{id}` | Admin | Delete module |
-| POST | `/modules/{id}/lessons` | Admin | Create lesson |
-| PATCH | `/lessons/{id}` | Admin | Update lesson |
-| DELETE | `/lessons/{id}` | Admin | Delete lesson |
-
-### Quizzes
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/modules/{id}/quiz` | User | Get module quiz |
-| POST | `/modules/{id}/quiz` | Admin | Create/update quiz |
-| POST | `/quizzes/{id}/submit` | User | Submit quiz answers |
-
-### Exams
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/exams/sessions` | User | List exam sessions |
-| POST | `/exams/sessions` | Admin | Create exam session |
-| POST | `/exams/register/{session_id}` | User | Register for exam |
-| POST | `/exams/start/{session_id}` | User | Start exam attempt |
-| POST | `/exams/submit/{attempt_id}` | User | Submit exam answers |
-| GET | `/exams/results/{attempt_id}` | User | View attempt results |
-
-### Coaches
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/coaches/` | Admin | List all coaches |
-| GET | `/coaches/pool` | Admin | Filtered coach pool |
-| PATCH | `/coaches/{id}` | Admin | Update coach attributes |
-
-### Projects
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/projects/` | Admin | List projects |
-| POST | `/projects/` | Admin | Create project |
-| POST | `/projects/{id}/assign` | Admin | Assign coach to project |
-
-### Certificates
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/certificates/` | User | My certificates |
-| GET | `/certificates/verify/{code}` | Public | Verify certificate |
-
-### Admin
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/admin/dashboard` | Admin | Dashboard stats |
-
-### Leads
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| POST | `/leads/` | Public | Submit lead form |
-| GET | `/leads/` | Admin | List leads |
-
----
-
-## 🏗️ Project Structure
-
-```
-olynixx_academy/
-├── .env.example
-├── .gitignore
-├── docker-compose.yml
-├── README.md
-├── backend/
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   ├── seed.py
-│   └── app/
-│       ├── main.py
-│       ├── core/config.py
-│       ├── db/
-│       │   ├── base.py
-│       │   ├── models.py
-│       │   └── session.py
-│       ├── api/
-│       │   ├── api.py           # Router aggregation
-│       │   ├── deps.py          # Auth dependencies
-│       │   └── endpoints/
-│       │       ├── auth.py
-│       │       ├── users.py
-│       │       ├── courses.py
-│       │       ├── modules.py   # NEW — Module & Lesson CRUD
-│       │       ├── quizzes.py   # NEW — Quiz endpoints
-│       │       ├── exams.py
-│       │       ├── coaches.py
-│       │       ├── projects.py
-│       │       ├── certificates.py
-│       │       ├── admin.py
-│       │       ├── leads.py
-│       │       └── video.py
-│       ├── schemas/
-│       │   ├── module.py        # NEW
-│       │   ├── quiz.py          # NEW
-│       │   └── ...
-│       └── workers/
-│           └── tasks/
-│               └── certificates.py  # Stub for PDF generation
-└── frontend/
-    ├── package.json
-    └── src/
-```
-
----
-
-## 👔 Default Credentials (Seed Data)
+These accounts are created by `seed.py` for development. They are **not** shown on the public login page — never ship them in production UI, and rotate or disable them before a public launch.
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -236,57 +93,244 @@ olynixx_academy/
 | Coach | `coach@olynixx.com` | `coach123` |
 | Learner | `learner@olynixx.com` | `learner123` |
 
+Additional seeded learners (e.g. `maya@olynixx.com` / `learner123`) include dual-gate certificates for certificate UI demos.
+
+Before production, set a real `NEXT_PUBLIC_SITE_URL`, strong `SECRET_KEY` / `REFRESH_SECRET_KEY`, and `CORS_ORIGINS` to your live frontend origin(s).
+
 ---
 
-## 🚢 Deployment Guidance
+## What is in the product
 
-| Component | Recommended Host |
+### Public site
+- Brand-aligned Praxis marketing pages (home, focus, certification, organisations, work-with-us, standards, about, contact)
+- Strapline and mark assets under `frontend/public/brand/`
+- Login with role-based redirect into portals
+
+### Learner portal (`/learner`)
+- Dashboard with live course progress (% complete from lesson completions)
+- Enrolled courses list (`/learner/courses`) and course player
+- Quizzes, online exam booking/attempts, dual-gate certificate status
+
+### Coach portal (`/coach`)
+- Dashboard with assignment counts (active, pending, accepted, completed, declined)
+- Profile editing (specialty, emirate, focus area, languages as dropdowns)
+- Project board (accept / decline / complete)
+- Agreements (NDA + Code of Conduct) and CEC tracking
+- Placement eligibility gate before dispatch
+
+### Admin portal (`/admin`)
+- Ops dashboard and user management
+- Talent pool (filter by emirate / specialty)
+- Project dispatch with assignment status
+- Content management (create/edit/publish courses + modules)
+- Exam engine and practical assessments
+- Compliance / agreements oversight
+
+---
+
+## Brand system (Praxis v1.1)
+
+Tokens live in `frontend/src/app/globals.css`. Portals use `.ox-portal` (Deep Teal shell).
+
+| Token | Role |
+|-------|------|
+| Ink `#0c0f12` | Primary dark |
+| Cream `#f2ede3` | Light text / public surfaces |
+| Gold / Ochre / Bronze | Accents and CTAs |
+| Teal / Mint | Portal status and success |
+
+Fonts: **Playfair Display** (display) + **EB Garamond** (body) via `next/font`.  
+Brand components: `frontend/src/components/brand/` (`BrandMark`, `BrandLockup`, `Strapline`, `KhatamDivider`).
+
+---
+
+## SEO
+
+- `robots.txt` and `sitemap.xml` are generated by Next.js (`app/robots.ts`, `app/sitemap.ts`).
+- Set `NEXT_PUBLIC_SITE_URL` to your production origin (e.g. `https://praxis.olynixx.com`) so canonical URLs, Open Graph, and the sitemap resolve correctly.
+- Portals (`/learner`, `/coach`, `/admin`) and `/login` are `noindex`.
+- Organization, Course, and FAQ JSON-LD ship on home, certification, and contact respectively.
+
+---
+
+## Environment variables
+
+Defined in `.env.example`. Copy to `.env` and set production values.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `POSTGRES_USER` | Database username | `postgres` |
+| `POSTGRES_PASSWORD` | Database password | `postgres` |
+| `POSTGRES_DB` | Database name | `olynixx` |
+| `DATABASE_URL` | Async DB URL | `postgresql+asyncpg://...` |
+| `SECRET_KEY` | JWT signing key — **change in production** | — |
+| `REFRESH_SECRET_KEY` | Refresh token signing key | — |
+| `ALGORITHM` | JWT algorithm | `HS256` |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Access token TTL | `30` |
+| `REFRESH_TOKEN_EXPIRE_DAYS` | Refresh token TTL | `7` |
+| `NEXT_PUBLIC_API_URL` | Browser → API URL | `http://localhost:8000` |
+| `NEXT_PUBLIC_SITE_URL` | Canonical site URL (SEO / OG / sitemap) | `http://localhost:3000` |
+| `INTERNAL_API_URL` | Frontend container → backend | `http://backend:8000` |
+| `BUNNY_LIBRARY_ID` | Bunny Stream library | — |
+| `BUNNY_API_KEY` | Bunny API key | — |
+| `BUNNY_CDN_HOSTNAME` | Bunny CDN hostname | — |
+| `BUNNY_TOKEN_AUTH_KEY` | Bunny token auth key | — |
+| `REDIS_URL` | Redis (optional locally) | `redis://localhost:6379/0` |
+| `CELERY_BROKER_URL` | Celery broker | `redis://localhost:6379/0` |
+| `EXAM_PASS_MARK` | Default pass mark | `70` |
+| `EXAM_TIME_LIMIT_MINUTES` | Default duration | `60` |
+| `EXAM_MAX_ATTEMPTS` | Max attempts | `3` |
+| `EXAM_RANDOMISE` | Randomise questions | `true` |
+| `EXAM_DELIVERY_MODE` | `online` or `in_person` | `online` |
+
+---
+
+## API summary
+
+Base path: `/api` · Interactive docs: `/docs`
+
+Frontend calls go through the Next.js proxy at `/api/proxy/...` (forwards to the backend with auth cookies).
+
+### Auth
+| Method | Path | Access |
+|--------|------|--------|
+| POST | `/auth/login` | Public |
+| POST | `/auth/register` | Public |
+| POST | `/auth/refresh` | User |
+
+### Courses & learning
+| Method | Path | Access |
+|--------|------|--------|
+| GET | `/courses/` | Public (published) |
+| GET | `/courses/all` | Admin |
+| GET | `/courses/my/dashboard` | Learner dashboard |
+| GET | `/courses/my/enrollments` | Enrolled courses + live progress |
+| GET | `/courses/{id}` | Course detail |
+| POST | `/courses/` | Admin create |
+| PATCH | `/courses/{id}` | Admin update |
+| POST | `/courses/{id}/enroll` | Enroll |
+| POST | `/courses/{id}/progress` | Lesson completion (syncs enrollment %) |
+
+### Modules, lessons, quizzes
+| Method | Path | Access |
+|--------|------|--------|
+| POST | `/courses/{id}/modules` | Admin |
+| PATCH / DELETE | `/modules/{id}` | Admin |
+| POST | `/modules/{id}/lessons` | Admin |
+| PATCH / DELETE | `/lessons/{id}` | Admin |
+| GET / POST | `/modules/{id}/quiz` | User / Admin |
+| POST | `/quizzes/{id}/submit` | User |
+
+### Exams
+| Method | Path | Access |
+|--------|------|--------|
+| GET / POST | `/exams/sessions` | User / Admin |
+| POST | `/exams/sessions/{id}/book` | User |
+| POST | `/exams/attempts/start` | User |
+| POST | `/exams/attempts/{id}/submit` | User |
+| GET | `/exams/attempts/{id}/result` | User |
+| POST | `/exams/attempts/{id}/approve` | Admin |
+| GET / POST | `/exams/questions` | Admin |
+| GET | `/exams/attempts` | Admin |
+
+### Coaches & placement
+| Method | Path | Access |
+|--------|------|--------|
+| GET | `/coaches/` | Admin pool |
+| GET / PATCH | `/coaches/me/profile` | Coach |
+| GET | `/coaches/me/dashboard` | Coach dashboard |
+| GET | `/coaches/assignments/board` | Coach board |
+| PATCH | `/coaches/assignments/{id}` | Accept / decline / complete |
+
+### Projects & operators
+| Method | Path | Access |
+|--------|------|--------|
+| GET / POST | `/projects/` | Admin |
+| PATCH | `/projects/{id}` | Admin |
+| POST | `/projects/{id}/assign` | Admin |
+| GET / POST | `/projects/operators` | Admin |
+
+### Compliance & certificates
+| Method | Path | Access |
+|--------|------|--------|
+| GET / POST | `/compliance/practical-assessments` | Admin |
+| GET | `/compliance/practical-assessments/me` | Learner |
+| GET | `/compliance/agreements/me` | Coach |
+| POST | `/compliance/agreements/me/sign` | Coach |
+| GET | `/certificates/me` | User |
+| GET | `/certificates/verify/{code}` | Public |
+
+### Admin & leads
+| Method | Path | Access |
+|--------|------|--------|
+| GET | `/admin/dashboard` | Admin |
+| GET | `/admin/stats` | Admin |
+| GET | `/admin/users` | Admin |
+| PATCH | `/admin/users/{id}/role` | Admin |
+| POST | `/leads/` | Public |
+| GET | `/leads/` | Admin |
+
+---
+
+## Project structure
+
+```
+olynixx_academy/
+├── .env.example
+├── docker-compose.yml
+├── README.md
+├── backend/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── seed.py
+│   ├── alembic/
+│   └── app/
+│       ├── main.py
+│       ├── core/
+│       ├── db/              # models, session
+│       ├── api/endpoints/   # auth, courses, exams, coaches, …
+│       ├── schemas/
+│       ├── services/        # e.g. certification dual-gate
+│       └── workers/tasks/   # certificate PDF stub
+└── frontend/
+    ├── public/brand/        # Praxis mark assets
+    └── src/
+        ├── app/             # public + learner/coach/admin routes
+        ├── components/brand/
+        └── components/ui/
+```
+
+---
+
+## Certification & placement model
+
+1. **Study** — enroll, complete lessons (progress % from completed lessons / total).
+2. **Written exam** — online attempt; admin approval marks written gate.
+3. **Practical PASS** — recorded by admin under compliance.
+4. **Certificate** — issued only when both gates pass (`ACTIVE` / `EXPIRED` / `REVOKED`).
+5. **Coach upgrade** — successful dual-gate can promote learner → coach.
+6. **Placement** — requires active cert + signed NDA and Code of Conduct (`placement_eligible`) before project assignment.
+
+---
+
+## Deployment guidance
+
+| Component | Recommended host |
 |-----------|------------------|
-| **Application** (FastAPI + Next.js) | Azure App Service / Container Apps (**UAE North**) |
-| **Database** (PostgreSQL) | Azure Database for PostgreSQL (**UAE North**) |
-| **File Storage** (materials / certificates) | Azure Blob Storage (**UAE North**) |
-| **Video** | Bunny.net Stream (global CDN with UAE edge) |
-| **Task Queue** | Celery + Redis |
+| App (FastAPI + Next.js) | Azure App Service / Container Apps (**UAE North**) |
+| PostgreSQL | Azure Database for PostgreSQL (**UAE North**) |
+| Files (materials / PDFs) | Azure Blob Storage (**UAE North**) |
+| Video | Bunny.net Stream |
+| Task queue | Celery + Redis |
 
-> Phase 1 architecture requires sensitive data residency in **UAE North** for PDPL compliance.
-
----
-
-## 🔮 Phase 2 Extensibility
-
-- **Commerce / Stripe**: Add `/checkout` route + Stripe Webhooks → auto-create `CourseEnrollment` on payment.
-- **Client Portal**: New `UserRole.CLIENT` + `/organisations` protected route (middleware already structured for this).
-- **Self-Service Onboarding**: Coach profile models already support user-editable data → feeds into Admin matching pool.
-- **Video Hosting**: Bunny Stream integration is wired; supply `BUNNY_*` env vars and upload via the `/video` endpoints.
-- **Certificate PDFs**: Stub task exists at `workers/tasks/certificates.py` — implement with reportlab/weasyprint + Azure Blob.
+Phase 1 intent: sensitive data residency in **UAE North** for PDPL alignment. Local Docker remains the default for development.
 
 ---
 
-## ✅ Current Compliance Baseline
+## Roadmap (deferred)
 
-### Theme (strict)
-
-- Brand palette is enforced through tokens and component styling with only:
-  - `#25C0D2` (primary accent)
-  - `#3E80CC` (secondary accent)
-  - `#2E3C8E` (deep accent)
-  - `#0A0A0A` (near-black)
-
-### Scope (Phase 1 — Architecture + Schema aligned)
-
-- Public portal + learner/coach/admin areas are active.
-- Configurable online exam engine (`exam_configs` + attempts with JSONB snapshots).
-- **Dual-gate certification**: written exam pass **and** practical assessment PASS required before certificate issuance.
-- Automatic Learner → Coach upgrade on successful dual-gate certification.
-- Linear level prerequisites (L2 requires active L1, L3 requires active L2).
-- Placement gate: `placement_eligible` + signed `coach_agreements` (NDA + Code of Conduct) before project assignment.
-- Soft-delete / anonymisation for users (preserves exam/certificate audit trail).
-- Operators + projects + project assignments for coach pool dispatch.
-- Certificate lifecycle status: `ACTIVE` / `EXPIRED` / `REVOKED`.
-
-### Deferred (Phase 2+)
-
-- Online payment and self-service enrolment
-- Full client portal workflows
-- Expanded commerce and deployment automation
-- Production Azure UAE North cutover (local Docker remains the default for development)
+- Commerce / Stripe checkout → auto-enrollment
+- Full client / operator self-service portal
+- Production certificate PDF generation + blob storage
+- Expanded Bunny Stream content pipeline
+- Azure UAE North production cutover automation

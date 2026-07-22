@@ -16,30 +16,24 @@ export function DonutChart({
   thickness = 14,
   label,
   sublabel = "score",
-  colors = ["var(--ox-accent)", "var(--ox-blue)", "var(--ox-indigo)"],
+  colors = ["var(--gold)", "var(--mint)", "var(--teal)"],
   className = "",
 }: DonutProps) {
   const clamped = Math.max(0, Math.min(100, value));
   const r = (size - thickness) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (clamped / 100) * c;
+  const stroke = colors[0] || "var(--gold)";
 
   return (
     <div className={`relative inline-grid place-items-center ${className}`} style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="ox-donut-spin -rotate-90" aria-hidden>
-        <defs>
-          <linearGradient id={`donut-grad-${label || "d"}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={colors[0]} />
-            <stop offset="55%" stopColor={colors[1]} />
-            <stop offset="100%" stopColor={colors[2] || colors[1]} />
-          </linearGradient>
-        </defs>
+      <svg width={size} height={size} className="-rotate-90" aria-hidden>
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="rgba(62,128,204,0.12)"
+          stroke="rgba(150,118,43,0.25)"
           strokeWidth={thickness}
         />
         <circle
@@ -47,9 +41,9 @@ export function DonutChart({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={`url(#donut-grad-${label || "d"})`}
+          stroke={stroke}
           strokeWidth={thickness}
-          strokeLinecap="round"
+          strokeLinecap="butt"
           strokeDasharray={c}
           strokeDashoffset={offset}
           className="ox-donut-draw"
@@ -58,11 +52,11 @@ export function DonutChart({
       </svg>
       <div className="absolute inset-0 grid place-items-center text-center">
         <div>
-          <div className="font-outfit font-bold leading-none" style={{ fontSize: size * 0.22, color: "var(--ox-fg-dark)" }}>
+          <div className="font-display leading-none" style={{ fontSize: size * 0.22, color: "var(--ox-fg-dark)", fontWeight: 500 }}>
             {clamped}%
           </div>
           {sublabel && (
-            <div className="text-[10px] uppercase tracking-[0.16em] mt-1" style={{ color: "var(--ox-muted)" }}>
+            <div className="font-display text-[10px] uppercase tracking-[0.16em] mt-1" style={{ color: "var(--ox-muted)" }}>
               {sublabel}
             </div>
           )}
@@ -104,7 +98,6 @@ export function MultiSegmentDonut({
           width: size,
           height: size,
           background: `conic-gradient(${stops.join(", ")})`,
-          boxShadow: "0 18px 40px -28px rgba(46,60,142,0.55)",
         }}
       >
         <div
@@ -116,7 +109,7 @@ export function MultiSegmentDonut({
           }}
         >
           <div>
-            <div className="font-outfit font-bold text-2xl" style={{ color: "var(--ox-fg-dark)" }}>
+            <div className="font-display text-2xl" style={{ color: "var(--ox-fg-dark)", fontWeight: 500 }}>
               {centerValue}
             </div>
             {centerLabel && (
@@ -140,38 +133,70 @@ export function MultiSegmentDonut({
 }
 
 type AreaChartProps = {
-  path: string;
+  values?: number[];
+  path?: string;
   areaPath?: string;
   width?: number;
   height?: number;
   gradientId: string;
 };
 
-export function AreaTrendChart({ path, areaPath, width = 280, height = 88, gradientId }: AreaChartProps) {
-  const fill = areaPath || `${path} L${width - 4} ${height - 8} L4 ${height - 8} Z`;
+/** Build a smooth-ish polyline path from raw series values (empty → flat baseline). */
+export function buildAreaPaths(values: number[], width: number, height: number) {
+  const padX = 4;
+  const padY = 8;
+  const usableW = width - padX * 2;
+  const usableH = height - padY * 2;
+  const n = values.length;
+  if (n === 0 || values.every((v) => v === 0)) {
+    const y = height - padY;
+    const line = `M${padX} ${y} L${width - padX} ${y}`;
+    return { path: line, areaPath: `${line} L${width - padX} ${y} L${padX} ${y} Z` };
+  }
+  const max = Math.max(...values, 1);
+  const pts = values.map((v, i) => {
+    const x = padX + (n === 1 ? usableW / 2 : (i / (n - 1)) * usableW);
+    const y = padY + usableH - (v / max) * usableH;
+    return { x, y };
+  });
+  const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+  const areaPath = `${path} L${pts[pts.length - 1].x.toFixed(1)} ${height - padY} L${pts[0].x.toFixed(1)} ${height - padY} Z`;
+  return { path, areaPath };
+}
+
+export function AreaTrendChart({
+  values,
+  path: pathProp,
+  areaPath: areaProp,
+  width = 280,
+  height = 88,
+  gradientId: _gradientId,
+}: AreaChartProps) {
+  const built = values ? buildAreaPaths(values, width, height) : null;
+  const path = built?.path ?? pathProp ?? `M4 ${height - 8} L${width - 4} ${height - 8}`;
+  const fill = areaProp || built?.areaPath || `${path} L${width - 4} ${height - 8} L4 ${height - 8} Z`;
+  const empty = values ? values.length === 0 || values.every((v) => v === 0) : false;
+
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-28" aria-hidden>
-      <defs>
-        <linearGradient id={`${gradientId}-stroke`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(37,192,210,0.95)" />
-          <stop offset="100%" stopColor="rgba(62,128,204,0.95)" />
-        </linearGradient>
-        <linearGradient id={`${gradientId}-fill`} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="rgba(37,192,210,0.28)" />
-          <stop offset="100%" stopColor="rgba(37,192,210,0)" />
-        </linearGradient>
-      </defs>
-      <path d={fill} fill={`url(#${gradientId}-fill)`} className="ox-area-fade" />
-      <path
-        d={path}
-        fill="none"
-        stroke={`url(#${gradientId}-stroke)`}
-        strokeWidth="2.8"
-        strokeLinecap="round"
-        className="ox-line-draw"
-      />
-      <path d={`M4 ${height - 8} L${width - 4} ${height - 8}`} stroke="rgba(62,128,204,0.18)" strokeWidth="1" />
-    </svg>
+    <div className="relative w-full">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-28" aria-hidden>
+        <path d={fill} fill="rgba(42,161,135,0.12)" className="ox-area-fade" />
+        <path
+          d={path}
+          fill="none"
+          stroke="var(--mint)"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          className="ox-line-draw"
+        />
+        <path d={`M4 ${height - 8} L${width - 4} ${height - 8}`} stroke="rgba(150,118,43,0.35)" strokeWidth="1" />
+      </svg>
+      {empty && (
+        <p className="absolute inset-0 grid place-items-center text-[11px]" style={{ color: "var(--ox-muted)" }}>
+          No activity in this period
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -184,20 +209,28 @@ export function AnimatedBarChart({
   data: BarSeriesItem[];
   height?: number;
 }) {
+  if (!data.length || data.every((d) => d.value === 0)) {
+    return (
+      <div className="grid place-items-center text-[12px]" style={{ height, color: "var(--ox-muted)" }}>
+        No activity in this period
+      </div>
+    );
+  }
   const max = Math.max(...data.map((d) => d.value), 1);
   return (
     <div className="grid items-end gap-2" style={{ gridTemplateColumns: `repeat(${data.length}, minmax(0, 1fr))`, height }}>
       {data.map((item, idx) => (
         <div key={item.label} className="flex flex-col items-center justify-end gap-2 h-full">
-          <span className="text-[10px] font-medium ox-count-in" style={{ color: "var(--ox-fg)", animationDelay: `${idx * 70}ms` }}>
+          <span className="text-[10px] font-medium ox-count-in" style={{ color: "var(--ox-muted)", animationDelay: `${idx * 70}ms` }}>
             {item.value}
           </span>
           <div
             className="ox-bar w-full rounded-t-md"
             style={{
-              height: `${Math.max(12, (item.value / max) * (height - 36))}px`,
+              height: `${item.value <= 0 ? 0 : Math.max(4, (item.value / max) * (height - 36))}px`,
               animationDelay: `${idx * 80}ms`,
-              background: "linear-gradient(to top, rgba(62,128,204,0.25), rgba(37,192,210,0.9))",
+              background: "var(--mint)",
+              opacity: 0.85,
             }}
           />
           <span className="text-[10px] text-center leading-tight" style={{ color: "var(--ox-muted)" }}>

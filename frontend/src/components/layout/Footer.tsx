@@ -1,69 +1,112 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
-import { olynixxLogo } from "@/assets/logo";
+import { Instagram, Linkedin, Twitter, Youtube } from "react-feather";
+import { BrandLockup } from "@/components/brand/BrandLockup";
+import { Strapline } from "@/components/brand/Strapline";
+import { KhatamDivider } from "@/components/brand/KhatamDivider";
+
+const SOCIAL = [
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/olynixx",
+    Icon: Linkedin,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/olynixx",
+    Icon: Instagram,
+  },
+  {
+    label: "X",
+    href: "https://x.com/olynixx",
+    Icon: Twitter,
+  },
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com/@olynixx",
+    Icon: Youtube,
+  },
+] as const;
 
 export function Footer() {
   return (
     <footer
-      style={{
-        background:
-          "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(62,128,204,0.08) 100%)",
-        color: "var(--ox-indigo)",
-        borderTop: "1px solid rgba(62,128,204,0.2)",
-      }}
-      className="px-6 py-12"
+      className="px-6 py-8 sm:py-10"
+      style={{ background: "var(--teal-deep)", color: "var(--cream)" }}
     >
       <div className="mx-auto max-w-screen-2xl">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6 mb-6">
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-9 h-9 rounded-lg overflow-hidden border" style={{ borderColor: "var(--ox-line)" }}>
-                <Image
-                  src={olynixxLogo}
-                  alt="Olynixx Academy logo"
-                  width={36}
-                  height={36}
-                  className="w-full h-full object-cover object-top"
-                />
-              </div>
-              <span className="font-semibold tracking-tight" style={{ color: "var(--ox-indigo)" }}>OLYNIXX</span>
-            </div>
-            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ox-muted)' }}>
-              Setting the standard in non-medical human readiness, recovery, and performance intelligence.
+            <BrandLockup variant="transparent" markSize={40} tone="light" />
+            <p
+              className="font-body italic text-[14px] leading-relaxed mt-3 max-w-xs"
+              style={{ color: "rgba(242,237,227,0.7)" }}
+            >
+              Where trusted specialists are made.
             </p>
+            <Strapline className="mt-3" deployTone="cream" size="sm" />
+            <div className="mt-4 flex items-center gap-2.5" aria-label="Social media">
+              {SOCIAL.map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="ox-social-icon inline-flex h-8 w-8 items-center justify-center transition-colors"
+                  style={{
+                    color: "rgba(242,237,227,0.55)",
+                    border: "1px solid rgba(150,118,43,0.35)",
+                    borderRadius: 2,
+                  }}
+                >
+                  <Icon size={14} strokeWidth={1.6} />
+                </a>
+              ))}
+            </div>
           </div>
 
           {[
-            { title: "Platform", links: [
-              { label: "Our Focus", href: "/focus" },
-              { label: "Get Certified", href: "/certification" },
-              { label: "For Organisations", href: "/organisations" },
-              { label: "Become a Coach", href: "/work-with-us" },
-            ]},
-            { title: "Resources", links: [
-              { label: "Standards & Scope", href: "/standards" },
-              { label: "FAQ", href: "/contact" },
-              { label: "Contact", href: "/contact" },
-            ]},
-            { title: "Legal", links: [
-              { label: "Privacy Policy", href: "/privacy" },
-              { label: "Terms of Service", href: "/terms" },
-            ]},
+            {
+              title: "Platform",
+              links: [
+                { label: "Our Focus", href: "/focus" },
+                { label: "Specialisations", href: "/certification" },
+                { label: "Organisations", href: "/organisations" },
+                { label: "Join the pool", href: "/work-with-us" },
+              ],
+            },
+            {
+              title: "Resources",
+              links: [
+                { label: "Standards & Scope", href: "/standards" },
+                { label: "Contact", href: "/contact" },
+                { label: "About", href: "/about" },
+              ],
+            },
+            {
+              title: "Legal",
+              links: [
+                { label: "Privacy Policy", href: "/privacy" },
+                { label: "Terms of Service", href: "/terms" },
+              ],
+            },
           ].map((col) => (
             <div key={col.title}>
-              <h4 className="text-[11px] font-semibold uppercase tracking-[0.22em] mb-5"
-                  style={{ color: 'var(--ox-indigo)' }}>
+              <h4
+                className="font-display text-[11px] tracking-[0.28em] uppercase mb-3"
+                style={{ color: "var(--ochre)" }}
+              >
                 {col.title}
               </h4>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {col.links.map((l) => (
-                  <li key={`${col.title}-${l.label}-${l.href}`}>
-                    <Link href={l.href}
-                      className="text-[13px] transition-colors"
-                      style={{ color: 'var(--ox-muted)' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--ox-fg-dark)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--ox-muted)')}>
+                  <li key={`${col.title}-${l.label}`}>
+                    <Link
+                      href={l.href}
+                      className="font-body text-[14px] transition-colors"
+                      style={{ color: "rgba(242,237,227,0.65)" }}
+                    >
                       {l.label}
                     </Link>
                   </li>
@@ -73,10 +116,14 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="pt-6 flex flex-col md:flex-row justify-between items-center text-[12px]"
-             style={{ borderTop: '1px solid rgba(62,128,204,0.24)', color: 'var(--ox-muted)' }}>
-          <p>© {new Date().getFullYear()} Olynixx Academy. All rights reserved.</p>
-          <p className="mt-2 md:mt-0">Built for human performance.</p>
+        <KhatamDivider className="mb-4 opacity-80" />
+
+        <div
+          className="flex flex-col md:flex-row justify-between items-center gap-2 text-[12px] font-body"
+          style={{ color: "rgba(242,237,227,0.45)" }}
+        >
+          <p>© {new Date().getFullYear()} Olynixx Praxis. All rights reserved.</p>
+          <p className="italic">A RiseUp company.</p>
         </div>
       </div>
     </footer>

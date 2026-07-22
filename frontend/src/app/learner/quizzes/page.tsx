@@ -70,27 +70,27 @@ export default function LearnerQuizzesPage() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 md:px-6 py-6">
-        <h1 className="font-outfit text-3xl font-bold mb-2">Module Quiz</h1>
+        <h1 className="font-display text-3xl mb-2" style={{ fontWeight: 500 }}>Module Quiz</h1>
         <p className="text-[14px] mb-6" style={{ color: "var(--ox-muted)" }}>
           Complete knowledge checks at the end of each module.
         </p>
 
         {status === "loading" && <p>Loading quiz...</p>}
         {status === "error" && (
-          <div className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+          <div className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
             Quiz is not available yet. Ask admin to publish a module quiz.
           </div>
         )}
 
         {quiz && (
           <div className="space-y-4">
-            <div className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+            <div className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
               <div className="text-[13px]" style={{ color: "var(--ox-muted)" }}>Questions: {totalQuestions}</div>
             </div>
             {quiz.questions.map((q, idx) => {
               const key = String(q.id);
               return (
-                <div key={key} className="rounded-xl p-5" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+                <div key={key} className="rounded-xl p-5" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
                   <h2 className="font-semibold mb-3">{idx + 1}. {q.text || q.question || "Question"}</h2>
                   {(["a", "b", "c", "d"] as const).map((opt) => {
                     const fallbackIndex = { a: 0, b: 1, c: 2, d: 3 }[opt];
@@ -116,12 +116,12 @@ export default function LearnerQuizzesPage() {
             <button
               onClick={submitQuiz}
               disabled={status === "submitting"}
-              className="ox-cta h-10 rounded-full px-6 text-[14px] font-semibold"
+              className="ox-cta h-10 px-6 text-[14px] font-semibold"
             >
               {status === "submitting" ? "Submitting..." : "Submit Quiz"}
             </button>
             {result && (
-              <div className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+              <div className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
                 Score: <strong>{result.score}%</strong> - {result.passed ? "Passed" : "Not passed"}
               </div>
             )}

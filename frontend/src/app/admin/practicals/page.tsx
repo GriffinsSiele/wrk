@@ -57,6 +57,14 @@ export default function AdminPracticalsPage() {
     if (uResp.ok) setUsers(await uResp.json());
   }
 
+  function userDisplayName(userId?: number | null) {
+    if (!userId) return "—";
+    const user = users.find((u) => u.id === userId);
+    if (!user) return `User #${userId}`;
+    const name = [user.first_name, user.last_name].filter(Boolean).join(" ").trim();
+    return name || user.email || `User #${userId}`;
+  }
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadAll();
@@ -97,7 +105,7 @@ export default function AdminPracticalsPage() {
   return (
     <div className="p-6 space-y-5">
       <div>
-        <h1 className="font-outfit text-2xl font-bold" style={{ color: "var(--ox-fg)" }}>
+        <h1 className="font-display text-2xl" style={{ color: "var(--ox-fg)", fontWeight: 500 }}>
           Practical Assessments
         </h1>
         <p className="text-[14px] mt-1" style={{ color: "var(--ox-muted)" }}>
@@ -167,7 +175,7 @@ export default function AdminPracticalsPage() {
           </div>
         </div>
 
-        <button onClick={submitPractical} className="ox-cta h-10 rounded-full px-6 text-[14px] font-semibold">
+        <button onClick={submitPractical} className="ox-cta h-10 px-6 text-[14px] font-semibold">
           Save practical result
         </button>
         {message && <p className="text-sm" style={{ color: "var(--ox-muted)" }}>{message}</p>}
@@ -182,7 +190,7 @@ export default function AdminPracticalsPage() {
             <thead>
               <tr style={{ color: "var(--ox-muted)" }}>
                 <th className="px-5 py-3 font-medium">ID</th>
-                <th className="px-5 py-3 font-medium">User</th>
+                <th className="px-5 py-3 font-medium">Name</th>
                 <th className="px-5 py-3 font-medium">Level</th>
                 <th className="px-5 py-3 font-medium">Result</th>
                 <th className="px-5 py-3 font-medium">Assessed</th>
@@ -192,7 +200,7 @@ export default function AdminPracticalsPage() {
               {practicals.map((p) => (
                 <tr key={p.id} style={{ borderTop: "1px solid var(--ox-line)" }}>
                   <td className="px-5 py-3">{p.id}</td>
-                  <td className="px-5 py-3">{p.user_id}</td>
+                  <td className="px-5 py-3">{userDisplayName(p.user_id)}</td>
                   <td className="px-5 py-3">{p.certification_level}</td>
                   <td className="px-5 py-3" style={{ color: p.result === "PASS" ? "var(--ox-accent)" : "var(--ox-indigo)" }}>
                     {p.result}

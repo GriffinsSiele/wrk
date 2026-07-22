@@ -125,23 +125,42 @@ export default function AdminExamsPage() {
 
   return (
     <div className="p-6 space-y-5">
-      <h1 className="font-outfit text-3xl font-bold">Exam Management</h1>
-      <p className="text-[14px]" style={{ color: "var(--ox-muted)" }}>
+      <h1 className="font-display text-3xl" style={{ fontWeight: 500, color: "var(--cream)" }}>
+        Exam engine
+      </h1>
+      <div
+        className="p-4 font-body text-[13px] grid grid-cols-1 md:grid-cols-3 gap-3"
+        style={{ border: "1px solid rgba(150,118,43,0.4)", background: "rgba(12,15,18,0.28)", color: "rgba(242,237,227,0.7)" }}
+      >
+        <div>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>01 · Session</span>
+          <p className="mt-1">Create an exam session and add questions.</p>
+        </div>
+        <div>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>02 · Learner</span>
+          <p className="mt-1">Learner Portal → Exam: start, answer, submit.</p>
+        </div>
+        <div>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>03 · Review</span>
+          <p className="mt-1">Attempts appear below; approve written gate when ready.</p>
+        </div>
+      </div>
+      <p className="text-[14px] font-body" style={{ color: "var(--ox-muted)" }}>
         Configure online sessions, maintain the question bank, and review written attempts. Certificates issue only after written + practical PASS.
       </p>
       {message && <p className="text-sm" style={{ color: "var(--ox-muted)" }}>{message}</p>}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Create Exam Session</h2>
           <input value={sessionForm.title} onChange={(e) => setSessionForm((p) => ({ ...p, title: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input type="datetime-local" value={sessionForm.date} onChange={(e) => setSessionForm((p) => ({ ...p, date: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input value={sessionForm.location} onChange={(e) => setSessionForm((p) => ({ ...p, location: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input type="number" min={1} value={sessionForm.capacity} onChange={(e) => setSessionForm((p) => ({ ...p, capacity: Number(e.target.value) }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <button onClick={createSession} className="ox-cta h-9 rounded-full px-5 text-[13px] font-semibold">Create Session</button>
+          <button onClick={createSession} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create Session</button>
         </section>
 
-        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Add Question</h2>
           <textarea placeholder="Question text" value={questionForm.text} onChange={(e) => setQuestionForm((p) => ({ ...p, text: e.target.value }))} className="w-full rounded px-3 py-2 text-sm" rows={3} style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           {(["option_a", "option_b", "option_c", "option_d"] as const).map((opt) => (
@@ -156,11 +175,11 @@ export default function AdminExamsPage() {
             </select>
             <input value={questionForm.pillar_tag} onChange={(e) => setQuestionForm((p) => ({ ...p, pillar_tag: e.target.value }))} className="h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           </div>
-          <button onClick={createQuestion} className="ox-cta h-9 rounded-full px-5 text-[13px] font-semibold">Add Question</button>
+          <button onClick={createQuestion} className="ox-cta h-9 px-5 text-[13px] font-semibold">Add Question</button>
         </section>
       </div>
 
-      <section className="rounded-xl p-4 overflow-x-auto" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+      <section className="rounded-xl p-4 overflow-x-auto" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
         <h2 className="font-semibold mb-3">Written Attempts (dual-gate review)</h2>
         <table className="w-full text-sm">
           <thead>
@@ -187,7 +206,7 @@ export default function AdminExamsPage() {
                     onClick={() => approveAttempt(a.id)}
                     className="px-3 h-8 rounded text-[12px]"
                     style={{
-                      border: "1px solid rgba(62,128,204,0.35)",
+                      border: "1px solid rgba(150,118,43,0.4)",
                       opacity: !a.passed || a.approved_at ? 0.45 : 1,
                     }}
                   >
@@ -208,7 +227,7 @@ export default function AdminExamsPage() {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <section className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+        <section className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold mb-2">Scheduled Sessions</h2>
           <ul className="text-sm space-y-1">
             {sessions.map((s) => (
@@ -216,7 +235,7 @@ export default function AdminExamsPage() {
             ))}
           </ul>
         </section>
-        <section className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+        <section className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold mb-2">Question Bank ({questions.length})</h2>
           <ul className="text-sm space-y-1 max-h-64 overflow-auto">
             {questions.map((q) => (

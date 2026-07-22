@@ -3,15 +3,14 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { Activity, BarChart2, Briefcase, CheckCircle, Target } from "react-feather";
-
-const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { BrandMark } from "@/components/brand/BrandMark";
+import { Strapline } from "@/components/brand/Strapline";
 
 const offerings = [
-  { icon: Activity, title: "Sport Team Programmes", desc: "Readiness screening and recovery protocols for professional and amateur sport teams. Reduce injury rates, extend athlete careers." },
-  { icon: Briefcase, title: "Corporate Wellbeing", desc: "Science-backed wellness interventions for organisations. Reduce sick days, improve focus, and build a high-performing workforce." },
-  { icon: Target, title: "High-Performance Camps", desc: "Immersive readiness and recovery experiences for executive teams, elite athletes, and high-performing individuals." },
-  { icon: BarChart2, title: "Data-Driven Reporting", desc: "Quantified wellbeing metrics delivered as board-ready reports. Demonstrate ROI on your wellness investment." },
+  { title: "Sport programmes", desc: "Readiness and recovery specialists for teams — assigned from the vetted pool through admin dispatch." },
+  { title: "Corporate programmes", desc: "Specialists for organisations that take human performance seriously, within a clear non-medical scope." },
+  { title: "Events & projects", desc: "Shortlisted coaches for time-bound deployments. Every specialist has been taught, tested, and vouched for." },
+  { title: "Reporting", desc: "Clear delivery reporting so partners understand what was delivered — without breathless claims." },
 ];
 
 export default function OrganisationsPage() {
@@ -22,7 +21,7 @@ export default function OrganisationsPage() {
     e.preventDefault();
     setStatus("sending");
     try {
-      const res = await fetch(`${NEXT_PUBLIC_API_URL}/api/leads/`, {
+      const res = await fetch("/api/proxy/leads/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -39,99 +38,122 @@ export default function OrganisationsPage() {
   }
 
   return (
-    <div style={{ background: "var(--ox-bg-dark)", color: "var(--ox-fg-dark)", minHeight: "100vh" }}>
+    <div style={{ background: "var(--cream)", color: "var(--ink)", minHeight: "100vh" }}>
       <Navbar />
 
-      {/* Hero */}
-      <section style={{ padding: "128px 24px 56px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div className="ox-aurora" />
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 800, margin: "0 auto" }}>
-          <ScrollReveal><span className="ox-label"><span className="ox-dot" />For Organisations</span></ScrollReveal>
+      <section style={{ padding: "140px 24px 72px", background: "var(--ink)", color: "var(--cream)", textAlign: "center" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
+          <ScrollReveal>
+            <BrandMark variant="midnight" size={56} />
+          </ScrollReveal>
+          <ScrollReveal delay={60}>
+            <p
+              className="font-display"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                color: "var(--ochre)",
+                margin: "28px 0 0",
+              }}
+            >
+              Organisations
+            </p>
+          </ScrollReveal>
           <ScrollReveal delay={100}>
-            <h1 style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)", fontWeight: 800, lineHeight: 1.1, margin: "24px 0 20px", letterSpacing: "-0.02em" }}>
-              Your people are your<br />greatest asset.
+            <h1 className="font-display" style={{ fontSize: "clamp(2.4rem,5.5vw,3.5rem)", fontWeight: 500, lineHeight: 1.1, margin: "18px 0 20px" }}>
+              Every specialist we send has been taught, tested, and vouched for.
             </h1>
           </ScrollReveal>
-          <ScrollReveal delay={200}>
-            <p style={{ fontSize: "1.15rem", color: "rgba(62,128,204,0.7)", lineHeight: 1.7, marginBottom: 40, maxWidth: 600, margin: "0 auto 40px" }}>
-              Olynixx deploys certified Human Readiness Coaches into corporate, sport, and community environments through admin-reviewed enquiry and assignment workflows.
+          <ScrollReveal delay={160}>
+            <p className="font-body" style={{ fontSize: "1.1rem", color: "rgba(242,237,227,0.68)", lineHeight: 1.7, maxWidth: 560, margin: "0 auto 28px" }}>
+              Olynixx Praxis deploys certified specialists into corporate, sport, and project environments through admin-reviewed assignment.
             </p>
+          </ScrollReveal>
+          <ScrollReveal delay={200}>
+            <Strapline deployTone="cream" size="sm" />
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Offerings */}
-      <section style={{ padding: "56px 24px", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 24 }}>
+      <section style={{ padding: "72px 24px", maxWidth: 1000, margin: "0 auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 28 }}>
           {offerings.map((o, i) => (
-            <ScrollReveal key={o.title} delay={i * 80}>
-              <div className="ox-card-dark" style={{ padding: "32px 24px" }}>
-                <div style={{ marginBottom: 16, color: "var(--ox-accent)" }}>
-                  <o.icon size={28} />
-                </div>
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: 10 }}>{o.title}</h3>
-                <p style={{ color: "var(--ox-muted)", fontSize: "0.9rem", lineHeight: 1.7 }}>{o.desc}</p>
+            <ScrollReveal key={o.title} delay={i * 70}>
+              <div style={{ paddingTop: 16, borderTop: "1px solid rgba(150,118,43,0.35)" }}>
+                <h3 className="font-display" style={{ fontSize: "1.1rem", fontWeight: 500, marginBottom: 10, color: "var(--teal)" }}>
+                  {o.title}
+                </h3>
+                <p className="font-body" style={{ color: "rgba(12,15,18,0.62)", fontSize: "0.95rem", lineHeight: 1.7 }}>
+                  {o.desc}
+                </p>
               </div>
             </ScrollReveal>
           ))}
         </div>
       </section>
 
-      {/* Enquiry Form */}
-      <section style={{ padding: "56px 24px 84px", maxWidth: 680, margin: "0 auto" }}>
+      <section style={{ padding: "24px 24px 96px", maxWidth: 560, margin: "0 auto" }}>
         <ScrollReveal>
-          <h2 style={{ fontSize: "2rem", fontWeight: 700, textAlign: "center", marginBottom: 8 }}>Start a conversation</h2>
-          <p style={{ color: "var(--ox-muted)", textAlign: "center", marginBottom: 40 }}>Tell us about your organisation and we&apos;ll be in touch within 48 hours.</p>
+          <h2 className="font-display" style={{ fontSize: "1.75rem", fontWeight: 500, textAlign: "center", marginBottom: 8 }}>
+            Start a conversation
+          </h2>
+          <p className="font-body" style={{ color: "rgba(12,15,18,0.55)", textAlign: "center", marginBottom: 40 }}>
+            Tell us about your organisation and we&apos;ll respond promptly.
+          </p>
         </ScrollReveal>
         {status === "sent" ? (
-          <ScrollReveal>
-            <div style={{ textAlign: "center", padding: 48, background: "rgba(37,192,210,0.08)", borderRadius: 16, border: "1px solid rgba(37,192,210,0.2)" }}>
-              <div style={{ marginBottom: 16, display: "flex", justifyContent: "center", color: "var(--ox-accent)" }}>
-                <CheckCircle size={40} />
-              </div>
-              <h3 style={{ fontSize: "1.3rem", fontWeight: 700, marginBottom: 8 }}>Enquiry received</h3>
-              <p style={{ color: "var(--ox-muted)" }}>We&apos;ll be in touch within 48 hours.</p>
-            </div>
-          </ScrollReveal>
+          <div style={{ textAlign: "center", padding: 40, border: "1px solid rgba(150,118,43,0.4)" }}>
+            <h3 className="font-display" style={{ fontSize: "1.2rem", fontWeight: 500, marginBottom: 8 }}>Enquiry received</h3>
+            <p className="font-body" style={{ color: "rgba(12,15,18,0.55)" }}>We&apos;ll be in touch shortly.</p>
+          </div>
         ) : (
-          <ScrollReveal delay={100}>
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {[
-                { id: "name", label: "Full Name", type: "text", placeholder: "Jane Smith" },
-                { id: "email", label: "Email", type: "email", placeholder: "jane@company.com" },
-                { id: "organisation", label: "Organisation", type: "text", placeholder: "Your company or team" },
-                { id: "phone", label: "Phone (optional)", type: "tel", placeholder: "+971 50 000 0000" },
-              ].map((f) => (
-                <div key={f.id}>
-                  <label htmlFor={f.id} style={{ display: "block", fontSize: "0.8rem", color: "var(--ox-muted)", marginBottom: 6, letterSpacing: "0.05em", textTransform: "uppercase" }}>{f.label}</label>
-                  <input
-                    id={f.id}
-                    type={f.type}
-                    placeholder={f.placeholder}
-                    required={f.id !== "phone"}
-                    value={(form as Record<string, string>)[f.id]}
-                    onChange={(e) => setForm((p) => ({ ...p, [f.id]: e.target.value }))}
-                    style={{ width: "100%", background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", borderRadius: 8, padding: "12px 16px", color: "var(--ox-fg-dark)", fontSize: "0.95rem", outline: "none", boxSizing: "border-box" }}
-                  />
-                </div>
-              ))}
-              <div>
-                <label htmlFor="message" style={{ display: "block", fontSize: "0.8rem", color: "var(--ox-muted)", marginBottom: 6, letterSpacing: "0.05em", textTransform: "uppercase" }}>Message</label>
-                <textarea
-                  id="message"
-                  rows={5}
-                  placeholder="Tell us about your organisation, team size, and what you're looking to achieve..."
-                  value={form.message}
-                  onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
-                  style={{ width: "100%", background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", borderRadius: 8, padding: "12px 16px", color: "var(--ox-fg-dark)", fontSize: "0.95rem", outline: "none", resize: "vertical", boxSizing: "border-box" }}
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {[
+              { id: "name", label: "Full Name", type: "text", placeholder: "Jane Smith" },
+              { id: "email", label: "Email", type: "email", placeholder: "jane@company.com" },
+              { id: "organisation", label: "Organisation", type: "text", placeholder: "Your organisation" },
+              { id: "phone", label: "Phone (optional)", type: "tel", placeholder: "+971 …" },
+            ].map((f) => (
+              <div key={f.id}>
+                <label htmlFor={f.id} className="font-display" style={{ display: "block", fontSize: 11, color: "var(--ochre)", marginBottom: 6, letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                  {f.label}
+                </label>
+                <input
+                  id={f.id}
+                  type={f.type}
+                  placeholder={f.placeholder}
+                  required={f.id !== "phone"}
+                  value={(form as Record<string, string>)[f.id]}
+                  onChange={(e) => setForm((p) => ({ ...p, [f.id]: e.target.value }))}
+                  className="font-body"
+                  style={{ width: "100%", background: "var(--ox-input-bg)", border: "1px solid rgba(150,118,43,0.4)", borderRadius: 2, padding: "12px 16px", color: "var(--ink)", fontSize: "0.95rem", outline: "none", boxSizing: "border-box" }}
                 />
               </div>
-              <button type="submit" className="ox-cta" disabled={status === "sending"} style={{ padding: "14px 32px", fontSize: "1rem", border: "none", cursor: "pointer" }}>
-                {status === "sending" ? "Sending..." : "Send enquiry"}
-              </button>
-              {status === "error" && <p style={{ color: "var(--ox-blue)", textAlign: "center", fontSize: "0.9rem" }}>Something went wrong. Please try again.</p>}
-            </form>
-          </ScrollReveal>
+            ))}
+            <div>
+              <label htmlFor="message" className="font-display" style={{ display: "block", fontSize: 11, color: "var(--ochre)", marginBottom: 6, letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                Message
+              </label>
+              <textarea
+                id="message"
+                rows={5}
+                placeholder="Team size, context, and what you need…"
+                value={form.message}
+                onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
+                className="font-body"
+                style={{ width: "100%", background: "var(--ox-input-bg)", border: "1px solid rgba(150,118,43,0.4)", borderRadius: 2, padding: "12px 16px", color: "var(--ink)", fontSize: "0.95rem", outline: "none", resize: "vertical", boxSizing: "border-box" }}
+              />
+            </div>
+            <button type="submit" className="ox-cta" disabled={status === "sending"} style={{ padding: "14px 32px", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase", border: "none", cursor: "pointer" }}>
+              {status === "sending" ? "Sending…" : "Send enquiry"}
+            </button>
+            {status === "error" && (
+              <p className="font-body" style={{ color: "var(--ochre)", textAlign: "center", fontSize: "0.9rem" }}>
+                Something went wrong. Please try again.
+              </p>
+            )}
+          </form>
         )}
       </section>
 

@@ -2,41 +2,50 @@
 import { useActionState } from "react";
 import { login } from "@/app/actions/auth";
 import Link from "next/link";
-import Image from "next/image";
-import { olynixxLogo } from "@/assets/logo";
+import { BrandLockup } from "@/components/brand/BrandLockup";
+import { Strapline } from "@/components/brand/Strapline";
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(login, null);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4"
-         style={{ background: "var(--ox-bg-dark)" }}>
-      {/* Aurora */}
-      <div className="ox-aurora fixed inset-0 pointer-events-none" aria-hidden />
-
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: "var(--ink)" }}
+    >
       <div className="relative z-10 w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-10">
-          <Image
-            src={olynixxLogo}
-            alt="Olynixx Academy official logo"
-            width={112}
-            height={112}
-            className="w-28 h-28 mx-auto mb-6 object-contain"
+          <BrandLockup
+            variant="midnight"
+            markSize={72}
+            layout="stacked"
+            tone="light"
+            className="mb-2"
           />
-          <h1 className="font-outfit font-bold text-3xl mb-2" style={{ color: "var(--ox-fg-dark)" }}>Sign in</h1>
-          <p className="text-[14px]" style={{ color: "var(--ox-muted)" }}>
-            Access your portal
-          </p>
+          <Strapline className="mt-6 justify-center" deployTone="cream" size="sm" />
         </div>
 
-        {/* Card */}
-        <div className="rounded-2xl p-8"
-             style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", backdropFilter: "blur(12px)", boxShadow: "var(--ox-shadow)" }}>
+        <div
+          className="p-8"
+          style={{ background: "rgba(242,237,227,0.04)", border: "1px solid rgba(150,118,43,0.4)" }}
+        >
+          <h1
+            className="font-display text-2xl mb-1 text-center"
+            style={{ color: "var(--cream)", fontWeight: 500 }}
+          >
+            Sign in
+          </h1>
+          <p className="font-body text-[14px] text-center mb-8" style={{ color: "rgba(242,237,227,0.55)" }}>
+            Access your portal
+          </p>
+
           <form action={formAction} className="space-y-4">
             <div>
-              <label htmlFor="email-address" className="block text-[12px] font-medium mb-2"
-                     style={{ color: "var(--ox-muted)" }}>
+              <label
+                htmlFor="email-address"
+                className="block font-display text-[11px] tracking-[0.18em] uppercase mb-2"
+                style={{ color: "var(--ochre)" }}
+              >
                 Email address
               </label>
               <input
@@ -45,20 +54,24 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                placeholder="e.g. admin@olynixx.com"
-                className="w-full px-4 py-3 rounded-xl text-[14px] outline-none transition-all"
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 text-[14px] font-body outline-none"
                 style={{
-                  background: "var(--ox-input-bg)",
-                  border: "1px solid var(--ox-line)",
-                  color: "var(--ox-fg-dark)",
+                  background: "rgba(12,15,18,0.5)",
+                  border: "1px solid rgba(150,118,43,0.4)",
+                  color: "var(--cream)",
+                  borderRadius: 2,
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--ox-accent)")}
-                onBlur={(e) => (e.target.style.borderColor = "var(--ox-line)")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--gold)")}
+                onBlur={(e) => (e.target.style.borderColor = "rgba(150,118,43,0.4)")}
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-[12px] font-medium mb-2"
-                     style={{ color: "var(--ox-muted)" }}>
+              <label
+                htmlFor="password"
+                className="block font-display text-[11px] tracking-[0.18em] uppercase mb-2"
+                style={{ color: "var(--ochre)" }}
+              >
                 Password
               </label>
               <input
@@ -67,21 +80,28 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                placeholder="e.g. admin123"
-                className="w-full px-4 py-3 rounded-xl text-[14px] outline-none transition-all"
+                placeholder="••••••••"
+                className="w-full px-4 py-3 text-[14px] font-body outline-none"
                 style={{
-                  background: "var(--ox-input-bg)",
-                  border: "1px solid var(--ox-line)",
-                  color: "var(--ox-fg-dark)",
+                  background: "rgba(12,15,18,0.5)",
+                  border: "1px solid rgba(150,118,43,0.4)",
+                  color: "var(--cream)",
+                  borderRadius: 2,
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--ox-accent)")}
-                onBlur={(e) => (e.target.style.borderColor = "var(--ox-line)")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--gold)")}
+                onBlur={(e) => (e.target.style.borderColor = "rgba(150,118,43,0.4)")}
               />
             </div>
 
             {state?.error && (
-              <div className="text-[13px] text-center py-2.5 px-4 rounded-xl"
-                   style={{ background: "var(--ox-surface-strong)", color: "var(--ox-blue)", border: "1px solid var(--ox-line)" }}>
+              <div
+                className="text-[13px] font-body text-center py-2.5 px-4"
+                style={{
+                  background: "rgba(217,172,74,0.08)",
+                  color: "var(--gold-bright)",
+                  border: "1px solid rgba(150,118,43,0.4)",
+                }}
+              >
                 {state.error}
               </div>
             )}
@@ -89,30 +109,29 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isPending}
-              className="ox-cta w-full h-12 rounded-full text-[15px] font-semibold mt-2"
+              className="ox-cta w-full h-12 text-[13px] tracking-[0.14em] uppercase mt-2"
             >
-              {isPending ? "Signing in..." : "Sign in"}
+              {isPending ? "Signing in…" : "Sign in"}
             </button>
           </form>
 
-          {/* Demo hint */}
-          <div className="mt-6 pt-5 text-center" style={{ borderTop: "1px solid var(--ox-line)" }}>
-            <p className="text-[11px] uppercase tracking-[0.18em] mb-3" style={{ color: "var(--ox-muted)" }}>
-              Demo accounts
+          <div className="mt-6 pt-5 text-center" style={{ borderTop: "1px solid rgba(150,118,43,0.3)" }}>
+            <p className="font-body text-[13px]" style={{ color: "rgba(242,237,227,0.5)" }}>
+              Need an account?{" "}
+              <Link href="/contact" style={{ color: "var(--gold)" }}>
+                Request access
+              </Link>
             </p>
-            <div className="space-y-1.5 text-[12px] font-mono" style={{ color: "var(--ox-muted)" }}>
-              <p>admin@olynixx.com / admin123</p>
-              <p>coach@olynixx.com / coach123</p>
-              <p>learner@olynixx.com / learner123</p>
-            </div>
           </div>
         </div>
 
         <div className="text-center mt-6">
-          <Link href="/" className="text-[13px] transition-colors" style={{ color: "var(--ox-muted)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--ox-accent)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--ox-muted)")}>
-            ← Return to homepage
+          <Link
+            href="/"
+            className="font-display text-[13px] tracking-[0.06em]"
+            style={{ color: "rgba(242,237,227,0.5)" }}
+          >
+            ← Return home
           </Link>
         </div>
       </div>

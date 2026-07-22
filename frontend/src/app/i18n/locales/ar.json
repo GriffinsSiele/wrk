@@ -1,79 +1,79 @@
 {
   "home": {
-    "heroTitle": "افتح جاهزية الإنسان، التعافي والأداء الذكي",
-    "heroSubtitle": "انضم إلى أكاديمية Olynixx لتصبح مدربًا معتمدًا وتمكين المنظمات حول العالم.",
+    "heroTitle": "Where trusted specialists are made.",
+    "heroSubtitle": "We don't replace your certification. We specialise it.",
     "ctaLearn": "المزيد",
-    "ctaGetCertified": "احصل على شهادة"
+    "ctaGetCertified": "التخصصات"
   },
   "focus": {
-    "title": "الأركان الثلاثة",
-    "pillar1": "جاهزية الإنسان – إعداد الأفراد للأداء القمة.",
-    "pillar2": "ذكاء التعافي – استراتيجيات تعافي مبنية على البيانات.",
-    "pillar3": "علوم الأداء – منهجيات تدريب متقدمة."
+    "title": "Three disciplines. One standard.",
+    "pillar1": "Human Readiness",
+    "pillar2": "Recovery Intelligence",
+    "pillar3": "Performance Intelligence"
   },
   "certification": {
-    "title": "مسار الشهادة",
-    "step1": "ادرس المنهج المنسق",
-    "step2": "اجتز الامتحان الحضوري الخاضع للإشراف في الإمارات",
-    "step3": "انضم إلى مجموعة المدربين المعتمدين عالميًا"
+    "title": "Specialisation pathway",
+    "step1": "Study the curriculum",
+    "step2": "Pass the dual gate",
+    "step3": "Join the deployable pool"
   },
   "workWithUs": {
-    "title": "كن مدربًا – انضم إلى فريقنا",
-    "description": "نبحث عن مدربين شغوفين لتقديم تدريب عالمي المستوى. قدم الآن وحقق تأثيرًا."
+    "title": "Earn the specialisation. Join the pool. Get placed.",
+    "description": "We don't replace your certification. We specialise it."
   },
   "organisations": {
-    "title": "للمنظمات",
-    "description": "قوِ قوة جاهزية القوى العاملة لديك عبر برامجنا المؤسسية."
+    "title": "For organisations",
+    "description": "Every specialist we send has been taught, tested, and vouched for."
   },
   "about": {
-    "title": "عن Olynixx",
-    "mission": "تمكين الأفراد والمؤسسات عبر تدريب مدعوم بالعلوم."
+    "title": "About Olynixx Praxis",
+    "mission": "The specialisation layer for performance coaches."
   },
   "standards": {
-    "title": "المعايير ومجال الممارسة",
-    "content": "شهادتنا تتماشى مع معايير REPs الإمارات، ACE، وNASM."
+    "title": "Standards & Scope of Practice",
+    "content": "Professional standards for Olynixx Praxis certified coaches."
   },
   "contact": {
-    "title": "اتصل بنا",
-    "intro": "نحن هنا للمساعدة. تواصل معنا لأي أسئلة أو استفسارات."
+    "title": "Contact",
+    "intro": "Questions, answered precisely."
   },
   "navbar": {
     "language": "اللغة",
-    "ourFocus": "تركيزنا",
-    "getCertified": "احصل على الشهادة",
-    "forOrganisations": "للمؤسسات",
-    "about": "من نحن",
-    "signIn": "تسجيل الدخول",
-    "languageSwitcherLabel": "اختر اللغة",
-    "currentLanguage": "اللغة الحالية",
-    "english": "الإنجليزية",
+    "ourFocus": "Our Focus",
+    "getCertified": "Specialisations",
+    "forOrganisations": "Organisations",
+    "about": "About",
+    "signIn": "Sign in",
+    "languageSwitcherLabel": "Select language",
+    "currentLanguage": "Current language",
+    "english": "English",
     "arabic": "العربية",
-    "french": "الفرنسية",
-    "spanish": "الإسبانية",
-    "chinese": "الصينية"
+    "french": "French",
+    "spanish": "Spanish",
+    "chinese": "Chinese"
   },
   "footer": {
-    "tagline": "نضع معيارًا جديدًا في جاهزية الإنسان غير الطبية والتعافي وذكاء الأداء.",
-    "platform": "المنصة",
-    "resources": "الموارد",
-    "legal": "قانوني",
-    "becomeCoach": "كن مدربًا",
-    "standardsScope": "المعايير والنطاق",
-    "faq": "الأسئلة الشائعة",
-    "contact": "اتصل بنا",
-    "privacyPolicy": "سياسة الخصوصية",
-    "termsOfService": "شروط الخدمة",
-    "rightsReserved": "جميع الحقوق محفوظة.",
-    "builtForHumanPerformance": "مبني للأداء البشري."
+    "tagline": "Where trusted specialists are made.",
+    "platform": "Platform",
+    "resources": "Resources",
+    "legal": "Legal",
+    "becomeCoach": "Join the pool",
+    "standardsScope": "Standards & Scope",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "rightsReserved": "All rights reserved.",
+    "builtForHumanPerformance": "LEARN + CERTIFY + DEPLOY"
   },
   "login": {
-    "title": "تسجيل الدخول",
-    "subtitle": "ادخل إلى بوابتك",
-    "emailLabel": "البريد الإلكتروني",
-    "passwordLabel": "كلمة المرور",
-    "submit": "تسجيل الدخول",
-    "submitting": "جاري تسجيل الدخول...",
-    "demoAccounts": "حسابات تجريبية",
-    "backHome": "العودة إلى الصفحة الرئيسية"
+    "title": "Sign in",
+    "subtitle": "Access your portal",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "demoAccounts": "Demo accounts",
+    "backHome": "Return home"
   }
 }

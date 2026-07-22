@@ -48,7 +48,7 @@ export default function CoachAgreementsPage() {
 
   return (
     <main className="max-w-3xl mx-auto px-4 md:px-6 py-6">
-        <h1 className="font-outfit text-3xl font-bold mb-2">Placement Agreements</h1>
+        <h1 className="font-display text-3xl mb-2" style={{ fontWeight: 500 }}>Placement Agreements</h1>
         <p className="text-[14px] mb-6" style={{ color: "var(--ox-muted)" }}>
           Project assignment requires placement eligibility: active certificate + signed NDA and Code of Conduct.
         </p>
@@ -56,7 +56,7 @@ export default function CoachAgreementsPage() {
         <div
           className="rounded-xl p-4 mb-5 text-[14px]"
           style={{
-            background: placementEligible ? "rgba(37,192,210,0.1)" : "rgba(62,128,204,0.08)",
+            background: placementEligible ? "rgba(217,172,74,0.08)" : "rgba(217,172,74,0.08)",
             border: "1px solid var(--ox-line)",
             color: "var(--ox-fg)",
           }}
@@ -79,13 +79,13 @@ export default function CoachAgreementsPage() {
                 </p>
               </div>
               {a.signed_at ? (
-                <span className="text-[12px] px-3 py-1 rounded-full" style={{ background: "rgba(37,192,210,0.12)", color: "var(--ox-accent)" }}>
+                <span className="text-[12px] px-3 py-1 rounded-full" style={{ background: "rgba(217,172,74,0.08)", color: "var(--ox-accent)" }}>
                   Signed
                 </span>
               ) : (
                 <button
                   onClick={() => sign(a.agreement_type)}
-                  className="ox-cta h-9 rounded-full px-5 text-[13px] font-semibold"
+                  className="ox-cta h-9 px-5 text-[13px] font-semibold"
                 >
                   Sign
                 </button>

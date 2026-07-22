@@ -47,6 +47,7 @@ export default function CourseDetailPage() {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
+        // Prefer proxy in other pages; direct call uses browser→API URL (auth via cookie if CORS allows).
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
         const res = await fetch(`${apiUrl}/api/courses/${courseId}`, { credentials: "include" });
         if (res.ok) {
@@ -132,8 +133,7 @@ export default function CourseDetailPage() {
         <button
           className="md:hidden fixed bottom-6 left-6 z-40 w-12 h-12 rounded-full flex items-center justify-center"
           style={{
-            background: "linear-gradient(135deg, var(--ox-accent), var(--ox-indigo))",
-            boxShadow: "0 4px 20px rgba(37,192,210,0.4)",
+            background: "var(--gold)",
           }}
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
@@ -148,12 +148,12 @@ export default function CourseDetailPage() {
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0 fixed md:relative z-30 md:z-auto w-[85vw] max-w-80 md:w-72 lg:w-80 h-[calc(100vh-64px)] overflow-y-auto transition-transform duration-300`}
           style={{
-            background: "rgba(46,60,142,0.22)",
-            borderRight: "1px solid rgba(26,26,26,0.07)",
+            background: "rgba(12,15,18,0.28)",
+            borderRight: "1px solid rgba(150,118,43,0.35)",
           }}
         >
           <div className="p-5">
-            <h2 className="font-outfit font-bold text-[15px] mb-1" style={{ color: "var(--ox-fg)" }}>
+            <h2 className="font-display text-[15px] mb-1" style={{ color: "var(--ox-fg)", fontWeight: 500 }}>
               {course?.title || "Course"}
             </h2>
             <div className="flex items-center gap-2 text-[12px] mb-4" style={{ color: "var(--ox-muted)" }}>
@@ -167,7 +167,7 @@ export default function CourseDetailPage() {
                 className="h-1.5 rounded-full transition-all duration-500"
                 style={{
                   width: `${progressPercent}%`,
-                  background: "linear-gradient(90deg, var(--ox-accent), var(--ox-blue))",
+                  background: "var(--gold)",
                 }}
               />
             </div>
@@ -209,7 +209,7 @@ export default function CourseDetailPage() {
                           }}
                           className="w-full flex items-center gap-3 px-5 py-2.5 text-left transition-all"
                           style={{
-                            background: isActive ? "rgba(37,192,210,0.06)" : "transparent",
+                            background: isActive ? "rgba(217,172,74,0.08)" : "transparent",
                             borderLeft: isActive ? "2px solid var(--ox-accent)" : "2px solid transparent",
                           }}
                         >
@@ -272,8 +272,8 @@ export default function CourseDetailPage() {
                     {course?.level || "Level 1"}
                   </span>
                   <h1
-                    className="font-outfit font-bold text-2xl mt-1"
-                    style={{ color: "var(--ox-fg)" }}
+                    className="font-display text-2xl mt-1"
+                    style={{ color: "var(--ox-fg)", fontWeight: 500 }}
                   >
                     {activeLesson.title}
                   </h1>
@@ -308,13 +308,13 @@ export default function CourseDetailPage() {
                   <button
                     onClick={handleMarkComplete}
                     disabled={activeLesson.completed || markingComplete}
-                    className={`h-11 rounded-full px-7 text-[13px] font-semibold inline-flex items-center gap-2 transition-all ${
+                    className={`h-11 px-7 text-[13px] font-semibold inline-flex items-center gap-2 transition-all ${
                       activeLesson.completed ? "" : "ox-cta"
                     }`}
                     style={
                       activeLesson.completed
                         ? {
-                            background: "rgba(37,192,210,0.12)",
+                            background: "rgba(217,172,74,0.08)",
                             color: "var(--ox-accent)",
                             cursor: "default",
                           }
@@ -365,7 +365,7 @@ export default function CourseDetailPage() {
               <div className="text-center">
                 <div
                   className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-                  style={{ background: "rgba(37,192,210,0.08)" }}
+                  style={{ background: "rgba(217,172,74,0.08)" }}
                 >
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
                     <path d="M12 6v6l4 2" stroke="var(--ox-accent)" strokeWidth="2" strokeLinecap="round" />

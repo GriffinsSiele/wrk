@@ -48,16 +48,15 @@ const COLOR_MAP: Record<string, string> = {
   muted: "rgba(46,60,142,0.55)",
 };
 
-const trendPath = "M8 62 C28 58, 48 44, 72 48 C96 52, 116 36, 140 30 C164 24, 188 16, 212 12 C232 9, 252 10, 272 8";
-
 export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       const resp = await fetch("/api/proxy/admin/dashboard", { cache: "no-store" });
-      if (!resp.ok) return;
-      setData(await resp.json());
+      if (resp.ok) setData(await resp.json());
+      setLoaded(true);
     };
     load();
   }, []);
@@ -73,63 +72,60 @@ export default function AdminDashboard() {
   const certRate = data?.cert_rate ?? 0;
   const poolHealth = data?.pool_health ?? 0;
   const governance = data?.governance_score ?? 0;
-  const throughput = data?.throughput?.length
-    ? data.throughput
-    : [
-        { label: "W1", value: 20 },
-        { label: "W2", value: 24 },
-        { label: "W3", value: 28 },
-        { label: "W4", value: 32 },
-        { label: "W5", value: 36 },
-        { label: "W6", value: 40 },
-        { label: "W7", value: 44 },
-        { label: "W8", value: 48 },
-      ];
+  const throughput = data?.throughput ?? [];
+  const trendValues = throughput.map((p) => p.value);
   const talentMix = (data?.talent_mix ?? []).filter((s) => s.value > 0);
   const dispatch = data?.dispatch ?? [];
   const recentCoaches = data?.recent_coaches ?? [];
+  const zeroSpark = [0, 0, 0, 0, 0, 0];
 
   const kpis = [
-    { label: "Coach Command", value: String(stats.total_coaches), change: data?.kpi_changes?.coaches ?? "+0%", color: "var(--ox-accent)", icon: Users, spark: data?.spark_coaches ?? [1, 2, 3, 4, 5, 6] },
-    { label: "Learner Velocity", value: String(stats.total_learners), change: data?.kpi_changes?.learners ?? "+0%", color: "var(--ox-blue)", icon: Activity, spark: data?.spark_learners ?? [1, 2, 3, 4, 5, 6] },
-    { label: "Project Dispatch", value: String(stats.total_active_projects), change: data?.kpi_changes?.projects ?? "+0%", color: "var(--ox-indigo)", icon: Briefcase, spark: data?.spark_projects ?? [1, 2, 3, 4, 5, 6] },
-    { label: "Certification Output", value: String(stats.total_certificates), change: data?.kpi_changes?.certificates ?? "+0%", color: "var(--ox-indigo)", icon: CheckCircle, spark: data?.spark_certs ?? [1, 2, 3, 4, 5, 6] },
+    { label: "Coach Command", value: String(stats.total_coaches), change: data?.kpi_changes?.coaches ?? "0%", color: "var(--ox-accent)", icon: Users, spark: data?.spark_coaches ?? zeroSpark },
+    { label: "Learner Velocity", value: String(stats.total_learners), change: data?.kpi_changes?.learners ?? "0%", color: "var(--ox-blue)", icon: Activity, spark: data?.spark_learners ?? zeroSpark },
+    { label: "Project Dispatch", value: String(stats.total_active_projects), change: data?.kpi_changes?.projects ?? "0%", color: "var(--ox-indigo)", icon: Briefcase, spark: data?.spark_projects ?? zeroSpark },
+    { label: "Certification Output", value: String(stats.total_certificates), change: data?.kpi_changes?.certificates ?? "0%", color: "var(--ox-indigo)", icon: CheckCircle, spark: data?.spark_certs ?? zeroSpark },
   ];
+
+  if (!loaded) {
+    return (
+      <div className="px-4 md:px-6 py-8 text-[13px]" style={{ color: "var(--ox-muted)" }}>
+        Loading dashboard…
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 md:px-6 py-5">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <ScrollReveal className="lg:col-span-12">
           <div
-            className="ox-hero-shimmer rounded-2xl p-5 md:p-6 relative overflow-hidden"
+            className="p-5 md:p-6 relative overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, rgba(46,60,142,0.96), rgba(62,128,204,0.96))",
-              boxShadow: "0 24px 56px -34px rgba(46,60,142,0.7)",
+              background: "rgba(12,15,18,0.45)",
+              border: "1px solid rgba(150,118,43,0.4)",
             }}
           >
-            <div
-              className="absolute -top-16 -right-16 w-64 h-64 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(37,192,210,0.35), transparent 70%)" }}
-            />
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="min-w-0">
-                <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] mb-1.5" style={{ color: "rgba(255,255,255,0.7)" }}>
+                <div className="inline-flex items-center gap-2 font-display text-[11px] uppercase tracking-[0.22em] mb-1.5" style={{ color: "var(--ochre)" }}>
                   <Shield size={14} />
-                  Executive Control Tower
+                  Control tower
                 </div>
-                <h2 className="font-outfit font-bold text-2xl md:text-3xl mb-1 text-white">Admin Intelligence Layer</h2>
-                <p className="text-[13px] md:text-[14px] max-w-xl" style={{ color: "rgba(255,255,255,0.75)" }}>
-                  Live command view across certification conversion, coach placement health, and project dispatch.
+                <h2 className="font-display text-2xl md:text-3xl mb-1" style={{ color: "var(--cream)", fontWeight: 500 }}>
+                  Certification, pool &amp; dispatch
+                </h2>
+                <p className="font-body text-[13px] md:text-[14px] max-w-xl" style={{ color: "rgba(242,237,227,0.65)" }}>
+                  Live view across certification conversion, coach placement health, and project dispatch.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2 shrink-0">
-                <div className="rounded-xl px-4 py-2.5 text-center min-w-[88px]" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)" }}>
-                  <div className="text-[10px] uppercase tracking-[0.14em]" style={{ color: "rgba(255,255,255,0.72)" }}>Governance</div>
-                  <div className="font-outfit text-3xl font-bold text-white leading-tight">{governance}</div>
+                <div className="px-4 py-2.5 text-center min-w-[88px]" style={{ border: "1px solid rgba(150,118,43,0.45)" }}>
+                  <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--ochre)" }}>Governance</div>
+                  <div className="font-display text-3xl leading-tight" style={{ color: "var(--gold)", fontWeight: 500 }}>{governance}</div>
                 </div>
-                <div className="rounded-xl px-4 py-2.5 text-center min-w-[88px]" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)" }}>
-                  <div className="text-[10px] uppercase tracking-[0.14em]" style={{ color: "rgba(255,255,255,0.72)" }}>Placement</div>
-                  <div className="font-outfit text-3xl font-bold text-white leading-tight">{poolHealth}%</div>
+                <div className="px-4 py-2.5 text-center min-w-[88px]" style={{ border: "1px solid rgba(150,118,43,0.45)" }}>
+                  <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--ochre)" }}>Placement</div>
+                  <div className="font-display text-3xl leading-tight" style={{ color: "var(--cream)", fontWeight: 500 }}>{poolHealth}%</div>
                 </div>
               </div>
             </div>
@@ -140,13 +136,13 @@ export default function AdminDashboard() {
           <ScrollReveal key={k.label} delay={i * 50} className="lg:col-span-3 h-full">
             <div className="ox-card ox-kpi-float p-4 rounded-2xl h-full flex flex-col" style={{ background: "var(--ox-surface-strong)" }}>
               <div className="flex items-start justify-between mb-2">
-                <div className="w-9 h-9 rounded-xl grid place-items-center" style={{ background: "rgba(62,128,204,0.1)", color: k.color }}>
+                <div className="w-9 h-9 rounded-xl grid place-items-center" style={{ background: "rgba(217,172,74,0.12)", color: k.color }}>
                   <k.icon size={16} />
                 </div>
                 <Sparkline values={k.spark} color={k.color} />
               </div>
               <div className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ color: "var(--ox-muted)" }}>{k.label}</div>
-              <div className="font-outfit font-bold text-3xl leading-none mb-1" style={{ color: "var(--ox-fg)" }}>{k.value}</div>
+              <div className="font-display text-3xl leading-none mb-1" style={{ color: "var(--ox-fg)", fontWeight: 500 }}>{k.value}</div>
               <div className="text-[11px] mt-auto" style={{ color: k.color }}>{k.change} vs last period</div>
             </div>
           </ScrollReveal>
@@ -164,8 +160,8 @@ export default function AdminDashboard() {
             <div className="flex-1">
               <AnimatedBarChart data={throughput} height={140} />
             </div>
-            <div className="mt-3 rounded-xl p-3" style={{ background: "rgba(62,128,204,0.08)", border: "1px solid rgba(62,128,204,0.2)" }}>
-              <AreaTrendChart path={trendPath} gradientId="adminTrend" width={280} height={72} />
+            <div className="mt-3 rounded-xl p-3" style={{ background: "rgba(217,172,74,0.08)", border: "1px solid rgba(150,118,43,0.35)" }}>
+              <AreaTrendChart values={trendValues} gradientId="adminTrend" width={280} height={72} />
             </div>
           </div>
         </ScrollReveal>
@@ -184,7 +180,7 @@ export default function AdminDashboard() {
                 { label: "Courses", value: stats.total_courses },
                 { label: "Leads", value: stats.total_leads },
               ].map((row) => (
-                <div key={row.label} className="rounded-lg px-2.5 py-2" style={{ background: "rgba(62,128,204,0.08)" }}>
+                <div key={row.label} className="rounded-lg px-2.5 py-2" style={{ background: "rgba(217,172,74,0.08)" }}>
                   <div style={{ color: "var(--ox-muted)" }}>{row.label}</div>
                   <div className="font-semibold" style={{ color: "var(--ox-fg)" }}>{row.value}</div>
                 </div>
@@ -198,17 +194,21 @@ export default function AdminDashboard() {
             <h3 className="font-semibold text-[15px] mb-0.5" style={{ color: "var(--ox-fg)" }}>Talent Mix</h3>
             <p className="text-[12px] mb-3" style={{ color: "var(--ox-muted)" }}>Pool composition by readiness</p>
             <div className="flex-1 grid place-items-center">
-              <MultiSegmentDonut
-                size={130}
-                thickness={15}
-                centerValue={`${poolHealth}%`}
-                centerLabel="eligible"
-                segments={(talentMix.length ? talentMix : [{ label: "Pool", value: 1, color_key: "blue" }]).map((s) => ({
-                  value: s.value,
-                  color: COLOR_MAP[s.color_key] || "var(--ox-blue)",
-                  label: s.label,
-                }))}
-              />
+              {talentMix.length ? (
+                <MultiSegmentDonut
+                  size={130}
+                  thickness={15}
+                  centerValue={`${poolHealth}%`}
+                  centerLabel="eligible"
+                  segments={talentMix.map((s) => ({
+                    value: s.value,
+                    color: COLOR_MAP[s.color_key] || "var(--ox-blue)",
+                    label: s.label,
+                  }))}
+                />
+              ) : (
+                <p className="text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No coaches in pool yet</p>
+              )}
             </div>
           </div>
         </ScrollReveal>
@@ -219,13 +219,13 @@ export default function AdminDashboard() {
             <p className="text-[12px] mb-3" style={{ color: "var(--ox-muted)" }}>Cross-track execution quality and throughput health</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
               {(dispatch.length ? dispatch : [{ track: "No projects yet", active: 0, completion: 0, risk: "Watch" }]).map((row, i) => (
-                <div key={row.track} className="rounded-xl p-3.5 flex flex-col" style={{ background: "rgba(62,128,204,0.07)", border: "1px solid rgba(62,128,204,0.16)" }}>
+                <div key={row.track} className="rounded-xl p-3.5 flex flex-col" style={{ background: "rgba(12,15,18,0.25)", border: "1px solid rgba(150,118,43,0.3)" }}>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="font-medium text-[13px] leading-snug" style={{ color: "var(--ox-fg-dark)" }}>{row.track}</div>
                     <span
                       className="text-[10px] px-2 py-0.5 rounded-full shrink-0"
                       style={{
-                        background: row.risk === "Low" ? "rgba(37,192,210,0.18)" : row.risk === "Moderate" ? "rgba(62,128,204,0.18)" : "rgba(46,60,142,0.2)",
+                        background: row.risk === "Low" ? "rgba(42,161,135,0.2)" : row.risk === "Moderate" ? "rgba(150,118,43,0.28)" : "rgba(201,150,46,0.25)",
                         color: "var(--ox-indigo)",
                       }}
                     >
@@ -236,12 +236,12 @@ export default function AdminDashboard() {
                     <span style={{ color: "var(--ox-muted)" }}>{row.active} active</span>
                     <span style={{ color: "var(--ox-fg)" }}>{row.completion}%</span>
                   </div>
-                  <div className="w-full h-1.5 rounded-full overflow-hidden mt-auto" style={{ background: "rgba(62,128,204,0.18)" }}>
+                  <div className="w-full h-1.5 rounded-full overflow-hidden mt-auto" style={{ background: "rgba(150,118,43,0.28)" }}>
                     <div
                       className="h-1.5 rounded-full ox-progress-fill"
                       style={{
                         width: `${row.completion}%`,
-                        background: "linear-gradient(90deg, var(--ox-accent), var(--ox-blue), var(--ox-indigo))",
+                        background: "var(--mint)",
                         animationDelay: `${i * 90}ms`,
                       }}
                     />
@@ -263,11 +263,11 @@ export default function AdminDashboard() {
             </div>
             <div className="divide-y" style={{ borderColor: "var(--ox-line)" }}>
               {(recentCoaches.length ? recentCoaches : [{ name: "No coaches yet", emirate: "—", specialty: "—", level: "—", available: false, placement: false }]).map((coach) => (
-                <div key={coach.name} className="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group transition-colors hover:bg-[rgba(37,192,210,0.03)]">
+                <div key={coach.name} className="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group transition-colors hover:bg-[rgba(217,172,74,0.06)]">
                   <div className="flex items-center gap-3 min-w-0">
                     <div
                       className="w-9 h-9 rounded-full grid place-items-center text-sm font-bold text-white shrink-0"
-                      style={{ background: "linear-gradient(135deg, var(--ox-accent), var(--ox-blue))" }}
+                      style={{ background: "var(--gold)" }}
                     >
                       {coach.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                     </div>
@@ -277,11 +277,11 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                    <span className="text-[12px] px-2.5 py-1 rounded-full" style={{ background: "rgba(37,192,210,0.08)", color: "var(--ox-accent)" }}>{coach.level || "—"}</span>
+                    <span className="text-[12px] px-2.5 py-1 rounded-full" style={{ background: "rgba(217,172,74,0.12)", color: "var(--ox-accent)" }}>{coach.level || "—"}</span>
                     <span
                       className="text-[11px] font-medium px-2.5 py-1 rounded-full"
                       style={{
-                        background: coach.available ? "rgba(37,192,210,0.12)" : "rgba(26,26,26,0.05)",
+                        background: coach.available ? "rgba(42,161,135,0.18)" : "rgba(26,26,26,0.05)",
                         color: coach.available ? "var(--ox-accent)" : "var(--ox-muted)",
                       }}
                     >
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
                     <span
                       className="text-[11px] font-medium px-2.5 py-1 rounded-full"
                       style={{
-                        background: coach.placement ? "rgba(62,128,204,0.14)" : "rgba(26,26,26,0.05)",
+                        background: coach.placement ? "rgba(217,172,74,0.14)" : "rgba(26,26,26,0.05)",
                         color: coach.placement ? "var(--ox-blue)" : "var(--ox-muted)",
                       }}
                     >

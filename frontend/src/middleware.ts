@@ -12,10 +12,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Basic RBAC checking
+  // Edge RBAC: decode only (signature verified on the API). Admin/coach restricted; /learner open to any signed-in role.
   if (token) {
     try {
-      // Decode JWT payload (without verifying signature for Edge runtime simplicity)
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const payload = JSON.parse(atob(base64));
@@ -27,9 +26,7 @@ export function middleware(request: NextRequest) {
       if (path.startsWith('/coach') && !['coach', 'admin'].includes(role)) {
         return NextResponse.redirect(new URL('/', request.url));
       }
-      // Learner paths can be accessed by everyone
     } catch {
-      // Invalid token format
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

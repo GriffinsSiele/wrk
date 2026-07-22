@@ -54,7 +54,7 @@ export default function LearnerExamPage() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 md:px-6 py-6">
-        <h1 className="font-outfit text-3xl font-bold mb-2">Online Written Exam</h1>
+        <h1 className="font-display text-3xl mb-2" style={{ fontWeight: 500 }}>Online Written Exam</h1>
         <p className="text-[14px] mb-6" style={{ color: "var(--ox-muted)" }}>
           Book and complete the supervised online written exam. A separate practical assessment PASS is also required before your certificate is issued.
         </p>
@@ -63,14 +63,14 @@ export default function LearnerExamPage() {
         {status === "error" && <p>Unable to load exam sessions.</p>}
 
         {message && (
-          <div className="rounded-xl p-4 mb-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+          <div className="rounded-xl p-4 mb-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
             {message}
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sessions.map((session) => (
-            <div key={session.id} className="rounded-xl p-5" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+            <div key={session.id} className="rounded-xl p-5" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
               <h2 className="font-semibold text-lg">{session.title}</h2>
               <p className="text-[13px]" style={{ color: "var(--ox-muted)" }}>
                 Date: {new Date(session.date).toLocaleString()}
@@ -84,7 +84,7 @@ export default function LearnerExamPage() {
               <button
                 onClick={() => bookSession(session.id)}
                 disabled={status === "booking"}
-                className="ox-cta h-9 rounded-full px-5 text-[13px] font-semibold"
+                className="ox-cta h-9 px-5 text-[13px] font-semibold"
               >
                 Register for Session
               </button>

@@ -81,7 +81,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="p-6 space-y-5">
-      <h1 className="font-outfit text-3xl font-bold">User Management</h1>
+      <h1 className="font-display text-3xl" style={{ fontWeight: 500 }}>User Management</h1>
       <p className="text-[14px]" style={{ color: "var(--ox-muted)" }}>
         Manage roles and status. Soft-delete anonymises identity while preserving audit history.
       </p>
@@ -89,9 +89,9 @@ export default function AdminUsersPage() {
       {loading ? (
         <p>Loading users...</p>
       ) : (
-        <div className="rounded-2xl overflow-x-auto" style={{ border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)", background: "var(--ox-surface)" }}>
+        <div className="rounded-2xl overflow-x-auto" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-surface)" }}>
           <table className="w-full text-sm">
-            <thead style={{ background: "rgba(62,128,204,0.12)" }}>
+            <thead style={{ background: "rgba(217,172,74,0.1)" }}>
               <tr>
                 <th className="text-left p-3">Name</th>
                 <th className="text-left p-3">Email</th>
@@ -102,7 +102,7 @@ export default function AdminUsersPage() {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} style={{ borderTop: "1px solid rgba(62,128,204,0.25)" }}>
+                <tr key={user.id} style={{ borderTop: "1px solid rgba(150,118,43,0.3)" }}>
                   <td className="p-3">{[user.first_name, user.last_name].filter(Boolean).join(" ") || "N/A"}</td>
                   <td className="p-3">{user.email}</td>
                   <td className="p-3">
@@ -124,7 +124,7 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => deactivate(user.id)}
                           className="px-3 h-9 rounded"
-                          style={{ border: "1px solid rgba(62,128,204,0.35)" }}
+                          style={{ border: "1px solid rgba(150,118,43,0.4)" }}
                         >
                           Deactivate
                         </button>
@@ -133,8 +133,8 @@ export default function AdminUsersPage() {
                           onClick={() => activate(user.id)}
                           className="px-3 h-9 rounded font-medium"
                           style={{
-                            border: "1px solid rgba(37,192,210,0.45)",
-                            background: "rgba(37,192,210,0.12)",
+                            border: "1px solid rgba(217,172,74,0.35)",
+                            background: "rgba(217,172,74,0.08)",
                             color: "var(--ox-accent)",
                           }}
                         >

@@ -1,91 +1,393 @@
 "use client";
 
+import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-
-const scopeTable = [
-  { area: "Readiness Assessment", inScope: "Sleep, stress, nutrition status, HRV-based readiness screening", outOfScope: "Clinical diagnosis, medical assessment, prescribing medication" },
-  { area: "Recovery Protocols", inScope: "Cold/heat therapy, breathwork, active recovery, NMS techniques", outOfScope: "Physiotherapy treatment, medical rehabilitation, surgery" },
-  { area: "Performance Planning", inScope: "Periodisation, wellness questionnaires, wearable data interpretation", outOfScope: "Sports medicine decisions, injury management, clinical psychology" },
-  { area: "Client Interaction", inScope: "Coaching, education, behaviour change frameworks", outOfScope: "Medical advice, diagnosis, prescribing therapeutic interventions" },
-];
+import { BrandMark } from "@/components/brand/BrandMark";
+import { Strapline } from "@/components/brand/Strapline";
+import { KhatamDivider } from "@/components/brand/KhatamDivider";
 
 const standards = [
-  { code: "STD-01", title: "Evidence-Based Practice", desc: "All coaching recommendations must be grounded in peer-reviewed research or established best practice frameworks." },
-  { code: "STD-02", title: "Scope of Practice", desc: "Coaches operate strictly within the non-medical scope defined in this document. Any concern requiring medical intervention is referred onward." },
-  { code: "STD-03", title: "Client Confidentiality", desc: "All client data, wellness records, and assessment results are treated as strictly confidential in line with UAE PDPL." },
-  { code: "STD-04", title: "Continuing Education", desc: "Certified coaches must complete a minimum of 20 CECs per year to maintain active certification status." },
-  { code: "STD-05", title: "Professional Conduct", desc: "Coaches represent Olynixx Academy in every engagement. Unprofessional conduct may result in certification suspension or revocation." },
-  { code: "STD-06", title: "Conflict of Interest", desc: "Coaches must disclose any financial or personal relationships that may influence their coaching recommendations." },
+  {
+    code: "01",
+    title: "Evidence-based practice",
+    desc: "All coaching recommendations must be grounded in peer-reviewed research or established best-practice frameworks.",
+  },
+  {
+    code: "02",
+    title: "Scope of practice",
+    desc: "Coaches operate strictly within the non-medical scope defined here. Concerns requiring medical intervention are referred onward.",
+  },
+  {
+    code: "03",
+    title: "Client confidentiality",
+    desc: "Client data, wellness records, and assessment results are treated as confidential in line with UAE PDPL.",
+  },
+  {
+    code: "04",
+    title: "Continuing education",
+    desc: "Certified coaches complete a minimum of 20 CECs per year to maintain active certification status.",
+  },
+  {
+    code: "05",
+    title: "Professional conduct",
+    desc: "Coaches represent Olynixx Praxis in every engagement. Unprofessional conduct may lead to suspension or revocation.",
+  },
+  {
+    code: "06",
+    title: "Conflict of interest",
+    desc: "Coaches must disclose any financial or personal relationships that may influence coaching recommendations.",
+  },
 ];
 
+const scopeTable = [
+  {
+    area: "Readiness assessment",
+    inScope: "Sleep, stress, nutrition status, HRV-based readiness screening",
+    outOfScope: "Clinical diagnosis, medical assessment, prescribing medication",
+  },
+  {
+    area: "Recovery protocols",
+    inScope: "Cold/heat therapy, breathwork, active recovery, neuromuscular techniques",
+    outOfScope: "Physiotherapy treatment, medical rehabilitation, surgery",
+  },
+  {
+    area: "Performance planning",
+    inScope: "Periodisation, wellness questionnaires, wearable data interpretation",
+    outOfScope: "Sports medicine decisions, injury management, clinical psychology",
+  },
+  {
+    area: "Client interaction",
+    inScope: "Coaching, education, behaviour-change frameworks",
+    outOfScope: "Medical advice, diagnosis, prescribing therapeutic interventions",
+  },
+];
 
 export default function StandardsPage() {
   return (
-    <div style={{ background: "var(--ox-bg-dark)", color: "var(--ox-fg-dark)", minHeight: "100vh" }}>
+    <div style={{ background: "var(--cream)", color: "var(--ink)", minHeight: "100vh" }}>
       <Navbar />
 
-      {/* Header */}
-      <section style={{ padding: "128px 24px 56px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div className="ox-aurora" />
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto" }}>
-          <ScrollReveal><span className="ox-label"><span className="ox-dot" />Official Document</span></ScrollReveal>
-          <ScrollReveal delay={100}>
-            <h1 style={{ fontSize: "clamp(2rem,5vw,3.5rem)", fontWeight: 800, lineHeight: 1.1, margin: "24px 0 20px", letterSpacing: "-0.02em" }}>
-              Standards &amp; Scope of Practice
+      {/* Hero — one composition: brand, headline, one sentence */}
+      <section
+        style={{
+          position: "relative",
+          padding: "140px 24px 88px",
+          background: "var(--ink)",
+          color: "var(--cream)",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(27,122,107,0.28) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(217,172,74,0.12) 0%, transparent 50%)",
+          }}
+        />
+        <div style={{ position: "relative", maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
+          <ScrollReveal>
+            <BrandMark variant="midnight" size={56} />
+          </ScrollReveal>
+          <ScrollReveal delay={80}>
+            <p
+              className="font-display"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                color: "var(--ochre)",
+                margin: "28px 0 0",
+              }}
+            >
+              Standards · v1.0
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={140}>
+            <h1
+              className="font-display"
+              style={{
+                fontSize: "clamp(2.4rem,5.5vw,3.75rem)",
+                fontWeight: 500,
+                lineHeight: 1.1,
+                margin: "20px 0 24px",
+              }}
+            >
+              The line we hold.
             </h1>
           </ScrollReveal>
           <ScrollReveal delay={200}>
-            <p style={{ color: "var(--ox-muted)", marginBottom: 8 }}>Version 1.0 &mdash; Effective from Q3 2025</p>
-            <p style={{ fontSize: "1rem", color: "var(--ox-muted)", lineHeight: 1.7, maxWidth: 580, margin: "0 auto" }}>
-              This document defines the professional standards, scope of practice, and code of conduct for all Olynixx Academy certified coaches.
+            <p
+              className="font-body"
+              style={{
+                fontSize: "1.1rem",
+                color: "rgba(242,237,227,0.68)",
+                lineHeight: 1.75,
+                maxWidth: 520,
+                margin: "0 auto 36px",
+              }}
+            >
+              Professional standards and scope of practice for every Olynixx Praxis certified coach.
             </p>
+          </ScrollReveal>
+          <ScrollReveal delay={260}>
+            <Strapline deployTone="cream" size="sm" />
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Standards */}
-      <section style={{ padding: "56px 24px", maxWidth: 900, margin: "0 auto" }}>
-        <ScrollReveal><h2 style={{ fontSize: "1.6rem", fontWeight: 700, marginBottom: 32 }}>Professional Standards</h2></ScrollReveal>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Principle */}
+      <section style={{ padding: "72px 24px", maxWidth: 720, margin: "0 auto" }}>
+        <ScrollReveal>
+          <KhatamDivider className="mb-10" />
+          <p className="ox-label" style={{ marginBottom: 20, textAlign: "center" }}>
+            Guiding principle
+          </p>
+          <p
+            className="font-body italic"
+            style={{
+              fontSize: "clamp(1.15rem,2.4vw,1.4rem)",
+              lineHeight: 1.75,
+              color: "var(--ink)",
+              textAlign: "center",
+            }}
+          >
+            We specialise coaches — we do not practise medicine. Clarity of scope protects clients, organisations, and
+            the professionals who carry our name.
+          </p>
+          <KhatamDivider className="mt-10" />
+        </ScrollReveal>
+      </section>
+
+      {/* Standards — one job: list the six */}
+      <section style={{ padding: "24px 24px 88px", maxWidth: 820, margin: "0 auto" }}>
+        <ScrollReveal>
+          <h2
+            className="font-display"
+            style={{
+              fontSize: "clamp(1.6rem,3vw,2.2rem)",
+              fontWeight: 500,
+              textAlign: "center",
+              marginBottom: 12,
+            }}
+          >
+            Six professional standards
+          </h2>
+          <p
+            className="font-body"
+            style={{
+              textAlign: "center",
+              color: "rgba(12,15,18,0.55)",
+              marginBottom: 56,
+              fontSize: "0.98rem",
+            }}
+          >
+            Expected of every coach who earns and keeps Praxis certification.
+          </p>
+        </ScrollReveal>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
           {standards.map((s, i) => (
-            <ScrollReveal key={s.code} delay={i * 60}>
-              <div className="ox-card-dark" style={{ padding: "24px 28px", display: "flex", gap: 24, alignItems: "flex-start" }}>
-                <span style={{ fontSize: "0.75rem", fontFamily: "monospace", color: "var(--ox-accent)", background: "rgba(37,192,210,0.1)", padding: "4px 10px", borderRadius: 4, flexShrink: 0, marginTop: 2 }}>{s.code}</span>
-                <div>
-                  <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: 6 }}>{s.title}</h3>
-                  <p style={{ color: "var(--ox-muted)", fontSize: "0.9rem", lineHeight: 1.7 }}>{s.desc}</p>
+            <ScrollReveal key={s.code} delay={i * 50}>
+              <article
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "72px 1fr",
+                  gap: 28,
+                  padding: "32px 0",
+                  borderTop: "1px solid rgba(150,118,43,0.35)",
+                  borderBottom: i === standards.length - 1 ? "1px solid rgba(150,118,43,0.35)" : "none",
+                }}
+              >
+                <div
+                  className="font-display"
+                  style={{
+                    fontSize: 13,
+                    letterSpacing: "0.2em",
+                    color: "var(--ochre)",
+                    paddingTop: 4,
+                  }}
+                >
+                  STD-{s.code}
                 </div>
-              </div>
+                <div>
+                  <h3
+                    className="font-display"
+                    style={{ fontSize: "1.25rem", fontWeight: 500, color: "var(--teal)", marginBottom: 10 }}
+                  >
+                    {s.title}
+                  </h3>
+                  <p className="font-body" style={{ color: "rgba(12,15,18,0.62)", lineHeight: 1.75, fontSize: "0.98rem" }}>
+                    {s.desc}
+                  </p>
+                </div>
+              </article>
             </ScrollReveal>
           ))}
         </div>
       </section>
 
-      {/* Scope Table */}
-      <section style={{ padding: "56px 24px 84px", maxWidth: 1000, margin: "0 auto", borderTop: "1px solid var(--ox-line)" }}>
-        <ScrollReveal><h2 style={{ fontSize: "1.6rem", fontWeight: 700, marginBottom: 32 }}>Scope of Practice</h2></ScrollReveal>
-        <ScrollReveal delay={100}>
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.88rem" }}>
-              <thead>
-                <tr style={{ borderBottom: "1px solid var(--ox-line)" }}>
-                  {["Area", "Within Scope", "Outside Scope"].map((h) => (
-                    <th key={h} style={{ textAlign: "left", padding: "12px 16px", color: "var(--ox-muted)", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "0.75rem" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {scopeTable.map((row, i) => (
-                  <tr key={row.area} style={{ borderBottom: "1px solid var(--ox-line)", background: i % 2 === 0 ? "rgba(62,128,204,0.06)" : "transparent" }}>
-                    <td style={{ padding: "14px 16px", fontWeight: 600, color: "var(--ox-accent)", whiteSpace: "nowrap" }}>{row.area}</td>
-                    <td style={{ padding: "14px 16px", color: "var(--ox-fg-dark)", lineHeight: 1.5 }}>{row.inScope}</td>
-                    <td style={{ padding: "14px 16px", color: "rgba(46,60,142,0.7)", lineHeight: 1.5 }}>{row.outOfScope}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Scope — visual in / out, not a dense spreadsheet */}
+      <section
+        style={{
+          padding: "72px 24px 96px",
+          background: "rgba(13,59,62,0.04)",
+          borderTop: "1px solid rgba(150,118,43,0.28)",
+        }}
+      >
+        <div style={{ maxWidth: 960, margin: "0 auto" }}>
+          <ScrollReveal>
+            <h2
+              className="font-display"
+              style={{
+                fontSize: "clamp(1.6rem,3vw,2.2rem)",
+                fontWeight: 500,
+                textAlign: "center",
+                marginBottom: 12,
+              }}
+            >
+              Scope of practice
+            </h2>
+            <p
+              className="font-body"
+              style={{
+                textAlign: "center",
+                color: "rgba(12,15,18,0.55)",
+                marginBottom: 48,
+                fontSize: "0.98rem",
+                maxWidth: 480,
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            >
+              What Praxis coaches may do — and where they must stop and refer.
+            </p>
+          </ScrollReveal>
+
+          <div
+            className="hidden md:grid"
+            style={{
+              gridTemplateColumns: "1.1fr 1.4fr 1.4fr",
+              gap: 16,
+              marginBottom: 20,
+              padding: "0 4px",
+            }}
+          >
+            {["Area", "Within scope", "Outside scope"].map((h) => (
+              <div
+                key={h}
+                className="font-display"
+                style={{
+                  fontSize: 11,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "var(--ochre)",
+                }}
+              >
+                {h}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {scopeTable.map((row, i) => (
+              <ScrollReveal key={row.area} delay={i * 60}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                    gap: 1,
+                    background: "rgba(150,118,43,0.35)",
+                  }}
+                >
+                  <div style={{ padding: "28px 24px", background: "var(--cream)" }}>
+                    <p
+                      className="font-display md:hidden"
+                      style={{
+                        fontSize: 10,
+                        letterSpacing: "0.16em",
+                        textTransform: "uppercase",
+                        color: "var(--ochre)",
+                        marginBottom: 8,
+                      }}
+                    >
+                      Area
+                    </p>
+                    <h3 className="font-display" style={{ fontSize: "1.1rem", fontWeight: 500, color: "var(--teal)" }}>
+                      {row.area}
+                    </h3>
+                  </div>
+                  <div style={{ padding: "28px 24px", background: "var(--cream)" }}>
+                    <p
+                      className="font-display"
+                      style={{
+                        fontSize: 10,
+                        letterSpacing: "0.16em",
+                        textTransform: "uppercase",
+                        color: "var(--mint)",
+                        marginBottom: 10,
+                      }}
+                    >
+                      Within scope
+                    </p>
+                    <p className="font-body" style={{ color: "rgba(12,15,18,0.7)", lineHeight: 1.65, fontSize: "0.95rem" }}>
+                      {row.inScope}
+                    </p>
+                  </div>
+                  <div style={{ padding: "28px 24px", background: "rgba(12,15,18,0.03)" }}>
+                    <p
+                      className="font-display"
+                      style={{
+                        fontSize: 10,
+                        letterSpacing: "0.16em",
+                        textTransform: "uppercase",
+                        color: "var(--bronze)",
+                        marginBottom: 10,
+                      }}
+                    >
+                      Outside scope
+                    </p>
+                    <p className="font-body" style={{ color: "rgba(12,15,18,0.55)", lineHeight: 1.65, fontSize: "0.95rem" }}>
+                      {row.outOfScope}
+                    </p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Close */}
+      <section style={{ padding: "80px 24px 96px", textAlign: "center", maxWidth: 560, margin: "0 auto" }}>
+        <ScrollReveal>
+          <p className="font-body italic" style={{ fontSize: "1.15rem", color: "rgba(12,15,18,0.62)", marginBottom: 32 }}>
+            Where trusted specialists are made.
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <Link
+              href="/certification"
+              className="ox-cta"
+              style={{
+                padding: "14px 28px",
+                textDecoration: "none",
+                fontSize: 13,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+              }}
+            >
+              View pathway
+            </Link>
+            <Link
+              href="/work-with-us"
+              className="ox-ghost"
+              style={{ padding: "14px 28px", textDecoration: "none", fontSize: 13 }}
+            >
+              Join the pool
+            </Link>
           </div>
         </ScrollReveal>
       </section>

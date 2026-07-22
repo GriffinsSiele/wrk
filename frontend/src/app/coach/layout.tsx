@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { PortalHeader } from "@/components/layout/PortalHeader";
+
+export const metadata: Metadata = {
+  title: "Coach Portal",
+  robots: { index: false, follow: false },
+};
 
 const coachNav = [
   { label: "Dashboard", href: "/coach" },
@@ -9,8 +15,9 @@ const coachNav = [
 ];
 
 export default function CoachLayout({ children }: { children: React.ReactNode }) {
+  // ox-portal switches CSS tokens to the Deep Teal portal theme.
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--ox-bg)", color: "var(--ox-fg)" }}>
+    <div className="ox-portal min-h-screen flex flex-col">
       <PortalHeader portalLabel="Coach Portal" items={coachNav} />
       <div className="flex-1 w-full">{children}</div>
     </div>

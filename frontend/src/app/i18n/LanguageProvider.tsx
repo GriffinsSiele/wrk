@@ -33,6 +33,7 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(undefine
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
+  // Persists locale + sets dir/lang. Does not hydrate from storage on first paint yet.
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem("locale", locale);

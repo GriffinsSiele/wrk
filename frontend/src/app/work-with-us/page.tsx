@@ -3,101 +3,131 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { BrandMark } from "@/components/brand/BrandMark";
+import { Strapline } from "@/components/brand/Strapline";
 import Link from "next/link";
-import { Award, BarChart2, DollarSign, Globe, TrendingUp, Users } from "react-feather";
 
 const traits = [
-  { title: "Non-medical professionals", desc: "Personal trainers, S&C coaches, sport coaches, wellness practitioners, and occupational health professionals." },
-  { title: "Evidence-driven mindset", desc: "You believe in the science. You want to back your coaching decisions with data and proven frameworks." },
-  { title: "People-first approach", desc: "You understand that performance is built on the human being, not just the training programme." },
-  { title: "Ready to level up", desc: "You're actively working in sport, corporate wellness, or community health — and you want a credential that reflects your expertise." },
+  { title: "Qualified already", desc: "Personal trainers, health coaches, physios, nutritionists — specialists with a licence or qualification we can build on." },
+  { title: "Evidence-driven", desc: "You want coaching decisions backed by science and assessed standards — not trends." },
+  { title: "People-first", desc: "You understand performance is built on the human being, not just the programme." },
+  { title: "Ready to specialise", desc: "You want a credential that sits on top of what you hold — and a path into the deployable pool." },
 ];
 
 const benefits = [
-  { icon: Award, title: "Accredited Certification", desc: "Earn a Level 1 qualification recognised by REPs UAE, ACE, and NASM." },
-  { icon: Globe, title: "Join the Coach Pool", desc: "Join the private Olynixx deployable coach pool; assignments are shortlisted and managed by admin." },
-  { icon: BarChart2, title: "Performance Intel Tools", desc: "Access frameworks, assessment tools, and templates developed by our expert faculty." },
-  { icon: Users, title: "Community of Practice", desc: "Connect with a growing network of certified Human Readiness Coaches across the region." },
-  { icon: TrendingUp, title: "Career Pathway", desc: "Progress from certification to paid project delivery through Olynixx-administered opportunities." },
-  { icon: DollarSign, title: "Earn as You Coach", desc: "Project assignments come with fair remuneration. Your time and expertise are valued." },
+  { title: "Specialisation, not replacement", desc: "We don't compete with your entry certificate. We layer readiness, recovery, and performance on top of it." },
+  { title: "Join the pool", desc: "Certified specialists enter the private deployable pool; assignments are shortlisted and managed by admin." },
+  { title: "Dual-gate standard", desc: "Written exam and practical PASS before placement eligibility — a standard that means something." },
+  { title: "Placed where it matters", desc: "Earn the specialisation. Join the pool. Get placed — across programmes and projects in the UAE." },
 ];
-
 
 export default function WorkWithUsPage() {
   return (
-    <div style={{ background: "var(--ox-bg-dark)", color: "var(--ox-fg-dark)", minHeight: "100vh" }}>
+    <div style={{ background: "var(--cream)", color: "var(--ink)", minHeight: "100vh" }}>
       <Navbar />
 
-      {/* Hero */}
-      <section style={{ padding: "128px 24px 56px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div className="ox-aurora" />
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto" }}>
-          <ScrollReveal><span className="ox-label"><span className="ox-dot" />Become a Coach</span></ScrollReveal>
-          <ScrollReveal delay={100}>
-            <h1 style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)", fontWeight: 800, lineHeight: 1.1, margin: "24px 0 20px", letterSpacing: "-0.02em" }}>
-              Your expertise deserves<br />a credential.
-            </h1>
+      <section style={{ padding: "140px 24px 72px", background: "var(--ink)", color: "var(--cream)", textAlign: "center" }}>
+        <div style={{ maxWidth: 700, margin: "0 auto" }}>
+          <ScrollReveal>
+            <BrandMark variant="midnight" size={56} />
           </ScrollReveal>
-          <ScrollReveal delay={200}>
-            <p style={{ fontSize: "1.15rem", color: "rgba(62,128,204,0.7)", lineHeight: 1.7, marginBottom: 40 }}>
-              Olynixx Academy bridges the gap between what you already know and what the industry recognises. Become certified, join the pool, and get deployed through admin-managed assignments.
+          <ScrollReveal delay={60}>
+            <p
+              className="font-display"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                color: "var(--ochre)",
+                margin: "28px 0 0",
+              }}
+            >
+              Join the pool
             </p>
           </ScrollReveal>
-          <ScrollReveal delay={300}>
-            <Link href="/login" className="ox-cta" style={{ padding: "16px 40px", display: "inline-block", textDecoration: "none", fontSize: "1rem" }}>
-              Apply now
-            </Link>
+          <ScrollReveal delay={100}>
+            <h1 className="font-display" style={{ fontSize: "clamp(2.4rem,5.5vw,3.75rem)", fontWeight: 500, lineHeight: 1.1, margin: "18px 0 20px" }}>
+              Earn the specialisation.<br />Join the pool. Get placed.
+            </h1>
+          </ScrollReveal>
+          <ScrollReveal delay={160}>
+            <p className="font-body italic" style={{ fontSize: "1.15rem", color: "rgba(242,237,227,0.7)", lineHeight: 1.7, marginBottom: 20 }}>
+              We don&apos;t replace your certification. We specialise it.
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={200}>
+            <Strapline deployTone="cream" size="sm" />
+          </ScrollReveal>
+          <ScrollReveal delay={240}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 36 }}>
+              <Link href="/contact" className="ox-cta" style={{ padding: "14px 32px", display: "inline-block", textDecoration: "none", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                Request access
+              </Link>
+              <Link
+                href="/certification"
+                className="font-display"
+                style={{
+                  padding: "14px 28px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  textDecoration: "none",
+                  fontSize: 13,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  border: "1px solid rgba(150,118,43,0.65)",
+                  color: "var(--cream)",
+                  borderRadius: 2,
+                }}
+              >
+                View pathway
+              </Link>
+            </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Who we're looking for */}
-      <section style={{ padding: "56px 24px", maxWidth: 1100, margin: "0 auto" }}>
+      <section style={{ padding: "72px 24px", maxWidth: 1000, margin: "0 auto" }}>
         <ScrollReveal>
-          <h2 style={{ fontSize: "2rem", fontWeight: 700, textAlign: "center", marginBottom: 48 }}>Who we&apos;re looking for</h2>
+          <h2 className="font-display" style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 500, textAlign: "center", marginBottom: 48 }}>
+            Who we&apos;re looking for
+          </h2>
         </ScrollReveal>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 28 }}>
           {traits.map((t, i) => (
-            <ScrollReveal key={t.title} delay={i * 80}>
-              <div className="ox-card-dark" style={{ padding: "28px 24px" }}>
-                <div style={{ width: 32, height: 3, background: "var(--ox-accent)", borderRadius: 2, marginBottom: 16 }} />
-                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, marginBottom: 10 }}>{t.title}</h3>
-                <p style={{ color: "var(--ox-muted)", fontSize: "0.9rem", lineHeight: 1.7 }}>{t.desc}</p>
+            <ScrollReveal key={t.title} delay={i * 70}>
+              <div style={{ paddingTop: 16, borderTop: "1px solid rgba(150,118,43,0.35)" }}>
+                <h3 className="font-display" style={{ fontSize: "1.05rem", fontWeight: 500, marginBottom: 10, color: "var(--teal)" }}>
+                  {t.title}
+                </h3>
+                <p className="font-body" style={{ color: "rgba(12,15,18,0.62)", fontSize: "0.95rem", lineHeight: 1.7 }}>
+                  {t.desc}
+                </p>
               </div>
             </ScrollReveal>
           ))}
         </div>
       </section>
 
-      {/* Benefits */}
-      <section style={{ padding: "56px 24px 84px", maxWidth: 1100, margin: "0 auto", borderTop: "1px solid var(--ox-line)" }}>
+      <section style={{ padding: "24px 24px 96px", maxWidth: 1000, margin: "0 auto" }}>
         <ScrollReveal>
-          <h2 style={{ fontSize: "2rem", fontWeight: 700, textAlign: "center", marginBottom: 48 }}>What you get</h2>
+          <h2 className="font-display" style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 500, textAlign: "center", marginBottom: 48 }}>
+            What you get
+          </h2>
         </ScrollReveal>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 1, background: "rgba(150,118,43,0.35)" }}>
           {benefits.map((b, i) => (
-            <ScrollReveal key={b.title} delay={i * 80}>
-              <div className="ox-card-dark" style={{ padding: "28px 24px", display: "flex", gap: 16, alignItems: "flex-start" }}>
-                <span style={{ flexShrink: 0, color: "var(--ox-accent)" }}>
-                  <b.icon size={26} />
-                </span>
-                <div>
-                  <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: 8 }}>{b.title}</h3>
-                  <p style={{ color: "var(--ox-muted)", fontSize: "0.88rem", lineHeight: 1.6 }}>{b.desc}</p>
-                </div>
+            <ScrollReveal key={b.title} delay={i * 70}>
+              <div style={{ padding: "28px 24px", background: "var(--cream)", height: "100%" }}>
+                <h3 className="font-display" style={{ fontSize: "1.05rem", fontWeight: 500, marginBottom: 10, color: "var(--ink)" }}>
+                  {b.title}
+                </h3>
+                <p className="font-body" style={{ color: "rgba(12,15,18,0.62)", fontSize: "0.95rem", lineHeight: 1.7 }}>
+                  {b.desc}
+                </p>
               </div>
             </ScrollReveal>
           ))}
         </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{ padding: "56px 24px 84px", textAlign: "center", background: "rgba(37,192,210,0.04)", borderTop: "1px solid rgba(37,192,210,0.1)" }}>
-        <ScrollReveal>
-          <h2 style={{ fontSize: "2.5rem", fontWeight: 800, marginBottom: 16 }}>Ready to apply?</h2>
-          <p style={{ color: "var(--ox-muted)", marginBottom: 32 }}>Create your account and begin your certification journey today.</p>
-          <Link href="/login" className="ox-cta" style={{ padding: "16px 48px", display: "inline-block", textDecoration: "none", fontSize: "1.05rem" }}>Get started</Link>
-        </ScrollReveal>
       </section>
 
       <Footer />

@@ -3,13 +3,39 @@
 import { useEffect, useState } from "react";
 
 type Operator = { id: number; name: string };
-type Project = { id: number; title: string; status: string; project_type?: string | null; client_name?: string | null };
+type ProjectAssignment = {
+  id: number;
+  coach_id?: number | null;
+  coach_name?: string | null;
+  status: string;
+  assigned_at?: string | null;
+};
+type Project = {
+  id: number;
+  title: string;
+  status: string;
+  description?: string | null;
+  project_type?: string | null;
+  client_name?: string | null;
+  created_at?: string | null;
+  assignment_count?: number;
+  assignments?: ProjectAssignment[];
+};
 type Coach = {
   id: number;
   profile?: { first_name?: string; last_name?: string };
   email: string;
   coach_attributes?: { id?: number; specialty?: string; placement_eligible?: boolean };
 };
+
+function statusTone(status: string) {
+  const value = status.toLowerCase();
+  if (value === "active" || value === "accepted") return { color: "var(--mint)", bg: "rgba(42,161,135,0.14)" };
+  if (value === "pending" || value === "offered") return { color: "var(--gold)", bg: "rgba(217,172,74,0.14)" };
+  if (value === "completed") return { color: "var(--cream)", bg: "rgba(242,237,227,0.1)" };
+  if (value === "declined" || value === "cancelled") return { color: "var(--ochre)", bg: "rgba(201,150,46,0.14)" };
+  return { color: "var(--ox-muted)", bg: "rgba(150,118,43,0.12)" };
+}
 
 export default function AdminProjectDispatchPage() {
   const [operators, setOperators] = useState<Operator[]>([]);
@@ -81,6 +107,7 @@ export default function AdminProjectDispatchPage() {
       setMessage("Choose a project and placement-eligible coach");
       return;
     }
+    // API `coach_id` is CoachAttribute.id, not users.id.
     const resp = await fetch(`/api/proxy/projects/${assignForm.project_id}/assign`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -100,25 +127,53 @@ export default function AdminProjectDispatchPage() {
     (c) => c.coach_attributes?.id && c.coach_attributes?.placement_eligible !== false
   );
 
+  const activeProjects = projects.filter((p) => (p.status || "").toLowerCase() === "active");
+  const otherProjects = projects.filter((p) => (p.status || "").toLowerCase() !== "active");
+  const displayProjects = [...activeProjects, ...otherProjects];
+  const dispatchedCount = projects.reduce((sum, p) => sum + (p.assignment_count || 0), 0);
+
   return (
     <div className="p-6 space-y-5">
-      <h1 className="font-outfit text-3xl font-bold">Project Dispatch</h1>
-      <p className="text-[14px]" style={{ color: "var(--ox-muted)" }}>
+      <h1 className="font-display text-3xl" style={{ fontWeight: 500, color: "var(--cream)" }}>
+        Project dispatch
+      </h1>
+      <p className="font-body text-[14px]" style={{ color: "var(--ox-muted)" }}>
         Create operators and projects, then dispatch only placement-eligible coaches (active cert + signed agreements).
       </p>
-      {message && <p className="text-sm" style={{ color: "var(--ox-muted)" }}>{message}</p>}
+      <div
+        className="p-4 font-body text-[13px] grid grid-cols-1 md:grid-cols-3 gap-3"
+        style={{ border: "1px solid rgba(150,118,43,0.4)", background: "rgba(12,15,18,0.28)", color: "rgba(242,237,227,0.7)" }}
+      >
+        <div>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>01 · Pool</span>
+          <p className="mt-1">Filter eligible coaches in Talent Pool.</p>
+        </div>
+        <div>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>02 · Assign</span>
+          <p className="mt-1">Dispatch a coach to an active project below.</p>
+        </div>
+        <div>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>03 · Coach sees it</span>
+          <p className="mt-1">Coach Portal → Projects / Dashboard shows the assignment.</p>
+        </div>
+      </div>
+      {message && (
+        <p className="text-sm font-body" style={{ color: message.toLowerCase().includes("fail") ? "var(--gold-bright)" : "var(--mint)" }}>
+          {message}
+        </p>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Create Operator</h2>
           <input placeholder="Name" value={operatorForm.name} onChange={(e) => setOperatorForm((p) => ({ ...p, name: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input placeholder="Industry" value={operatorForm.industry} onChange={(e) => setOperatorForm((p) => ({ ...p, industry: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input placeholder="Emirate" value={operatorForm.emirate} onChange={(e) => setOperatorForm((p) => ({ ...p, emirate: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input placeholder="Licence status" value={operatorForm.licence_status} onChange={(e) => setOperatorForm((p) => ({ ...p, licence_status: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <button onClick={createOperator} className="ox-cta h-9 rounded-full px-5 text-[13px] font-semibold">Create</button>
+          <button onClick={createOperator} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create</button>
         </section>
 
-        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Create Project</h2>
           <input placeholder="Title" value={projectForm.title} onChange={(e) => setProjectForm((p) => ({ ...p, title: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input placeholder="Description" value={projectForm.description} onChange={(e) => setProjectForm((p) => ({ ...p, description: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
@@ -127,10 +182,10 @@ export default function AdminProjectDispatchPage() {
             <option value="">Operator (optional)</option>
             {operators.map((o) => <option key={o.id} value={String(o.id)}>{o.name}</option>)}
           </select>
-          <button onClick={createProject} className="ox-cta h-9 rounded-full px-5 text-[13px] font-semibold">Create</button>
+          <button onClick={createProject} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create</button>
         </section>
 
-        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Dispatch Coach</h2>
           <select value={assignForm.project_id} onChange={(e) => setAssignForm((p) => ({ ...p, project_id: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
             <option value="">Project</option>
@@ -145,7 +200,7 @@ export default function AdminProjectDispatchPage() {
             ))}
           </select>
           <input placeholder="Dispatch notes" value={assignForm.notes} onChange={(e) => setAssignForm((p) => ({ ...p, notes: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <button onClick={assignCoach} className="ox-cta h-9 rounded-full px-5 text-[13px] font-semibold">Dispatch</button>
+          <button onClick={assignCoach} className="ox-cta h-9 px-5 text-[13px] font-semibold">Dispatch</button>
           {eligibleCoaches.length === 0 && (
             <p className="text-[12px]" style={{ color: "var(--ox-muted)" }}>
               No placement-eligible coaches. Coaches need an active certificate and signed agreements.
@@ -154,16 +209,121 @@ export default function AdminProjectDispatchPage() {
         </section>
       </div>
 
-      <div className="rounded-xl p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
-        <h2 className="font-semibold mb-2">Active Projects</h2>
-        <ul className="text-sm space-y-1">
-          {projects.map((project) => (
-            <li key={project.id}>
-              {project.title} — {project.client_name || project.project_type || "General"} — {project.status}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <section style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+        <div
+          className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+          style={{ borderBottom: "1px solid var(--ox-line)" }}
+        >
+          <div>
+            <h2 className="font-display text-[1.15rem]" style={{ fontWeight: 500, color: "var(--cream)" }}>
+              Active projects
+            </h2>
+            <p className="font-body text-[13px] mt-1" style={{ color: "var(--ox-muted)" }}>
+              Live dispatch board — operators, status, and assigned coaches.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span
+              className="font-display text-[11px] tracking-[0.14em] uppercase px-3 py-1.5"
+              style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--ochre)" }}
+            >
+              {activeProjects.length} active
+            </span>
+            <span
+              className="font-display text-[11px] tracking-[0.14em] uppercase px-3 py-1.5"
+              style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--gold)" }}
+            >
+              {dispatchedCount} assignments
+            </span>
+          </div>
+        </div>
+
+        {displayProjects.length === 0 ? (
+          <div className="px-5 py-10 text-center font-body text-[14px]" style={{ color: "var(--ox-muted)" }}>
+            No projects yet. Create a project above to begin dispatch.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm font-body">
+              <thead style={{ background: "rgba(217,172,74,0.1)" }}>
+                <tr>
+                  {["Project", "Operator / client", "Type", "Status", "Assignments", "Created"].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left px-5 py-3 font-display text-[11px] tracking-[0.14em] uppercase"
+                      style={{ color: "var(--ochre)" }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {displayProjects.map((project) => {
+                  const tone = statusTone(project.status || "active");
+                  const assignments = project.assignments || [];
+                  return (
+                    <tr key={project.id} style={{ borderTop: "1px solid rgba(150,118,43,0.28)" }}>
+                      <td className="px-5 py-4 align-top">
+                        <div className="font-display" style={{ color: "var(--cream)", fontWeight: 500 }}>
+                          {project.title}
+                        </div>
+                        {project.description && (
+                          <p className="mt-1 text-[12px] max-w-xs leading-relaxed" style={{ color: "var(--ox-muted)" }}>
+                            {project.description}
+                          </p>
+                        )}
+                        <p className="mt-1 text-[11px] font-display tracking-[0.12em]" style={{ color: "rgba(242,237,227,0.35)" }}>
+                          #{project.id}
+                        </p>
+                      </td>
+                      <td className="px-5 py-4 align-top" style={{ color: "var(--ox-muted)" }}>
+                        {project.client_name || "—"}
+                      </td>
+                      <td className="px-5 py-4 align-top" style={{ color: "var(--ox-muted)" }}>
+                        {project.project_type || "General"}
+                      </td>
+                      <td className="px-5 py-4 align-top">
+                        <span
+                          className="inline-block font-display text-[10px] tracking-[0.14em] uppercase px-2.5 py-1"
+                          style={{ color: tone.color, background: tone.bg }}
+                        >
+                          {project.status || "active"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 align-top">
+                        {assignments.length === 0 ? (
+                          <span style={{ color: "var(--ox-muted)" }}>Unassigned</span>
+                        ) : (
+                          <div className="space-y-1.5">
+                            {assignments.map((a) => {
+                              const aTone = statusTone(a.status);
+                              return (
+                                <div key={a.id} className="flex flex-wrap items-center gap-2">
+                                  <span style={{ color: "var(--cream)" }}>{a.coach_name || `Coach #${a.coach_id}`}</span>
+                                  <span
+                                    className="font-display text-[9px] tracking-[0.12em] uppercase px-2 py-0.5"
+                                    style={{ color: aTone.color, background: aTone.bg }}
+                                  >
+                                    {a.status}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-5 py-4 align-top whitespace-nowrap" style={{ color: "var(--ox-muted)" }}>
+                        {project.created_at ? new Date(project.created_at).toLocaleDateString() : "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

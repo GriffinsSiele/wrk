@@ -1,47 +1,47 @@
 {
   "home": {
-    "heroTitle": "Unlock Human Readiness, Recovery & Performance Intelligence",
-    "heroSubtitle": "Join Olynixx Academy to become a certified coach and empower organizations worldwide.",
-    "ctaLearn": "Learn More",
-    "ctaGetCertified": "Get Certified"
+    "heroTitle": "Where trusted specialists are made.",
+    "heroSubtitle": "We don't replace your certification. We specialise it.",
+    "ctaLearn": "Learn more",
+    "ctaGetCertified": "View specialisations"
   },
   "focus": {
-    "title": "Our Three Pillars",
-    "pillar1": "Human Readiness – preparing individuals for peak performance.",
-    "pillar2": "Recovery Intelligence – data‑driven recovery strategies.",
-    "pillar3": "Performance Science – cutting‑edge coaching methodologies."
+    "title": "Three disciplines. One standard.",
+    "pillar1": "Human Readiness — prepare the human, not just the athlete.",
+    "pillar2": "Recovery Intelligence — recovery is training.",
+    "pillar3": "Performance Intelligence — turn observation into decisions."
   },
   "certification": {
-    "title": "Certification Path",
+    "title": "Specialisation pathway",
     "step1": "Study the curated curriculum",
-    "step2": "Pass the supervised online exam",
-    "step3": "Become a certified coach in our global pool"
+    "step2": "Pass the dual gate — written exam and practical PASS",
+    "step3": "Join the deployable coach pool"
   },
   "workWithUs": {
-    "title": "Become a Coach – Join Our Team",
-    "description": "We are looking for passionate coaches to deliver world‑class training. Apply now and make an impact."
+    "title": "Earn the specialisation. Join the pool. Get placed.",
+    "description": "We don't replace your certification. We specialise it."
   },
   "organisations": {
-    "title": "For Organisations",
-    "description": "Scale your workforce’s readiness with Olynixx Academy’s corporate programs."
+    "title": "For organisations",
+    "description": "Every specialist we send has been taught, tested, and vouched for."
   },
   "about": {
-    "title": "About Olynixx",
-    "mission": "Empowering individuals and organizations through science‑backed coaching."
+    "title": "About Olynixx Praxis",
+    "mission": "The specialisation layer for performance coaches."
   },
   "standards": {
     "title": "Standards & Scope of Practice",
-    "content": "Our accreditation aligns with REPs UAE, ACE, and NASM standards."
+    "content": "Professional standards and non-medical scope for Olynixx Praxis certified coaches."
   },
   "contact": {
-    "title": "Contact Us",
-    "intro": "We’re here to help. Reach out with any questions or inquiries."
+    "title": "Contact",
+    "intro": "Questions, answered precisely."
   },
   "navbar": {
     "language": "Language",
     "ourFocus": "Our Focus",
-    "getCertified": "Get Certified",
-    "forOrganisations": "For Organisations",
+    "getCertified": "Specialisations",
+    "forOrganisations": "Organisations",
     "about": "About",
     "signIn": "Sign in",
     "languageSwitcherLabel": "Select language",
@@ -53,18 +53,18 @@
     "chinese": "Chinese"
   },
   "footer": {
-    "tagline": "Setting the standard in non-medical human readiness, recovery, and performance intelligence.",
+    "tagline": "Where trusted specialists are made.",
     "platform": "Platform",
     "resources": "Resources",
     "legal": "Legal",
-    "becomeCoach": "Become a Coach",
+    "becomeCoach": "Join the pool",
     "standardsScope": "Standards & Scope",
     "faq": "FAQ",
     "contact": "Contact",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "rightsReserved": "All rights reserved.",
-    "builtForHumanPerformance": "Built for human performance."
+    "builtForHumanPerformance": "LEARN + CERTIFY + DEPLOY"
   },
   "login": {
     "title": "Sign in",
@@ -74,6 +74,6 @@
     "submit": "Sign in",
     "submitting": "Signing in...",
     "demoAccounts": "Demo accounts",
-    "backHome": "Return to homepage"
+    "backHome": "Return home"
   }
 }

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
+// Prefer INTERNAL_API_URL so the Next container can reach FastAPI on the Docker network.
 const API_BASE =
   process.env.INTERNAL_API_URL ||
   process.env.NEXT_PUBLIC_API_URL ||
@@ -14,6 +15,7 @@ function buildTargetUrl(pathSegments: string[], searchParams: URLSearchParams): 
 
 async function forward(request: NextRequest, pathSegments: string[]) {
   const targetUrl = buildTargetUrl(pathSegments, request.nextUrl.searchParams);
+  // Lift httpOnly cookie → Bearer for the backend OAuth2 dependency.
   const token = (await cookies()).get("token")?.value;
 
   const headers = new Headers();
@@ -36,7 +38,7 @@ async function forward(request: NextRequest, pathSegments: string[]) {
   try {
     payload = text ? JSON.parse(text) : null;
   } catch {
-    // keep raw text payload when backend does not return JSON.
+    // Non-JSON bodies are still wrapped so the client always gets application/json.
   }
 
   return NextResponse.json(payload, { status: resp.status });

@@ -36,11 +36,11 @@ export default function CoachCecsPage() {
 
   return (
     <main className="max-w-3xl mx-auto px-4 md:px-6 py-6">
-        <h1 className="font-outfit text-3xl font-bold mb-2">Continuing Education (CECs)</h1>
+        <h1 className="font-display text-3xl mb-2" style={{ fontWeight: 500 }}>Continuing Education (CECs)</h1>
         <p className="text-[14px] mb-6" style={{ color: "var(--ox-muted)" }}>
           Track annual renewal readiness and maintain active credential standing.
         </p>
-        <div className="rounded-xl p-5 space-y-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+        <div className="rounded-xl p-5 space-y-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <div>
             <label className="block text-xs mb-2" style={{ color: "var(--ox-muted)" }}>Certification level</label>
             <input
@@ -73,7 +73,7 @@ export default function CoachCecsPage() {
               <option>Expired</option>
             </select>
           </div>
-          <button onClick={save} className="ox-cta h-10 rounded-full px-6 text-[14px] font-semibold">Save CEC Record</button>
+          <button onClick={save} className="ox-cta h-10 px-6 text-[14px] font-semibold">Save CEC Record</button>
           {message && <p className="text-sm" style={{ color: "var(--ox-muted)" }}>{message}</p>}
         </div>
     </main>

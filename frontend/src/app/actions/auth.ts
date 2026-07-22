@@ -29,6 +29,7 @@ export async function login(_prevState: unknown, formData: FormData) {
       process.env.INTERNAL_API_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
       "http://localhost:8000";
+    // OAuth2PasswordRequestForm expects `username` (we pass the email).
     const res = await fetch(`${apiUrl}/api/auth/login`, {
       method: "POST",
       headers: {
@@ -66,6 +67,7 @@ export async function login(_prevState: unknown, formData: FormData) {
       redirect("/learner");
     }
   } catch (error) {
+    // Next.js implements redirect() via throw — must rethrow or login appears to fail.
     if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
       throw error;
     }

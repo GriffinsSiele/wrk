@@ -1,79 +1,79 @@
 {
   "home": {
-    "heroTitle": "Impulsa la preparacion humana, la recuperacion y la inteligencia del rendimiento",
-    "heroSubtitle": "Unete a Olynixx Academy para convertirte en coach certificado y apoyar a organizaciones en todo el mundo.",
-    "ctaLearn": "Mas informacion",
-    "ctaGetCertified": "Obtener certificacion"
+    "heroTitle": "Where trusted specialists are made.",
+    "heroSubtitle": "We don't replace your certification. We specialise it.",
+    "ctaLearn": "Saber mas",
+    "ctaGetCertified": "Ver especializaciones"
   },
   "focus": {
-    "title": "Nuestros tres pilares",
-    "pillar1": "Preparacion humana - preparar a las personas para el maximo rendimiento.",
-    "pillar2": "Inteligencia de recuperacion - estrategias de recuperacion basadas en datos.",
-    "pillar3": "Ciencia del rendimiento - metodologias de coaching avanzadas."
+    "title": "Tres disciplinas. Un estandar.",
+    "pillar1": "Human Readiness",
+    "pillar2": "Recovery Intelligence",
+    "pillar3": "Performance Intelligence"
   },
   "certification": {
-    "title": "Ruta de certificacion",
-    "step1": "Estudia el programa estructurado",
-    "step2": "Aprueba el examen presencial supervisado en EAU",
-    "step3": "Conviertete en coach certificado en nuestra red global"
+    "title": "Ruta de especializacion",
+    "step1": "Estudiar el programa",
+    "step2": "Superar la doble puerta",
+    "step3": "Unirse al pool"
   },
   "workWithUs": {
-    "title": "Conviertete en coach - Unete a nuestro equipo",
-    "description": "Buscamos coaches apasionados para ofrecer formacion de clase mundial."
+    "title": "Earn the specialisation. Join the pool. Get placed.",
+    "description": "We don't replace your certification. We specialise it."
   },
   "organisations": {
     "title": "Para organizaciones",
-    "description": "Escala la preparacion de tu equipo con los programas corporativos de Olynixx Academy."
+    "description": "Every specialist we send has been taught, tested, and vouched for."
   },
   "about": {
-    "title": "Sobre Olynixx",
-    "mission": "Impulsamos a personas y organizaciones con coaching respaldado por la ciencia."
+    "title": "About Olynixx Praxis",
+    "mission": "The specialisation layer for performance coaches."
   },
   "standards": {
-    "title": "Normas y alcance de la practica",
-    "content": "Nuestra certificacion esta alineada con los estandares de REPs UAE, ACE y NASM."
+    "title": "Standards & Scope of Practice",
+    "content": "Professional standards for Olynixx Praxis certified coaches."
   },
   "contact": {
     "title": "Contacto",
-    "intro": "Estamos aqui para ayudarte. Escribenos para cualquier consulta."
+    "intro": "Questions, answered precisely."
   },
   "navbar": {
     "language": "Idioma",
-    "ourFocus": "Nuestro enfoque",
-    "getCertified": "Certificarse",
-    "forOrganisations": "Para organizaciones",
+    "ourFocus": "Nuestro foco",
+    "getCertified": "Especializaciones",
+    "forOrganisations": "Organizaciones",
     "about": "Acerca de",
     "signIn": "Iniciar sesion",
     "languageSwitcherLabel": "Seleccionar idioma",
     "currentLanguage": "Idioma actual",
-    "english": "Ingles",
-    "arabic": "Arabe",
-    "french": "Frances",
+    "english": "English",
+    "arabic": "Arabic",
+    "french": "Francais",
     "spanish": "Espanol",
     "chinese": "Chino"
   },
   "footer": {
-    "tagline": "Elevamos el estandar en preparacion humana no medica, recuperacion e inteligencia del rendimiento.",
-    "platform": "Plataforma",
-    "resources": "Recursos",
+    "tagline": "Where trusted specialists are made.",
+    "platform": "Platform",
+    "resources": "Resources",
     "legal": "Legal",
-    "becomeCoach": "Conviertete en coach",
-    "standardsScope": "Normas y alcance",
-    "faq": "Preguntas frecuentes",
-    "contact": "Contacto",
-    "privacyPolicy": "Politica de privacidad",
-    "termsOfService": "Terminos del servicio",
-    "rightsReserved": "Todos los derechos reservados.",
-    "builtForHumanPerformance": "Disenado para el rendimiento humano."
+    "becomeCoach": "Join the pool",
+    "standardsScope": "Standards & Scope",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "rightsReserved": "All rights reserved.",
+    "builtForHumanPerformance": "LEARN + CERTIFY + DEPLOY"
   },
   "login": {
-    "title": "Iniciar sesion",
-    "subtitle": "Accede a tu portal",
-    "emailLabel": "Correo electronico",
-    "passwordLabel": "Contrasena",
-    "submit": "Entrar",
-    "submitting": "Iniciando sesion...",
-    "demoAccounts": "Cuentas de demostracion",
-    "backHome": "Volver al inicio"
+    "title": "Sign in",
+    "subtitle": "Access your portal",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "demoAccounts": "Demo accounts",
+    "backHome": "Return home"
   }
 }

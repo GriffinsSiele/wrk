@@ -18,6 +18,7 @@ const columns = ["pending", "accepted", "completed", "declined"] as const;
 type ColumnKey = (typeof columns)[number];
 
 function normalizeStatus(status: string): ColumnKey {
+  // Backend still may emit legacy "offered"; board treats it as pending.
   const value = status.toLowerCase();
   if (value === "offered" || value === "pending") return "pending";
   if (value === "accepted") return "accepted";
@@ -77,7 +78,7 @@ export default function CoachProjectBoardPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-        <h1 className="font-outfit text-3xl font-bold mb-2">Project Board</h1>
+        <h1 className="font-display text-3xl mb-2" style={{ fontWeight: 500 }}>Project Board</h1>
         <p className="text-[14px] mb-6" style={{ color: "var(--ox-muted)" }}>
           Admin dispatches pending assignments. Accept or decline, then track delivery status.
         </p>
@@ -87,7 +88,7 @@ export default function CoachProjectBoardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {columns.map((column) => (
-              <div key={column} className="rounded-xl p-3" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", boxShadow: "var(--ox-shadow)" }}>
+              <div key={column} className="rounded-xl p-3" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
                 <h2 className="uppercase text-xs mb-3" style={{ color: "var(--ox-muted)" }}>{column}</h2>
                 <div className="space-y-3">
                   {grouped[column].length === 0 && <p className="text-xs" style={{ color: "var(--ox-muted)" }}>No items</p>}
@@ -105,8 +106,8 @@ export default function CoachProjectBoardPage() {
                             onClick={() => updateStatus(assignment.id, next)}
                             className="px-2 py-1 rounded text-[10px] uppercase"
                             style={{
-                              border: "1px solid rgba(62,128,204,0.35)",
-                              background: next === column ? "rgba(37,192,210,0.16)" : "rgba(62,128,204,0.08)",
+                              border: "1px solid rgba(150,118,43,0.4)",
+                              background: next === column ? "rgba(217,172,74,0.12)" : "rgba(217,172,74,0.08)",
                             }}
                           >
                             {next}
