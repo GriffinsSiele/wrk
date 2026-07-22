@@ -149,6 +149,7 @@ async def approve_exam_attempt(attempt_id: int, admin: User = Depends(get_curren
             detail=f"Prerequisite not met: an active prior certification is required before {level}.",
         )
 
+    # Always record approval; cert waits if the practical gate is still open.
     attempt.approved_by_id = admin.id
     attempt.approved_at = datetime.now(timezone.utc)
 

@@ -82,15 +82,14 @@ async def create_practical_assessment(
     db.add(assessment)
     await db.flush()
 
+    # Mirror of exam-approve: either gate finishing second can issue the certificate.
     cert = None
     if result_value == "PASS":
         cert = await try_issue_certificate(db, payload.user_id, payload.certification_level)
 
     await db.commit()
     await db.refresh(assessment)
-    # Attach issuance hint via response headers is awkward; keep body clean and let cert endpoint show result
     if cert:
-        # ensure placement refreshed
         await refresh_placement_eligibility(db, payload.user_id)
         await db.commit()
     return assessment

@@ -32,6 +32,14 @@ class ProjectCreate(BaseModel):
     end_date: Optional[datetime] = None
     status: str = "active"
 
+class ProjectAssignmentSummary(BaseModel):
+    id: int
+    coach_id: Optional[int] = None
+    coach_name: Optional[str] = None
+    status: str
+    assigned_at: Optional[datetime] = None
+
+
 class ProjectResponse(BaseModel):
     id: int
     client_id: Optional[int] = None
@@ -44,6 +52,8 @@ class ProjectResponse(BaseModel):
     end_date: Optional[datetime] = None
     status: str = "active"
     created_at: Optional[datetime] = None
+    assignment_count: int = 0
+    assignments: list[ProjectAssignmentSummary] = []
     class Config:
         from_attributes = True
 

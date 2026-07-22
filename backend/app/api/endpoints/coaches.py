@@ -11,6 +11,7 @@ from app.schemas.project import AssignmentResponse, AssignmentStatusUpdate
 from app.schemas.admin import CoachDashboardResponse, SeriesPoint, TalentMixSegment
 from app.api.deps import get_current_user, get_current_active_admin
 from app.services.certification import ensure_mandatory_agreement_rows, refresh_placement_eligibility
+from app.services.analytics import weekly_bucket_counts, sparkline_from_weeks, checklist_score
 
 router = APIRouter()
 
@@ -48,7 +49,7 @@ async def update_coach_profile(updates: CoachAttributeBase, current_user: User =
     attrs = result.scalars().first()
     if not attrs:
         raise HTTPException(status_code=404, detail="Coach profile not found")
-    # Coaches cannot self-set placement_eligible
+    # Placement is server-computed; strip so coaches cannot self-grant it.
     data = updates.model_dump(exclude_none=True)
     data.pop("placement_eligible", None)
     for field, value in data.items():
@@ -65,7 +66,11 @@ async def coach_dashboard(current_user: User = Depends(get_current_user), db: As
 
     result = await db.execute(
         select(User)
-        .options(selectinload(User.profile), selectinload(User.coach_attributes))
+        .options(
+            selectinload(User.profile),
+            selectinload(User.coach_attributes),
+            selectinload(User.coach_agreements),
+        )
         .where(User.id == current_user.id)
     )
     user = result.scalars().first()
@@ -76,6 +81,7 @@ async def coach_dashboard(current_user: User = Depends(get_current_user), db: As
     first_name = profile.first_name if profile else (user.full_name or "Coach").split()[0]
 
     board = []
+    assignment_rows = []
     if attrs:
         rows = (
             await db.execute(
@@ -84,6 +90,7 @@ async def coach_dashboard(current_user: User = Depends(get_current_user), db: As
                 .where(ProjectAssignment.coach_id == attrs.id)
             )
         ).all()
+        assignment_rows = [assignment for assignment, _project in rows]
         board = [
             {
                 "id": assignment.id,
@@ -100,42 +107,69 @@ async def coach_dashboard(current_user: User = Depends(get_current_user), db: As
     accepted = [b for b in board if b["status"] == "accepted"]
     completed = [b for b in board if b["status"] == "completed"]
     declined = [b for b in board if b["status"] == "declined"]
-    # Active = pending/offered + accepted (still in flight)
     active_assignments = pending + accepted
-    total = max(len(board), 1)
-    utilisation = min(96, round(((len(accepted) + len(completed)) / total) * 100) if board else 42)
+    # Utilisation = accepted share of actionable assignments (0 if none).
+    actionable = len(accepted) + len(declined) + len(pending)
+    utilisation = round((len(accepted) / actionable) * 100) if actionable else 0
+
+    agreements = user.coach_agreements or []
+    signed_types = {
+        (a.agreement_type.value if hasattr(a.agreement_type, "value") else str(a.agreement_type))
+        for a in agreements
+        if a.signed_at
+    }
+    has_nda = "NDA" in signed_types
+    has_coc = "CODE_OF_CONDUCT" in signed_types
+    has_cert = bool(attrs and attrs.certification_level)
+    available = bool(attrs and attrs.availability_status)
+    placement_score = checklist_score([has_cert, has_nda, has_coc, available])
     placement_eligible = bool(attrs.placement_eligible) if attrs else False
-    placement_score = 92 if placement_eligible else (68 if attrs and attrs.availability_status else 45)
-    nps = round(4.2 + min(0.7, len(completed) * 0.15), 1)
+
+    # Weekly completed assignments (honest throughput).
+    completed_dates = [
+        a.responded_at or a.assigned_at
+        for a in assignment_rows
+        if a.status == AssignmentStatus.COMPLETED
+    ]
+    throughput = weekly_bucket_counts(completed_dates, weeks=5)
+    # If fewer labels desired for bar chart, keep weekly series as-is with W1..W5
+    throughput_bars = [
+        SeriesPoint(label=p.label, value=p.value) for p in throughput
+    ]
+
+    delivery_mix = [
+        TalentMixSegment(label="Pending", value=len(pending), color_key="accent"),
+        TalentMixSegment(label="Accepted", value=len(accepted), color_key="blue"),
+        TalentMixSegment(label="Completed", value=len(completed), color_key="indigo"),
+        TalentMixSegment(label="Declined", value=len(declined), color_key="muted"),
+    ]
+
+    placement_spark = sparkline_from_weeks(
+        [a.assigned_at for a in assignment_rows],
+        weeks=6,
+    )
 
     return CoachDashboardResponse(
         first_name=first_name,
         utilisation=utilisation,
         placement_score=placement_score,
         placement_eligible=placement_eligible,
-        nps=nps,
+        nps=None,
         certification_level=attrs.certification_level if attrs else None,
         cec_credits=attrs.cec_credits if attrs else 0,
         cec_status=attrs.cec_status if attrs else None,
         pending_count=len(pending),
         active_count=len(active_assignments),
+        accepted_count=len(accepted),
+        completed_count=len(completed),
+        declined_count=len(declined),
         active_assignments=active_assignments,
         active_assignment=active_assignments[0] if active_assignments else None,
-        throughput=[
-            SeriesPoint(label="Assess", value=max(4, len(accepted) * 3 + 5)),
-            SeriesPoint(label="Sessions", value=max(3, len(accepted) * 2 + 4)),
-            SeriesPoint(label="Reports", value=max(2, len(completed) * 2 + 3)),
-            SeriesPoint(label="Check-ins", value=max(5, len(accepted) * 4 + 2)),
-            SeriesPoint(label="Closures", value=max(1, len(completed) * 2)),
-        ],
-        delivery_mix=[
-            TalentMixSegment(label="Check-ins", value=max(1, len(accepted) + 3), color_key="accent"),
-            TalentMixSegment(label="Assess", value=max(1, len(accepted) + 2), color_key="blue"),
-            TalentMixSegment(label="Sessions", value=max(1, len(completed) + 2), color_key="indigo"),
-            TalentMixSegment(label="Other", value=max(1, len(declined) + 1), color_key="muted"),
-        ],
-        nps_spark=[round(nps - 0.5 + i * 0.1, 1) for i in range(6)],
-        placement_spark=[max(40, placement_score - 20 + i * 4) for i in range(6)],
+        throughput=throughput_bars,
+        delivery_mix=delivery_mix,
+        nps_spark=[],
+        placement_spark=placement_spark,
+        throughput_values=[p.value for p in throughput_bars],
     )
 
 @router.get("/me/profile")
@@ -231,6 +265,7 @@ async def respond_to_assignment(assignment_id: int, update: AssignmentStatusUpda
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     status_value = update.status.lower()
+    # Legacy client status name → current enum value.
     if status_value == "offered":
         status_value = "pending"
     try:

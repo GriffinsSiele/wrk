@@ -4,11 +4,16 @@ Rich Phase-1 demo seed for Olynixx Academy portals.
 Usage:
   docker-compose exec backend python seed.py
   docker-compose exec backend python seed.py --force   # wipe demo rows & reseed
+
+Seed modes (SEED_MODE env):
+  demo     (default) — full cohort + multi-week dated activity for live charts
+  minimal            — bootstrap admin only (safe for production bootstrap)
 """
 from __future__ import annotations
 
 import argparse
 import asyncio
+import os
 import sys
 from datetime import datetime, timedelta, timezone
 
@@ -53,6 +58,7 @@ engine = create_async_engine(DATABASE_URL, echo=False)
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 NOW = datetime.now(timezone.utc)
+SEED_MODE = os.environ.get("SEED_MODE", "demo").strip().lower()
 
 
 def get_password_hash(password: str) -> str:
@@ -116,7 +122,48 @@ async def wipe_demo_data(session) -> None:
     print(f"Truncated: {', '.join(to_truncate)}")
 
 
-async def seed_data(force: bool = False) -> None:
+async def seed_minimal(force: bool = False) -> None:
+    """Production-safe bootstrap: one admin account only."""
+    async with AsyncSessionLocal() as session:
+        existing_admin = await session.scalar(select(User.id).where(User.email == "admin@olynixx.com"))
+        if existing_admin and not force:
+            print("Minimal seed: admin already exists. Use --force to wipe and recreate.")
+            return
+        if existing_admin and force:
+            await wipe_demo_data(session)
+
+        admin = User(
+            email="admin@olynixx.com",
+            password_hash=get_password_hash("admin123"),
+            role=UserRole.ADMIN,
+            full_name="Olynixx Admin",
+            created_at=NOW,
+        )
+        session.add(admin)
+        await session.flush()
+        session.add(Profile(user_id=admin.id, first_name="Olynixx", last_name="Admin", bio="System Administrator"))
+        session.add(
+            ExamConfig(
+                name="Level 1 Written Exam",
+                certification_level="Level 1",
+                pass_mark=70,
+                time_limit_minutes=60,
+                max_attempts=3,
+                question_count=10,
+                proctoring_level="basic",
+            )
+        )
+        await session.commit()
+        print("Minimal seed complete: admin@olynixx.com / admin123")
+        print("Change this password before any production use.")
+
+
+async def seed_data(force: bool = False, mode: str | None = None) -> None:
+    active_mode = (mode or SEED_MODE).strip().lower()
+    if active_mode == "minimal":
+        await seed_minimal(force=force)
+        return
+
     async with AsyncSessionLocal() as session:
         existing_admin = await session.scalar(select(User.id).where(User.email == "admin@olynixx.com"))
         if existing_admin and not force:
@@ -428,7 +475,7 @@ async def seed_data(force: bool = False) -> None:
             )
         )
 
-        # Enrollments + lesson progress for primary learner
+        # Seeded progress % drives which lessons are marked complete (dashboard later syncs %).
         for i, (email, user) in enumerate(learners.items()):
             progress = learner_defs[i]["progress"]
             session.add(
@@ -440,15 +487,19 @@ async def seed_data(force: bool = False) -> None:
                     enrolled_at=weeks_ago(8 - i),
                 )
             )
-            # Mark first N lessons complete based on progress
             complete_count = max(1, int(len(all_lessons) * progress / 100))
             for li, lesson in enumerate(all_lessons[:complete_count]):
+                # Spread across ~8 weeks; keep a few completions in the last 6 days for daily charts.
+                if li < 3:
+                    completed_at = days_ago(max(0, 5 - li - (i % 2)))
+                else:
+                    completed_at = days_ago(8 + li * 4 + i * 2)
                 session.add(
                     LessonProgress(
                         user_id=user.id,
                         lesson_id=lesson.id,
                         completed=True,
-                        completed_at=days_ago(20 - li - i),
+                        completed_at=completed_at,
                     )
                 )
 
@@ -555,6 +606,7 @@ async def seed_data(force: bool = False) -> None:
             approved_at=days_ago(14),
             answers={},
         )
+        # Passed but not approved — fixture for the admin exam approval queue.
         pending_attempt = ExamAttempt(
             user_id=learners["aisha@olynixx.com"].id,
             session_id=past_session.id,
@@ -683,14 +735,20 @@ async def seed_data(force: bool = False) -> None:
         marcus = coach_attrs["marcus@olynixx.com"]
 
         assignments = [
-            (projects[0], sarah, AssignmentStatus.PENDING, days_ago(2), None, "Pending review — PureHealth"),
+            (projects[0], sarah, AssignmentStatus.ACCEPTED, days_ago(2), days_ago(1), "Active PureHealth"),
             (projects[1], ahmed, AssignmentStatus.ACCEPTED, days_ago(14), days_ago(13), "Accepted sport track"),
             (projects[2], layla, AssignmentStatus.ACCEPTED, days_ago(10), days_ago(9), "Executive retainer live"),
             (projects[3], marcus, AssignmentStatus.DECLINED, days_ago(8), days_ago(7), "Schedule conflict"),
-            (projects[4], sarah, AssignmentStatus.COMPLETED, days_ago(40), days_ago(38), "Pilot closed"),
-            (projects[1], layla, AssignmentStatus.COMPLETED, days_ago(30), days_ago(28), "Support block done"),
+            (projects[4], sarah, AssignmentStatus.COMPLETED, weeks_ago(8), weeks_ago(8) + timedelta(days=2), "Pilot closed"),
+            (projects[1], layla, AssignmentStatus.COMPLETED, weeks_ago(6), weeks_ago(6) + timedelta(days=2), "Support block done"),
             (projects[0], ahmed, AssignmentStatus.ACCEPTED, days_ago(20), days_ago(19), "Secondary coach"),
             (projects[2], sarah, AssignmentStatus.PENDING, days_ago(1), None, "Overflow pending"),
+            (projects[3], ahmed, AssignmentStatus.COMPLETED, weeks_ago(5), weeks_ago(5) + timedelta(days=1), "Community block"),
+            (projects[4], layla, AssignmentStatus.COMPLETED, weeks_ago(4), weeks_ago(4) + timedelta(days=3), "Wellbeing close"),
+            (projects[1], sarah, AssignmentStatus.COMPLETED, weeks_ago(3), weeks_ago(3) + timedelta(days=2), "Sport sprint wrap"),
+            (projects[0], marcus, AssignmentStatus.COMPLETED, weeks_ago(2), weeks_ago(2) + timedelta(days=1), "Corporate close"),
+            (projects[2], ahmed, AssignmentStatus.COMPLETED, weeks_ago(1), weeks_ago(1) + timedelta(days=2), "Retainer milestone"),
+            (projects[3], sarah, AssignmentStatus.COMPLETED, days_ago(4), days_ago(3), "Recent community close"),
         ]
         for project, coach, status, assigned, responded, notes in assignments:
             session.add(
@@ -729,16 +787,22 @@ async def seed_data(force: bool = False) -> None:
             )
 
         await session.commit()
-        print("Database seeded successfully with rich Phase 1 demo data.")
+        print(f"Database seeded successfully (SEED_MODE={active_mode}) with rich Phase 1 demo data.")
         print("Logins: admin@olynixx.com / admin123 | coach@olynixx.com / coach123 | learner@olynixx.com / learner123")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true", help="Wipe and reseed demo data")
+    parser.add_argument(
+        "--mode",
+        choices=["demo", "minimal"],
+        default=None,
+        help="Override SEED_MODE env (demo|minimal)",
+    )
     args = parser.parse_args()
     try:
-        asyncio.run(seed_data(force=args.force))
+        asyncio.run(seed_data(force=args.force, mode=args.mode))
     except Exception as e:
         print(f"Seed failed: {e}", file=sys.stderr)
         raise

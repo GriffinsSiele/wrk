@@ -9,7 +9,6 @@ from app.db.models import (
     AssignmentStatus,
     Certificate,
     Course,
-    CourseEnrollment,
     Lead,
     Project,
     ProjectAssignment,
@@ -21,12 +20,17 @@ from app.schemas.admin import (
     CoachSnapshot,
     DispatchTrack,
     RoleUpdate,
-    SeriesPoint,
     StatsResponse,
     TalentMixSegment,
     UserAdminResponse,
 )
 from app.api.deps import get_current_active_admin
+from app.services.analytics import (
+    count_since,
+    period_change,
+    sparkline_from_weeks,
+    weekly_bucket_counts,
+)
 
 router = APIRouter()
 
@@ -58,7 +62,10 @@ async def get_stats(db: AsyncSession = Depends(get_db), _: User = Depends(get_cu
 async def get_admin_dashboard(db: AsyncSession = Depends(get_db), _: User = Depends(get_current_active_admin)):
     stats = await _build_stats(db)
     now = datetime.now(timezone.utc)
+    this_start = now - timedelta(days=7)
+    prev_start = now - timedelta(days=14)
 
+    users = (await db.execute(select(User).where(User.deleted_at.is_(None)))).scalars().all()
     coaches = (
         await db.execute(
             select(User)
@@ -78,28 +85,19 @@ async def get_admin_dashboard(db: AsyncSession = Depends(get_db), _: User = Depe
     blocked = max(0, len(coaches) - placement_ok - available_only)
     pool_health = round((placement_ok / len(coaches)) * 100) if coaches else 0
     cert_rate = (
-        min(98, round((stats.total_certificates / max(stats.total_learners, 1)) * 100))
+        round((stats.total_certificates / stats.total_learners) * 100)
         if stats.total_learners
         else 0
     )
 
-    # Weekly throughput from assignments + enrollments + certificates over last 8 weeks
     assignments = (await db.execute(select(ProjectAssignment))).scalars().all()
-    enrollments = (await db.execute(select(CourseEnrollment))).scalars().all()
-    certs = (await db.execute(select(Certificate))).scalars().all()
-    throughput: List[SeriesPoint] = []
-    for i in range(7, -1, -1):
-        start = now - timedelta(weeks=i + 1)
-        end = now - timedelta(weeks=i)
-        a_count = sum(1 for a in assignments if a.assigned_at and start <= a.assigned_at < end)
-        e_count = sum(1 for e in enrollments if e.enrolled_at and start <= e.enrolled_at < end)
-        c_count = sum(1 for c in certs if c.issued_at and start <= c.issued_at < end)
-        throughput.append(SeriesPoint(label=f"W{8 - i}", value=a_count * 8 + e_count * 6 + c_count * 10 + 20 + (7 - i) * 4))
+    assignment_dates = [a.assigned_at for a in assignments]
+    # Throughput = raw assignment volume per week (honest single metric).
+    throughput = weekly_bucket_counts(assignment_dates, weeks=8, now=now)
 
-    # Dispatch by project_type
-    projects = (await db.execute(select(Project).options(selectinload(Project.assignments)))).scalars().all()
+    all_projects = (await db.execute(select(Project).options(selectinload(Project.assignments)))).scalars().all()
     by_type: dict[str, list] = {}
-    for p in projects:
+    for p in all_projects:
         key = p.project_type or "General"
         by_type.setdefault(key, []).append(p)
 
@@ -109,17 +107,18 @@ async def get_admin_dashboard(db: AsyncSession = Depends(get_db), _: User = Depe
         all_asg = [a for p in plist for a in (p.assignments or [])]
         if all_asg:
             completed = sum(1 for a in all_asg if a.status == AssignmentStatus.COMPLETED)
-            accepted = sum(1 for a in all_asg if a.status in (AssignmentStatus.ACCEPTED, AssignmentStatus.COMPLETED))
-            completion = round((completed / len(all_asg)) * 100) if all_asg else 0
-            # Blend with accepted momentum so empty completed doesn't look dead
-            completion = max(completion, round((accepted / len(all_asg)) * 70))
+            completion = round((completed / len(all_asg)) * 100)
         else:
-            completion = 40
-        risk = "Low" if completion >= 75 else "Moderate" if completion >= 55 else "Watch"
-        dispatch.append(DispatchTrack(track=track, active=active or len(plist), completion=completion, risk=risk))
-
-    if not dispatch:
-        dispatch = [DispatchTrack(track="General", active=stats.total_active_projects, completion=60, risk="Moderate")]
+            completion = 0
+        risk = "Low" if completion >= 75 else "Moderate" if completion >= 55 else ("Watch" if all_asg else "—")
+        dispatch.append(
+            DispatchTrack(
+                track=track,
+                active=active if active else len([p for p in plist if p.status == "active"]),
+                completion=completion,
+                risk=risk,
+            )
+        )
 
     recent_coaches: List[CoachSnapshot] = []
     for c in coaches[:6]:
@@ -136,31 +135,50 @@ async def get_admin_dashboard(db: AsyncSession = Depends(get_db), _: User = Depe
             )
         )
 
-    # Simple sparkline proxies from cumulative growth
-    spark_coaches = [max(1, stats.total_coaches - 4 + i) for i in range(6)]
-    spark_learners = [max(1, stats.total_learners - 5 + i) for i in range(6)]
-    spark_projects = [max(1, stats.total_active_projects - 3 + i) for i in range(6)]
-    spark_certs = [max(0, stats.total_certificates - 5 + i) for i in range(6)]
+    coach_created = [u.created_at for u in users if u.role == UserRole.COACH]
+    learner_created = [u.created_at for u in users if u.role == UserRole.LEARNER]
+    project_created = [p.created_at for p in all_projects]
+    certs = (await db.execute(select(Certificate))).scalars().all()
+    cert_issued = [c.issued_at for c in certs]
 
-    signed_agreements_proxy = placement_ok
-    governance = min(98, 70 + signed_agreements_proxy * 4 + (2 if cert_rate > 50 else 0))
+    spark_coaches = sparkline_from_weeks(coach_created, weeks=6, now=now)
+    spark_learners = sparkline_from_weeks(learner_created, weeks=6, now=now)
+    spark_projects = sparkline_from_weeks(project_created, weeks=6, now=now)
+    spark_certs = sparkline_from_weeks(cert_issued, weeks=6, now=now)
+
+    kpi_changes = {
+        "coaches": period_change(
+            count_since(coach_created, this_start, now),
+            count_since(coach_created, prev_start, this_start),
+        ),
+        "learners": period_change(
+            count_since(learner_created, this_start, now),
+            count_since(learner_created, prev_start, this_start),
+        ),
+        "projects": period_change(
+            count_since(project_created, this_start, now),
+            count_since(project_created, prev_start, this_start),
+        ),
+        "certificates": period_change(
+            count_since(cert_issued, this_start, now),
+            count_since(cert_issued, prev_start, this_start),
+        ),
+    }
+
+    # Governance = share of coaches who are placement-eligible (real ratio).
+    governance = pool_health
 
     return AdminDashboardResponse(
         stats=stats,
-        cert_rate=cert_rate,
+        cert_rate=min(100, cert_rate),
         pool_health=pool_health,
         governance_score=governance,
-        kpi_changes={
-            "coaches": "+6.4%",
-            "learners": "+8.1%",
-            "projects": "+4.3%",
-            "certificates": "+10.7%",
-        },
+        kpi_changes=kpi_changes,
         throughput=throughput,
         talent_mix=[
-            TalentMixSegment(label="Placement OK", value=max(placement_ok, 0), color_key="accent"),
-            TalentMixSegment(label="Available", value=max(available_only, 0), color_key="blue"),
-            TalentMixSegment(label="Blocked", value=max(blocked, 0), color_key="indigo"),
+            TalentMixSegment(label="Placement OK", value=placement_ok, color_key="accent"),
+            TalentMixSegment(label="Available", value=available_only, color_key="blue"),
+            TalentMixSegment(label="Blocked", value=blocked, color_key="indigo"),
         ],
         dispatch=dispatch,
         recent_coaches=recent_coaches,
@@ -170,6 +188,7 @@ async def get_admin_dashboard(db: AsyncSession = Depends(get_db), _: User = Depe
         spark_certs=spark_certs,
     )
 
+
 @router.get("/users", response_model=List[UserAdminResponse])
 async def list_users(db: AsyncSession = Depends(get_db), _: User = Depends(get_current_active_admin)):
     result = await db.execute(
@@ -178,25 +197,43 @@ async def list_users(db: AsyncSession = Depends(get_db), _: User = Depends(get_c
     users = result.scalars().all()
     return [
         UserAdminResponse(
-            id=u.id, email=u.email, role=u.role.value, is_active=u.is_active, created_at=u.created_at,
+            id=u.id,
+            email=u.email,
+            role=u.role.value if hasattr(u.role, "value") else str(u.role),
+            is_active=bool(u.is_active),
+            created_at=u.created_at,
             first_name=u.profile.first_name if u.profile else None,
             last_name=u.profile.last_name if u.profile else None,
         )
         for u in users
     ]
 
+
 @router.patch("/users/{user_id}/role")
-async def update_user_role(user_id: int, update: RoleUpdate, db: AsyncSession = Depends(get_db), _: User = Depends(get_current_active_admin)):
+async def update_user_role(
+    user_id: int,
+    update: RoleUpdate,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_active_admin),
+):
     result = await db.execute(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
     user = result.scalars().first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    user.role = UserRole(update.role)
+    try:
+        user.role = UserRole(update.role)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid role")
     await db.commit()
     return {"message": "Role updated"}
 
+
 @router.patch("/users/{user_id}/deactivate")
-async def deactivate_user(user_id: int, db: AsyncSession = Depends(get_db), _: User = Depends(get_current_active_admin)):
+async def deactivate_user(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_active_admin),
+):
     result = await db.execute(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
     user = result.scalars().first()
     if not user:
@@ -205,8 +242,13 @@ async def deactivate_user(user_id: int, db: AsyncSession = Depends(get_db), _: U
     await db.commit()
     return {"message": "User deactivated"}
 
+
 @router.patch("/users/{user_id}/activate")
-async def activate_user(user_id: int, db: AsyncSession = Depends(get_db), _: User = Depends(get_current_active_admin)):
+async def activate_user(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_active_admin),
+):
     result = await db.execute(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
     user = result.scalars().first()
     if not user:
@@ -215,8 +257,13 @@ async def activate_user(user_id: int, db: AsyncSession = Depends(get_db), _: Use
     await db.commit()
     return {"message": "User activated"}
 
+
 @router.post("/users/{user_id}/soft-delete")
-async def soft_delete_user(user_id: int, db: AsyncSession = Depends(get_db), _: User = Depends(get_current_active_admin)):
+async def soft_delete_user(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_active_admin),
+):
     """Soft-delete / anonymise user while preserving exam and certificate history."""
     result = await db.execute(
         select(User).options(selectinload(User.profile)).where(User.id == user_id)
@@ -227,9 +274,11 @@ async def soft_delete_user(user_id: int, db: AsyncSession = Depends(get_db), _: 
     now = datetime.now(timezone.utc)
     user.is_active = False
     user.deleted_at = now
-    user.anonymised_at = now
+    if hasattr(user, "anonymised_at"):
+        user.anonymised_at = now
     user.email = f"anonymised_{user.id}@deleted.local"
     user.full_name = "Anonymised User"
+    user.password_hash = "!"  # invalidate login
     if user.profile:
         user.profile.first_name = "Anonymised"
         user.profile.last_name = "User"

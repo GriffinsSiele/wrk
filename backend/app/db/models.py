@@ -301,6 +301,7 @@ class PracticalAssessment(Base):
     assessor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     certification_level = Column(String, default="Level 1")
     checklist_result = Column(JSON, nullable=True)
+    # VARCHAR enum (not PG native) for simpler migrations across environments.
     result = Column(Enum(PracticalResult, native_enum=False), nullable=False)
     notes = Column(Text, nullable=True)
     assessed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

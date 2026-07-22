@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, field_validator
+from typing import Optional, Any
 from datetime import datetime
 
 class CertificateResponse(BaseModel):
@@ -11,6 +11,15 @@ class CertificateResponse(BaseModel):
     certification_level: str
     status: str = "ACTIVE"
     practical_assessment_id: Optional[int] = None
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def coerce_status(cls, value: Any) -> str:
+        # ORM may return Enum or NULL depending on migration/native_enum settings.
+        if value is None:
+            return "ACTIVE"
+        return value.value if hasattr(value, "value") else str(value)
+
     class Config:
         from_attributes = True
 

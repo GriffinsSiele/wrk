@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     EXAM_MAX_ATTEMPTS: int = 3
     EXAM_RANDOMISE: bool = True
     EXAM_DELIVERY_MODE: str = "online"
+    # Comma-separated browser origins allowed to call the API directly (forms should prefer the Next proxy).
+    CORS_ORIGINS: str = "http://localhost:3000"
 
     class Config:
         env_file = ".env"

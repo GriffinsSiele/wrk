@@ -62,20 +62,16 @@ async def get_active_certificate_level(db: AsyncSession, user_id: int) -> int:
 
 
 async def has_passed_written(db: AsyncSession, user_id: int, level: str) -> Tuple[bool, Optional[ExamAttempt]]:
-    target = normalize_level(level)
+    """Any scored pass counts; level matching is not enforced yet (Phase 1 bootstrap)."""
+    _ = normalize_level(level)
     result = await db.execute(
         select(ExamAttempt).where(
             ExamAttempt.user_id == user_id,
             ExamAttempt.passed.is_(True),
         ).order_by(ExamAttempt.submitted_at.desc())
     )
-    attempts = result.scalars().all()
-    # Prefer attempts whose session config matches; otherwise any passed attempt for L1 bootstrap
-    for attempt in attempts:
-        return True, attempt
-    if target <= 1 and attempts:
-        return True, attempts[0]
-    return False, None
+    attempt = result.scalars().first()
+    return (True, attempt) if attempt else (False, None)
 
 
 async def has_passed_practical(
@@ -92,6 +88,7 @@ async def has_passed_practical(
     )
     assessments = result.scalars().all()
     for assessment in assessments:
+        # Level 0 = unset/legacy rows; treat as L1 so older seed data still qualifies.
         if normalize_level(assessment.certification_level) == target or (
             target <= 1 and normalize_level(assessment.certification_level) in (0, 1)
         ):
@@ -100,6 +97,7 @@ async def has_passed_practical(
 
 
 async def prerequisite_satisfied(db: AsyncSession, user_id: int, target_level: str) -> bool:
+    """L2+ needs an active cert at the previous level (not just a prior attempt)."""
     target = normalize_level(target_level)
     if target <= 1:
         return True
@@ -119,6 +117,7 @@ async def agreements_fully_signed(db: AsyncSession, user_id: int) -> bool:
 
 
 async def refresh_placement_eligibility(db: AsyncSession, user_id: int) -> bool:
+    """Eligible only if: active cert + NDA & CoC signed + availability open."""
     ca_result = await db.execute(select(CoachAttribute).where(CoachAttribute.user_id == user_id))
     attrs = ca_result.scalars().first()
     if not attrs:
@@ -135,7 +134,7 @@ async def try_issue_certificate(
     user_id: int,
     certification_level: str = "Level 1",
 ) -> Optional[Certificate]:
-    """Issue certificate only when written + practical both pass and prerequisites hold."""
+    """Dual-gate: written pass + practical PASS. Admin approve is handled by the exam endpoint."""
     if not await prerequisite_satisfied(db, user_id, certification_level):
         return None
 
@@ -175,7 +174,7 @@ async def try_issue_certificate(
     )
     db.add(cert)
 
-    # Automatic Learner → Coach upgrade
+    # Dual-gate success places the specialist in the coach pool.
     if user.role == UserRole.LEARNER:
         user.role = UserRole.COACH
 

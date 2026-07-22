@@ -11,6 +11,7 @@ from app.schemas.token import TokenData
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
+# Note: does not re-check is_active/deleted_at; login/refresh gate those.
 async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -33,6 +34,7 @@ async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Depe
     return user
 
 async def get_current_active_admin(current_user: User = Depends(get_current_user)) -> User:
+    # UserRole is str-backed; comparing to "admin" matches ORM enum values.
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not enough permissions")
     return current_user
