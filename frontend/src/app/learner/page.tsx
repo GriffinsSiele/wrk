@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedBarChart, AreaTrendChart, DonutChart, MultiSegmentDonut } from "@/components/ui/Charts";
@@ -42,7 +42,7 @@ type LearnerDash = {
 };
 
 const COLOR_MAP: Record<string, string> = {
-  accent: "var(--ox-accent)",
+  accent: "var(--mint)",
   blue: "var(--ox-blue)",
   indigo: "var(--ox-indigo)",
 };
@@ -98,7 +98,7 @@ export default function LearnerDashboard() {
 
   if (!loaded) {
     return (
-      <main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-8 text-[13px]" style={{ color: "var(--ox-muted)" }}>
+      <main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-8 font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
         Loading dashboard…
       </main>
     );
@@ -152,29 +152,29 @@ export default function LearnerDashboard() {
             {steps.map((item, i) => (
               <div
                 key={item.step}
-                className="rounded-xl px-3.5 py-3 ox-kpi-float"
+                className="rounded-sm px-3.5 py-3 ox-kpi-float"
                 style={{
                   background: item.done ? "rgba(42,161,135,0.15)" : "var(--ox-surface)",
                   border: `1px solid ${item.done ? "rgba(42,161,135,0.4)" : "var(--ox-line)"}`,
                   animationDelay: `${i * 80}ms`,
                 }}
               >
-                <div className="text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--ox-accent)" }}>{item.step}</div>
-                <div className="text-[13px] font-medium mt-0.5" style={{ color: "var(--ox-fg)" }}>{item.label}</div>
+                <div className="font-display text-[11px] uppercase tracking-[0.16em]" style={{ color: item.done ? "var(--mint)" : "var(--ochre)" }}>{item.step}</div>
+                <div className="font-body text-[13px] font-medium mt-0.5" style={{ color: "var(--ox-fg)" }}>{item.label}</div>
               </div>
             ))}
           </div>
         </ScrollReveal>
 
         <ScrollReveal className="lg:col-span-8 h-full">
-          <div className="ox-card rounded-2xl overflow-hidden h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
+          <div className="ox-card rounded-sm overflow-hidden h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
             <div className="px-5 py-4 flex justify-between items-center gap-3" style={{ borderBottom: "1px solid var(--ox-line)" }}>
               <h2 className="font-semibold text-[15px]" style={{ color: "var(--ox-fg)" }}>My Courses</h2>
               <div className="flex items-center gap-2">
-                <span className="text-[12px] px-2.5 py-1" style={{ border: "1px solid rgba(150,118,43,0.4)", color: "var(--ochre)" }}>
+                <span className="font-display text-[11px] tracking-[0.14em] uppercase px-2.5 py-1" style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--ochre)" }}>
                   {enrolledCourses.length} enrolled
                 </span>
-                <Link href="/learner/courses" className="text-[13px]" style={{ color: "var(--ox-accent)" }}>
+                <Link href="/learner/courses" className="font-body text-[13px]" style={{ color: "var(--ochre)" }}>
                   View all →
                 </Link>
               </div>
@@ -187,11 +187,11 @@ export default function LearnerDashboard() {
                   return (
                     <div
                       key={course.course_id}
-                      className="flex flex-col sm:flex-row gap-4 rounded-xl p-4"
+                      className="flex flex-col sm:flex-row gap-4 rounded-sm p-4"
                       style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}
                     >
                       <div
-                        className="w-full sm:w-28 h-20 sm:h-auto rounded-lg flex-shrink-0 grid place-items-center"
+                        className="w-full sm:w-28 h-20 sm:h-auto rounded-sm flex-shrink-0 grid place-items-center"
                         style={{ background: "rgba(217,172,74,0.08)" }}
                       >
                         <Zap size={24} style={{ color: "var(--ox-accent)" }} />
@@ -200,10 +200,10 @@ export default function LearnerDashboard() {
                         <div>
                           <div className="flex flex-wrap items-center gap-2 mb-1.5">
                             <span
-                              className="text-[11px] uppercase tracking-[0.16em] px-2 py-0.5"
+                              className="font-display text-[11px] uppercase tracking-[0.16em]"
                               style={{
-                                color: pct >= 100 ? "var(--mint)" : "var(--ox-accent)",
-                                background: pct >= 100 ? "rgba(42,161,135,0.14)" : "rgba(217,172,74,0.12)",
+                                color: pct >= 100 ? "var(--mint)" : "var(--ochre)",
+                                borderBottom: "1px solid rgba(150,118,43,0.55)",
                               }}
                             >
                               {statusLabel}
@@ -215,26 +215,26 @@ export default function LearnerDashboard() {
                           <h3 className="font-bold text-[15px] leading-snug mb-1" style={{ color: "var(--ox-fg)" }}>
                             {course.title}
                           </h3>
-                          <p className="text-[13px] leading-relaxed line-clamp-2" style={{ color: "var(--ox-muted)" }}>
+                          <p className="font-body text-[13px] leading-relaxed line-clamp-2" style={{ color: "var(--ox-muted)" }}>
                             {course.description || "Structured modules with lessons and assessments."}
                           </p>
                         </div>
                         <div>
-                          <div className="flex justify-between text-[12px] mb-1.5">
-                            <span style={{ color: "var(--ox-indigo)" }}>Progress to completion</span>
+                          <div className="flex justify-between font-body text-[12px] mb-1.5">
+                            <span style={{ color: "var(--ochre)" }}>Progress to completion</span>
                             <span style={{ color: "var(--ox-muted)" }}>
                               {pct}% · {course.lessons_completed} / {course.lessons_total} lessons
                             </span>
                           </div>
-                          <div className="w-full rounded-full h-2 overflow-hidden" style={{ background: "rgba(150,118,43,0.25)" }}>
+                          <div className="w-full rounded-sm h-2 overflow-hidden" style={{ background: "rgba(150,118,43,0.25)" }}>
                             <div
-                              className="h-2 rounded-full ox-progress-fill transition-all duration-500"
-                              style={{ width: `${pct}%`, background: "var(--gold)" }}
+                              className="h-2 rounded-sm ox-progress-fill transition-all duration-500"
+                              style={{ width: `${pct}%`, background: "var(--mint)" }}
                             />
                           </div>
                           <Link
                             href={`/learner/courses/${course.course_id}`}
-                            className="mt-3 ox-cta inline-flex items-center h-9 rounded-full px-5 text-[13px] font-semibold"
+                            className="mt-3 ox-ghost-light inline-flex items-center h-9 px-5 text-[13px] font-medium w-fit"
                           >
                             {pct >= 100 ? "Review course →" : pct > 0 ? "Continue learning →" : "Start course →"}
                           </Link>
@@ -244,12 +244,12 @@ export default function LearnerDashboard() {
                   );
                 })
               ) : (
-                <div className="rounded-xl p-5 flex flex-col justify-center" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}>
+                <div className="rounded-sm p-5 flex flex-col justify-center" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}>
                   <p className="font-medium text-[15px]" style={{ color: "var(--ox-fg)" }}>No courses enrolled yet</p>
-                  <p className="text-[13px] mt-1 mb-4" style={{ color: "var(--ox-muted)" }}>
+                  <p className="font-body text-[13px] mt-1 mb-4" style={{ color: "var(--ox-muted)" }}>
                     When you are enrolled in a specialisation course, progress will appear here.
                   </p>
-                  <Link href="/learner/courses" className="ox-cta h-9 rounded-full px-5 text-[13px] font-semibold inline-flex items-center w-fit">
+                  <Link href="/learner/courses" className="ox-ghost-light h-9 px-5 text-[13px] font-medium inline-flex items-center w-fit">
                     Open courses
                   </Link>
                 </div>
@@ -259,19 +259,19 @@ export default function LearnerDashboard() {
         </ScrollReveal>
 
         <ScrollReveal delay={80} className="lg:col-span-4 h-full">
-          <div className="ox-card rounded-2xl p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
+          <div className="ox-card rounded-sm p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
             <h2 className="font-semibold text-[15px] mb-3" style={{ color: "var(--ox-fg)" }}>Certification Gates</h2>
             <div className="flex justify-center flex-1 items-center">
               <DonutChart value={gateProgress} label="gate" sublabel="complete" size={124} thickness={12} />
             </div>
-            <p className="text-[12px] text-center mt-2 mb-3" style={{ color: "var(--ox-muted)" }}>
+            <p className="font-body text-[12px] text-center mt-2 mb-3" style={{ color: "var(--ox-muted)" }}>
               Written + practical both required before issuance.
             </p>
             <div className="flex flex-col gap-2 mt-auto">
-              <Link href="/learner/exam" className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-[13px] font-medium ox-cta gap-2">
+              <Link href="/learner/exam" className="w-full inline-flex items-center justify-center py-2.5 text-[13px] font-medium ox-cta gap-2">
                 <Calendar size={14} /> {data?.has_exam_booking ? "View exam booking" : "Book online exam"}
               </Link>
-              <Link href="/learner/certificate" className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-[13px] font-medium ox-ghost-light">
+              <Link href="/learner/certificate" className="w-full inline-flex items-center justify-center py-2.5 text-[13px] font-medium ox-ghost-light">
                 View certificate status
               </Link>
             </div>
@@ -279,10 +279,10 @@ export default function LearnerDashboard() {
         </ScrollReveal>
 
         <ScrollReveal delay={100} className="lg:col-span-4 h-full">
-          <div className="ox-card ox-kpi-float rounded-2xl p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
-            <div className="flex items-center gap-2 mb-3" style={{ color: "var(--ox-accent)" }}>
+          <div className="ox-card ox-kpi-float rounded-sm p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
+            <div className="flex items-center gap-2 mb-3" style={{ color: "var(--ochre)" }}>
               <Target size={16} />
-              <span className="text-[12px] uppercase tracking-[0.14em]">Readiness</span>
+              <span className="font-display text-[12px] uppercase tracking-[0.14em]">Readiness</span>
             </div>
             <div className="flex-1 grid place-items-center">
               <DonutChart value={readiness} label="ready" sublabel="index" size={118} thickness={11} />
@@ -291,10 +291,10 @@ export default function LearnerDashboard() {
         </ScrollReveal>
 
         <ScrollReveal delay={130} className="lg:col-span-4 h-full">
-          <div className="ox-card ox-kpi-float rounded-2xl p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
+          <div className="ox-card ox-kpi-float rounded-sm p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
             <div className="flex items-center gap-2 mb-3" style={{ color: "var(--ox-blue)" }}>
               <BookOpen size={16} />
-              <span className="text-[12px] uppercase tracking-[0.14em]">Focus mix</span>
+              <span className="font-display text-[12px] uppercase tracking-[0.14em]">Focus mix</span>
             </div>
             <div className="flex-1 grid place-items-center">
               {focusMix.length ? (
@@ -310,27 +310,27 @@ export default function LearnerDashboard() {
                   }))}
                 />
               ) : (
-                <p className="text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No activity yet</p>
+                <p className="font-body text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No activity yet</p>
               )}
             </div>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={160} className="lg:col-span-4 h-full">
-          <div className="ox-card ox-kpi-float rounded-2xl p-5 h-full flex flex-col justify-between" style={{ background: "var(--ox-surface)" }}>
+          <div className="ox-card ox-kpi-float rounded-sm p-5 h-full flex flex-col justify-between" style={{ background: "var(--ox-surface)" }}>
             <div>
-              <div className="text-[12px] uppercase tracking-[0.14em] mb-2" style={{ color: "var(--ox-muted)" }}>Next milestone</div>
+              <div className="font-display text-[12px] uppercase tracking-[0.14em] mb-2" style={{ color: "var(--ochre)" }}>Next milestone</div>
               <p className="font-display text-xl mb-1.5 leading-snug" style={{ color: "var(--ox-fg)", fontWeight: 500 }}>{nextModule}</p>
-              <p className="text-[13px]" style={{ color: "var(--ox-muted)" }}>Continue lessons to unlock the next module.</p>
+              <p className="font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>Continue lessons to unlock the next module.</p>
             </div>
             <div className="mt-4">
-              <div className="flex justify-between text-[11px] mb-1.5">
+              <div className="flex justify-between font-body text-[11px] mb-1.5">
                 <span style={{ color: "var(--ox-muted)" }}>Unlock</span>
                 <span style={{ color: "var(--ox-fg)" }}>{courseProgress}%</span>
               </div>
-              <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: "rgba(150,118,43,0.25)" }}>
+              <div className="w-full h-2 rounded-sm overflow-hidden" style={{ background: "rgba(150,118,43,0.25)" }}>
                 <div
-                  className="h-2 rounded-full ox-progress-fill"
+                  className="h-2 rounded-sm ox-progress-fill"
                   style={{ width: `${courseProgress}%`, background: "var(--mint)" }}
                 />
               </div>
@@ -339,27 +339,27 @@ export default function LearnerDashboard() {
         </ScrollReveal>
 
         <ScrollReveal delay={180} className="lg:col-span-6 h-full">
-          <div className="ox-card rounded-2xl p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
+          <div className="ox-card rounded-sm p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-semibold text-[15px]" style={{ color: "var(--ox-fg)" }}>Weekly Learning Velocity</h2>
-              <span className="text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--ox-muted)" }}>Activity</span>
+              <span className="font-display text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--ochre)" }}>Activity</span>
             </div>
             <div className="flex-1">
               <AnimatedBarChart data={weeklyLearning} height={150} />
             </div>
-            <p className="mt-2 text-[12px]" style={{ color: "var(--ox-muted)" }}>
+            <p className="mt-2 font-body text-[12px]" style={{ color: "var(--ox-muted)" }}>
               Based on your recent lesson completions.
             </p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={210} className="lg:col-span-6 h-full">
-          <div className="ox-card rounded-2xl p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
+          <div className="ox-card rounded-sm p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-semibold text-[15px]" style={{ color: "var(--ox-fg)" }}>Learning Trend</h2>
-              <span className="text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--ox-muted)" }}>Last 6 days</span>
+              <span className="font-display text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--ochre)" }}>Last 6 days</span>
             </div>
-            <div className="rounded-xl p-3 flex-1" style={{ border: "1px solid var(--ox-line)", background: "rgba(12,15,18,0.22)" }}>
+            <div className="rounded-sm p-3 flex-1" style={{ border: "1px solid var(--ox-line)", background: "rgba(12,15,18,0.22)" }}>
               <AreaTrendChart values={trendValues} gradientId="learnerTrend" />
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
@@ -374,8 +374,8 @@ export default function LearnerDashboard() {
                 },
                 { label: "Status", value: readiness >= 60 ? "On track" : "Building" },
               ].map((s) => (
-                <div key={s.label} className="rounded-lg py-2" style={{ background: "rgba(217,172,74,0.08)" }}>
-                  <p className="text-[11px]" style={{ color: "var(--ox-muted)" }}>{s.label}</p>
+                <div key={s.label} className="rounded-sm py-2" style={{ background: "rgba(217,172,74,0.08)", border: "1px solid rgba(150,118,43,0.35)" }}>
+                  <p className="font-body text-[11px]" style={{ color: "var(--ox-muted)" }}>{s.label}</p>
                   <p className="font-semibold text-[14px]" style={{ color: "var(--ox-fg)" }}>{s.value}</p>
                 </div>
               ))}

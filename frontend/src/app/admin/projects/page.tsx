@@ -30,11 +30,11 @@ type Coach = {
 
 function statusTone(status: string) {
   const value = status.toLowerCase();
-  if (value === "active" || value === "accepted") return { color: "var(--mint)", bg: "rgba(42,161,135,0.14)" };
-  if (value === "pending" || value === "offered") return { color: "var(--gold)", bg: "rgba(217,172,74,0.14)" };
-  if (value === "completed") return { color: "var(--cream)", bg: "rgba(242,237,227,0.1)" };
-  if (value === "declined" || value === "cancelled") return { color: "var(--ochre)", bg: "rgba(201,150,46,0.14)" };
-  return { color: "var(--ox-muted)", bg: "rgba(150,118,43,0.12)" };
+  if (value === "active" || value === "accepted") return { color: "var(--mint)" };
+  if (value === "pending" || value === "offered") return { color: "var(--ochre)" };
+  if (value === "completed") return { color: "var(--cream)" };
+  if (value === "declined" || value === "cancelled") return { color: "var(--bronze)" };
+  return { color: "var(--ox-muted)" };
 }
 
 export default function AdminProjectDispatchPage() {
@@ -115,7 +115,7 @@ export default function AdminProjectDispatchPage() {
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
-      setMessage(err.detail || "Failed to dispatch coach — placement gate may block ineligible coaches");
+      setMessage(err.detail || "Failed to dispatch coach â€” placement gate may block ineligible coaches");
       return;
     }
     setAssignForm({ project_id: "", coach_attribute_id: "", notes: "" });
@@ -145,16 +145,16 @@ export default function AdminProjectDispatchPage() {
         style={{ border: "1px solid rgba(150,118,43,0.4)", background: "rgba(12,15,18,0.28)", color: "rgba(242,237,227,0.7)" }}
       >
         <div>
-          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>01 · Pool</span>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>01 Â· Pool</span>
           <p className="mt-1">Filter eligible coaches in Talent Pool.</p>
         </div>
         <div>
-          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>02 · Assign</span>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>02 Â· Assign</span>
           <p className="mt-1">Dispatch a coach to an active project below.</p>
         </div>
         <div>
-          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>03 · Coach sees it</span>
-          <p className="mt-1">Coach Portal → Projects / Dashboard shows the assignment.</p>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>03 Â· Coach sees it</span>
+          <p className="mt-1">Coach Portal â†’ Projects / Dashboard shows the assignment.</p>
         </div>
       </div>
       {message && (
@@ -164,34 +164,34 @@ export default function AdminProjectDispatchPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+        <section className="rounded-sm p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Create Operator</h2>
-          <input placeholder="Name" value={operatorForm.name} onChange={(e) => setOperatorForm((p) => ({ ...p, name: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input placeholder="Industry" value={operatorForm.industry} onChange={(e) => setOperatorForm((p) => ({ ...p, industry: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input placeholder="Emirate" value={operatorForm.emirate} onChange={(e) => setOperatorForm((p) => ({ ...p, emirate: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input placeholder="Licence status" value={operatorForm.licence_status} onChange={(e) => setOperatorForm((p) => ({ ...p, licence_status: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <button onClick={createOperator} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create</button>
+          <input placeholder="Name" value={operatorForm.name} onChange={(e) => setOperatorForm((p) => ({ ...p, name: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input placeholder="Industry" value={operatorForm.industry} onChange={(e) => setOperatorForm((p) => ({ ...p, industry: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input placeholder="Emirate" value={operatorForm.emirate} onChange={(e) => setOperatorForm((p) => ({ ...p, emirate: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input placeholder="Licence status" value={operatorForm.licence_status} onChange={(e) => setOperatorForm((p) => ({ ...p, licence_status: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <button onClick={createOperator} className="ox-ghost-light h-9 px-5 text-[13px] font-medium">Create</button>
         </section>
 
-        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+        <section className="rounded-sm p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Create Project</h2>
-          <input placeholder="Title" value={projectForm.title} onChange={(e) => setProjectForm((p) => ({ ...p, title: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input placeholder="Description" value={projectForm.description} onChange={(e) => setProjectForm((p) => ({ ...p, description: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input placeholder="Project type" value={projectForm.project_type} onChange={(e) => setProjectForm((p) => ({ ...p, project_type: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <select value={projectForm.operator_id} onChange={(e) => setProjectForm((p) => ({ ...p, operator_id: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
+          <input placeholder="Title" value={projectForm.title} onChange={(e) => setProjectForm((p) => ({ ...p, title: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input placeholder="Description" value={projectForm.description} onChange={(e) => setProjectForm((p) => ({ ...p, description: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input placeholder="Project type" value={projectForm.project_type} onChange={(e) => setProjectForm((p) => ({ ...p, project_type: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <select value={projectForm.operator_id} onChange={(e) => setProjectForm((p) => ({ ...p, operator_id: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
             <option value="">Operator (optional)</option>
             {operators.map((o) => <option key={o.id} value={String(o.id)}>{o.name}</option>)}
           </select>
-          <button onClick={createProject} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create</button>
+          <button onClick={createProject} className="ox-ghost-light h-9 px-5 text-[13px] font-medium">Create</button>
         </section>
 
-        <section className="rounded-xl p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+        <section className="rounded-sm p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Dispatch Coach</h2>
-          <select value={assignForm.project_id} onChange={(e) => setAssignForm((p) => ({ ...p, project_id: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
+          <select value={assignForm.project_id} onChange={(e) => setAssignForm((p) => ({ ...p, project_id: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
             <option value="">Project</option>
             {projects.map((p) => <option key={p.id} value={String(p.id)}>{p.title}</option>)}
           </select>
-          <select value={assignForm.coach_attribute_id} onChange={(e) => setAssignForm((p) => ({ ...p, coach_attribute_id: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
+          <select value={assignForm.coach_attribute_id} onChange={(e) => setAssignForm((p) => ({ ...p, coach_attribute_id: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
             <option value="">Placement-eligible coach</option>
             {eligibleCoaches.map((coach) => (
               <option key={coach.id} value={String(coach.coach_attributes?.id)}>
@@ -199,10 +199,10 @@ export default function AdminProjectDispatchPage() {
               </option>
             ))}
           </select>
-          <input placeholder="Dispatch notes" value={assignForm.notes} onChange={(e) => setAssignForm((p) => ({ ...p, notes: e.target.value }))} className="w-full h-9 rounded px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input placeholder="Dispatch notes" value={assignForm.notes} onChange={(e) => setAssignForm((p) => ({ ...p, notes: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <button onClick={assignCoach} className="ox-cta h-9 px-5 text-[13px] font-semibold">Dispatch</button>
           {eligibleCoaches.length === 0 && (
-            <p className="text-[12px]" style={{ color: "var(--ox-muted)" }}>
+            <p className="font-body text-[12px]" style={{ color: "var(--ox-muted)" }}>
               No placement-eligible coaches. Coaches need an active certificate and signed agreements.
             </p>
           )}
@@ -219,7 +219,7 @@ export default function AdminProjectDispatchPage() {
               Active projects
             </h2>
             <p className="font-body text-[13px] mt-1" style={{ color: "var(--ox-muted)" }}>
-              Live dispatch board — operators, status, and assigned coaches.
+              Live dispatch board â€” operators, status, and assigned coaches.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -278,15 +278,15 @@ export default function AdminProjectDispatchPage() {
                         </p>
                       </td>
                       <td className="px-5 py-4 align-top" style={{ color: "var(--ox-muted)" }}>
-                        {project.client_name || "—"}
+                        {project.client_name || "â€”"}
                       </td>
                       <td className="px-5 py-4 align-top" style={{ color: "var(--ox-muted)" }}>
                         {project.project_type || "General"}
                       </td>
                       <td className="px-5 py-4 align-top">
                         <span
-                          className="inline-block font-display text-[10px] tracking-[0.14em] uppercase px-2.5 py-1"
-                          style={{ color: tone.color, background: tone.bg }}
+                          className="inline-block font-display text-[10px] tracking-[0.14em] uppercase"
+                          style={{ color: tone.color, borderBottom: "1px solid rgba(150,118,43,0.55)" }}
                         >
                           {project.status || "active"}
                         </span>
@@ -302,8 +302,8 @@ export default function AdminProjectDispatchPage() {
                                 <div key={a.id} className="flex flex-wrap items-center gap-2">
                                   <span style={{ color: "var(--cream)" }}>{a.coach_name || `Coach #${a.coach_id}`}</span>
                                   <span
-                                    className="font-display text-[9px] tracking-[0.12em] uppercase px-2 py-0.5"
-                                    style={{ color: aTone.color, background: aTone.bg }}
+                                    className="font-display text-[9px] tracking-[0.12em] uppercase"
+                                    style={{ color: aTone.color, borderBottom: "1px solid rgba(150,118,43,0.55)" }}
                                   >
                                     {a.status}
                                   </span>
@@ -314,7 +314,7 @@ export default function AdminProjectDispatchPage() {
                         )}
                       </td>
                       <td className="px-5 py-4 align-top whitespace-nowrap" style={{ color: "var(--ox-muted)" }}>
-                        {project.created_at ? new Date(project.created_at).toLocaleDateString() : "—"}
+                        {project.created_at ? new Date(project.created_at).toLocaleDateString() : "â€”"}
                       </td>
                     </tr>
                   );

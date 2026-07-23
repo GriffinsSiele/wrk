@@ -108,18 +108,18 @@ export default function AdminPracticalsPage() {
         <h1 className="font-display text-2xl" style={{ color: "var(--ox-fg)", fontWeight: 500 }}>
           Practical Assessments
         </h1>
-        <p className="text-[14px] mt-1" style={{ color: "var(--ox-muted)" }}>
+        <p className="font-body text-[14px] mt-1" style={{ color: "var(--ox-muted)" }}>
           Dual-gate certification requires written exam pass + practical PASS before certificate issuance.
         </p>
       </div>
 
-      <div className="rounded-2xl p-5 space-y-4" style={{ background: "var(--ox-surface-strong)", border: "1px solid var(--ox-line)" }}>
+      <div className="rounded-sm p-5 space-y-4" style={{ background: "var(--ox-surface-strong)", border: "1px solid var(--ox-line)" }}>
         <h2 className="font-semibold text-[15px]" style={{ color: "var(--ox-fg)" }}>Record assessment</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <select
             value={form.user_id}
             onChange={(e) => setForm({ ...form, user_id: e.target.value })}
-            className="h-10 rounded-lg px-3 text-sm"
+            className="h-10 rounded-sm px-3 text-sm font-body"
             style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", color: "var(--ox-fg-dark)" }}
           >
             <option value="">Select user</option>
@@ -132,7 +132,7 @@ export default function AdminPracticalsPage() {
           <select
             value={form.certification_level}
             onChange={(e) => setForm({ ...form, certification_level: e.target.value })}
-            className="h-10 rounded-lg px-3 text-sm"
+            className="h-10 rounded-sm px-3 text-sm font-body"
             style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", color: "var(--ox-fg-dark)" }}
           >
             <option>Level 1</option>
@@ -142,7 +142,7 @@ export default function AdminPracticalsPage() {
           <select
             value={form.result}
             onChange={(e) => setForm({ ...form, result: e.target.value })}
-            className="h-10 rounded-lg px-3 text-sm"
+            className="h-10 rounded-sm px-3 text-sm font-body"
             style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", color: "var(--ox-fg-dark)" }}
           >
             <option value="PASS">PASS</option>
@@ -152,18 +152,18 @@ export default function AdminPracticalsPage() {
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             placeholder="Assessor notes"
-            className="h-10 rounded-lg px-3 text-sm"
+            className="h-10 rounded-sm px-3 text-sm font-body"
             style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", color: "var(--ox-fg-dark)" }}
           />
         </div>
 
         <div>
-          <p className="text-[12px] uppercase tracking-[0.16em] mb-3" style={{ color: "var(--ox-muted)" }}>
+          <p className="font-display text-[12px] uppercase tracking-[0.16em] mb-3" style={{ color: "var(--ochre)" }}>
             14-point checklist
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {Object.keys(checklist).map((key) => (
-              <label key={key} className="flex items-center gap-2 text-[13px]" style={{ color: "var(--ox-fg)" }}>
+              <label key={key} className="flex items-center gap-2 font-body text-[13px]" style={{ color: "var(--ox-fg)" }}>
                 <input
                   type="checkbox"
                   checked={(checklist as Record<string, boolean>)[key]}
@@ -178,22 +178,20 @@ export default function AdminPracticalsPage() {
         <button onClick={submitPractical} className="ox-cta h-10 px-6 text-[14px] font-semibold">
           Save practical result
         </button>
-        {message && <p className="text-sm" style={{ color: "var(--ox-muted)" }}>{message}</p>}
+        {message && <p className="font-body text-sm" style={{ color: message.toLowerCase().includes("fail") ? "var(--gold-bright)" : "var(--mint)" }}>{message}</p>}
       </div>
 
-      <div className="rounded-2xl overflow-hidden" style={{ background: "var(--ox-surface-strong)", border: "1px solid var(--ox-line)" }}>
+      <div className="rounded-sm overflow-hidden" style={{ background: "var(--ox-surface-strong)", border: "1px solid var(--ox-line)" }}>
         <div className="px-5 py-4" style={{ borderBottom: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold text-[15px]" style={{ color: "var(--ox-fg)" }}>Recent practicals</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-[13px]">
+          <table className="w-full text-left text-[13px] font-body">
             <thead>
-              <tr style={{ color: "var(--ox-muted)" }}>
-                <th className="px-5 py-3 font-medium">ID</th>
-                <th className="px-5 py-3 font-medium">Name</th>
-                <th className="px-5 py-3 font-medium">Level</th>
-                <th className="px-5 py-3 font-medium">Result</th>
-                <th className="px-5 py-3 font-medium">Assessed</th>
+              <tr>
+                {["ID", "Name", "Level", "Result", "Assessed"].map((h) => (
+                  <th key={h} className="px-5 py-3 font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)" }}>{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -202,15 +200,23 @@ export default function AdminPracticalsPage() {
                   <td className="px-5 py-3">{p.id}</td>
                   <td className="px-5 py-3">{userDisplayName(p.user_id)}</td>
                   <td className="px-5 py-3">{p.certification_level}</td>
-                  <td className="px-5 py-3" style={{ color: p.result === "PASS" ? "var(--ox-accent)" : "var(--ox-indigo)" }}>
-                    {p.result}
+                  <td className="px-5 py-3">
+                    <span
+                      className="font-display text-[11px] tracking-[0.14em] uppercase"
+                      style={{
+                        color: p.result === "PASS" ? "var(--mint)" : "var(--bronze)",
+                        borderBottom: "1px solid rgba(150,118,43,0.55)",
+                      }}
+                    >
+                      {p.result}
+                    </span>
                   </td>
                   <td className="px-5 py-3">{p.assessed_at ? new Date(p.assessed_at).toLocaleString() : "—"}</td>
                 </tr>
               ))}
               {practicals.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-8 text-center" style={{ color: "var(--ox-muted)" }}>
+                  <td colSpan={5} className="px-5 py-8 text-center font-body" style={{ color: "var(--ox-muted)" }}>
                     No practical assessments yet.
                   </td>
                 </tr>

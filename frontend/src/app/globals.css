@@ -1,5 +1,70 @@
 @import "tailwindcss";
 
+/* ── Page 05 self-hosted brand type ───────────────────── */
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/playfair-display-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/playfair-display-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/playfair-display-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/playfair-display-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "EB Garamond";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/eb-garamond-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "EB Garamond";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/eb-garamond-latin-400-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "EB Garamond";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/eb-garamond-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "EB Garamond";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/eb-garamond-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "EB Garamond";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/eb-garamond-latin-700-normal.woff2") format("woff2");
+}
+
 /* ── Olynixx Praxis v1.1 — page 08 tokens ─────────────── */
 :root {
   --ink: #0c0f12;
@@ -11,6 +76,10 @@
   --teal-deep: #0d3b3e;
   --teal: #1b7a6b;
   --mint: #2aa187;
+
+  /* Page 05 — self-hosted serif register */
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "EB Garamond", Georgia, "Times New Roman", serif;
 
   /* Legacy aliases → brand tokens (portals migrate gradually) */
   --background: var(--cream);
@@ -43,9 +112,12 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-body);
-  --font-serif: var(--font-display);
-  --font-outfit: var(--font-display);
+  /* Brand type — serif register only (page 05). No sans substitution. */
+  --font-sans: "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-outfit: "Playfair Display", Georgia, serif;
 }
 
 *,
@@ -61,21 +133,21 @@ html {
 body {
   background: var(--cream);
   color: var(--ink);
-  font-family: var(--font-body), Georgia, "Times New Roman", serif;
+  font-family: "EB Garamond", Georgia, "Times New Roman", serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
 .font-display {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
 }
 
 .font-body {
-  font-family: var(--font-body), Georgia, "Times New Roman", serif;
+  font-family: "EB Garamond", Georgia, "Times New Roman", serif;
 }
 
 .font-outfit {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
 }
 
 /* Portal shell: remaps --ox-* for dark teal (add class on learner/coach/admin layouts). */
@@ -87,17 +159,63 @@ body {
   --ox-muted: rgba(242, 237, 227, 0.62);
   --ox-muted-dark: rgba(242, 237, 227, 0.55);
   --ox-accent: var(--gold);
-  /* Legacy names kept; remapped to Praxis mint/teal for portal charts/UI. */
+  /* Charts / secondary UI — mint & teal, not gold blocks */
   --ox-blue: var(--mint);
   --ox-indigo: var(--teal);
-  --ox-card-border: rgba(150, 118, 43, 0.4);
-  --ox-card-bg: rgba(12, 15, 18, 0.28);
-  --ox-surface: rgba(12, 15, 18, 0.32);
-  --ox-surface-strong: rgba(12, 15, 18, 0.45);
-  --ox-input-bg: rgba(12, 15, 18, 0.4);
-  --ox-line: rgba(150, 118, 43, 0.38);
+  --ox-card-border: rgba(150, 118, 43, 0.35);
+  --ox-card-bg: rgba(12, 15, 18, 0.22);
+  --ox-surface: rgba(12, 15, 18, 0.22);
+  --ox-surface-strong: rgba(12, 15, 18, 0.28);
+  --ox-input-bg: rgba(12, 15, 18, 0.32);
+  --ox-line: rgba(150, 118, 43, 0.35);
   background: var(--teal-deep);
   color: var(--cream);
+  font-family: "EB Garamond", Georgia, "Times New Roman", serif;
+}
+
+/* Portal composition — flat panels, bronze structure, rationed gold */
+.ox-portal .ox-card {
+  border-radius: 2px;
+  background: var(--ox-surface);
+  border-color: var(--ox-line);
+  box-shadow: none;
+}
+.ox-portal .ox-kpi-float:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--bronze);
+}
+.ox-portal .rounded-2xl,
+.ox-portal .rounded-xl,
+.ox-portal .rounded-lg {
+  border-radius: 2px !important;
+}
+.ox-portal .rounded-full:not(.ox-keep-round) {
+  border-radius: 2px !important;
+}
+.ox-portal input,
+.ox-portal select,
+.ox-portal textarea,
+.ox-portal button {
+  border-radius: 2px;
+}
+.ox-status {
+  display: inline-block;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ochre);
+  border-bottom: 1px solid rgba(150, 118, 43, 0.45);
+  padding-bottom: 2px;
+}
+.ox-status-mint {
+  color: var(--mint);
+  border-bottom-color: rgba(42, 161, 135, 0.45);
+}
+.ox-status-muted {
+  color: rgba(242, 237, 227, 0.55);
+  border-bottom-color: rgba(150, 118, 43, 0.28);
 }
 
 /* ── Scroll reveal (premium, no glass) ────────────────── */
@@ -123,6 +241,19 @@ body {
   transition-delay: 0.4s;
 }
 
+/* Soft page enter — clears prior-route paint flash */
+.ox-page-enter {
+  animation: ox-page-enter 180ms ease-out;
+}
+@keyframes ox-page-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* ── Surfaces — flat only ─────────────────────────────── */
 .ox-card {
   border: 1px solid var(--ox-line);
@@ -143,7 +274,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-display), Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.28em;
@@ -154,7 +285,10 @@ body {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--gold);
+  background: var(--bronze);
+}
+.ox-portal .ox-dot {
+  background: var(--ochre);
 }
 
 .ox-hairline {
@@ -165,7 +299,7 @@ body {
 .ox-cta {
   background: var(--gold);
   color: var(--ink);
-  font-family: var(--font-display), Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-weight: 500;
   letter-spacing: 0.06em;
   border-radius: 2px;
@@ -194,7 +328,7 @@ body {
   border: 1px solid var(--bronze);
   background: transparent;
   color: var(--ink);
-  font-family: var(--font-display), Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-weight: 500;
   letter-spacing: 0.04em;
   border-radius: 2px;
@@ -209,13 +343,14 @@ body {
 .ox-portal .ox-ghost,
 .ox-portal .ox-ghost-light {
   color: var(--cream);
-  border-color: rgba(150, 118, 43, 0.55);
+  border-color: rgba(150, 118, 43, 0.45);
+  background: transparent;
 }
 .ox-portal .ox-ghost:hover,
 .ox-portal .ox-ghost-light:hover {
   color: var(--cream);
-  border-color: var(--gold);
-  background: rgba(217, 172, 74, 0.1);
+  border-color: var(--bronze);
+  background: rgba(12, 15, 18, 0.25);
 }
 
 a {
@@ -323,7 +458,8 @@ a:focus-visible {
   .ox-area-fade,
   .ox-count-in,
   .ox-progress-fill,
-  .ox-reveal {
+  .ox-reveal,
+  .ox-page-enter {
     animation: none !important;
     transition: none !important;
     transform: none !important;

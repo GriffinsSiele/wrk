@@ -13,8 +13,50 @@ function buildTargetUrl(pathSegments: string[], searchParams: URLSearchParams): 
   return `${API_BASE}/api/${path}${qs ? `?${qs}` : ""}`;
 }
 
+/**
+ * FastAPI list routes are often registered as `/resource/` and redirect `/resource` → `/resource/`.
+ * Automatic redirect following strips Authorization, which becomes a 401.
+ * Resolve that by appending a trailing slash for bare collection roots, and by
+ * manually replaying slash redirects with the same auth headers.
+ */
+function withCollectionSlash(url: string): string {
+  try {
+    const u = new URL(url);
+    if (!u.pathname.endsWith("/")) {
+      const segments = u.pathname.split("/").filter(Boolean);
+      // /api/coaches, /api/projects, /api/courses, /api/leads (single resource under /api)
+      if (segments.length === 2 && segments[0] === "api") {
+        u.pathname = `${u.pathname}/`;
+      }
+    }
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+async function fetchUpstream(
+  url: string,
+  init: RequestInit,
+  headers: Headers,
+): Promise<Response> {
+  let resp = await fetch(url, { ...init, headers, redirect: "manual", cache: "no-store" });
+  if ([301, 302, 307, 308].includes(resp.status)) {
+    const location = resp.headers.get("location");
+    if (location) {
+      const nextUrl = location.startsWith("http")
+        ? location
+        : new URL(location, url).toString();
+      resp = await fetch(nextUrl, { ...init, headers, redirect: "manual", cache: "no-store" });
+    }
+  }
+  return resp;
+}
+
 async function forward(request: NextRequest, pathSegments: string[]) {
-  const targetUrl = buildTargetUrl(pathSegments, request.nextUrl.searchParams);
+  const targetUrl = withCollectionSlash(
+    buildTargetUrl(pathSegments, request.nextUrl.searchParams),
+  );
   // Lift httpOnly cookie → Bearer for the backend OAuth2 dependency.
   const token = (await cookies()).get("token")?.value;
 
@@ -25,13 +67,9 @@ async function forward(request: NextRequest, pathSegments: string[]) {
 
   const method = request.method.toUpperCase();
   const hasBody = !["GET", "HEAD"].includes(method);
+  const body = hasBody ? await request.text() : undefined;
 
-  const resp = await fetch(targetUrl, {
-    method,
-    headers,
-    body: hasBody ? await request.text() : undefined,
-    cache: "no-store",
-  });
+  const resp = await fetchUpstream(targetUrl, { method, body }, headers);
 
   const text = await resp.text();
   let payload: unknown = text;

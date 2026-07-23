@@ -1,23 +1,7 @@
 import type { Metadata } from "next";
-import { Playfair_Display, EB_Garamond } from "next/font/google";
 import "./globals.css";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, getSiteUrl } from "@/lib/seo";
 import { OrganizationJsonLd } from "@/components/seo/OrganizationJsonLd";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-});
-
-const garamond = EB_Garamond({
-  subsets: ["latin"],
-  variable: "--font-body",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
 
 const siteUrl = getSiteUrl();
 
@@ -41,8 +25,9 @@ export const metadata: Metadata = {
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
   icons: {
-    icon: "/brand/olynixx-favicon.svg",
-    apple: "/brand/olynixx-appicon.svg",
+    icon: [{ url: "/brand/olynixx-favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/brand/olynixx-favicon.svg",
+    apple: [{ url: "/brand/olynixx-appicon.svg", type: "image/svg+xml" }],
   },
   openGraph: {
     type: "website",
@@ -74,7 +59,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${garamond.variable}`}>
+    <html lang="en">
       <body
         className="min-h-screen flex flex-col overflow-x-hidden font-body"
         style={{ background: "var(--cream)", color: "var(--ink)" }}

@@ -245,7 +245,7 @@ export default function AdminContentManagementPage() {
             className="w-full h-9 px-3 text-sm font-body"
             style={fieldStyle}
           />
-          <button onClick={createModule} className="ox-cta h-9 px-5 text-[13px] font-semibold">
+          <button onClick={createModule} className="ox-ghost-light h-9 px-5 text-[13px] font-medium">
             Create module
           </button>
         </section>
@@ -337,7 +337,7 @@ export default function AdminContentManagementPage() {
                             <div className="font-display" style={{ color: "var(--cream)", fontWeight: 500 }}>
                               {course.title}
                             </div>
-                            <p className="mt-1 text-[13px] leading-relaxed max-w-xl" style={{ color: "var(--ox-muted)" }}>
+                            <p className="mt-1 font-body text-[13px] leading-relaxed max-w-xl" style={{ color: "var(--ox-muted)" }}>
                               {course.description || "No description"}
                             </p>
                             <p className="mt-1 text-[11px] font-display tracking-[0.12em]" style={{ color: "rgba(242,237,227,0.35)" }}>
@@ -348,12 +348,10 @@ export default function AdminContentManagementPage() {
                       </td>
                       <td className="px-5 py-4 align-top">
                         <span
-                          className="inline-block font-display text-[10px] tracking-[0.14em] uppercase px-2.5 py-1"
+                          className="inline-block font-display text-[10px] tracking-[0.14em] uppercase"
                           style={{
                             color: (isEditing ? editForm.is_published : course.is_published) ? "var(--mint)" : "var(--ochre)",
-                            background: (isEditing ? editForm.is_published : course.is_published)
-                              ? "rgba(42,161,135,0.14)"
-                              : "rgba(201,150,46,0.14)",
+                            borderBottom: "1px solid rgba(150,118,43,0.55)",
                           }}
                         >
                           {(isEditing ? editForm.is_published : course.is_published) ? "Published" : "Draft"}

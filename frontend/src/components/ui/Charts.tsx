@@ -16,14 +16,14 @@ export function DonutChart({
   thickness = 14,
   label,
   sublabel = "score",
-  colors = ["var(--gold)", "var(--mint)", "var(--teal)"],
+  colors = ["var(--mint)", "var(--teal)", "var(--bronze)"],
   className = "",
 }: DonutProps) {
   const clamped = Math.max(0, Math.min(100, value));
   const r = (size - thickness) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (clamped / 100) * c;
-  const stroke = colors[0] || "var(--gold)";
+  const stroke = colors[0] || "var(--mint)";
 
   return (
     <div className={`relative inline-grid place-items-center ${className}`} style={{ width: size, height: size }}>
@@ -221,19 +221,20 @@ export function AnimatedBarChart({
     <div className="grid items-end gap-2" style={{ gridTemplateColumns: `repeat(${data.length}, minmax(0, 1fr))`, height }}>
       {data.map((item, idx) => (
         <div key={item.label} className="flex flex-col items-center justify-end gap-2 h-full">
-          <span className="text-[10px] font-medium ox-count-in" style={{ color: "var(--ox-muted)", animationDelay: `${idx * 70}ms` }}>
+          <span className="font-body text-[10px] ox-count-in" style={{ color: "var(--ox-muted)", animationDelay: `${idx * 70}ms` }}>
             {item.value}
           </span>
           <div
-            className="ox-bar w-full rounded-t-md"
+            className="ox-bar w-full"
             style={{
               height: `${item.value <= 0 ? 0 : Math.max(4, (item.value / max) * (height - 36))}px`,
               animationDelay: `${idx * 80}ms`,
               background: "var(--mint)",
               opacity: 0.85,
+              borderRadius: "1px 1px 0 0",
             }}
           />
-          <span className="text-[10px] text-center leading-tight" style={{ color: "var(--ox-muted)" }}>
+          <span className="font-body text-[10px] text-center leading-tight" style={{ color: "var(--ox-muted)" }}>
             {item.label}
           </span>
         </div>
@@ -244,7 +245,7 @@ export function AnimatedBarChart({
 
 export function Sparkline({
   values,
-  color = "var(--ox-accent)",
+  color = "var(--mint)",
 }: {
   values: number[];
   color?: string;

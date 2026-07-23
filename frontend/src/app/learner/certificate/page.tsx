@@ -206,10 +206,10 @@ export default function CertificatePage() {
                       : ""}
                   </span>
                   <span
-                    className="font-display text-[11px] tracking-[0.12em] uppercase px-2 py-0.5"
+                    className="font-display text-[11px] tracking-[0.12em] uppercase"
                     style={{
                       color: passed ? "var(--mint)" : "var(--bronze)",
-                      background: passed ? "rgba(42,161,135,0.14)" : "rgba(180,80,60,0.14)",
+                      borderBottom: "1px solid rgba(150,118,43,0.55)",
                     }}
                   >
                     {p.result}
@@ -268,10 +268,10 @@ export default function CertificatePage() {
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div>
                       <span
-                        className="inline-block font-display text-[11px] tracking-[0.16em] uppercase mb-2 px-2 py-0.5"
+                        className="inline-block font-display text-[11px] tracking-[0.16em] uppercase mb-2"
                         style={{
                           color: active ? "var(--mint)" : "var(--bronze)",
-                          background: active ? "rgba(42,161,135,0.14)" : "rgba(180,80,60,0.14)",
+                          borderBottom: "1px solid rgba(150,118,43,0.55)",
                         }}
                       >
                         {statusLabel(cert.status)}
@@ -325,7 +325,7 @@ export default function CertificatePage() {
                         href={cert.pdf_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="ox-cta h-9 px-4 text-[12px] font-semibold inline-flex items-center"
+                        className="ox-ghost-light h-9 px-4 text-[12px] font-medium inline-flex items-center"
                       >
                         Download PDF
                       </a>

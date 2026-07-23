@@ -131,7 +131,7 @@ export default function CourseDetailPage() {
       <main className="flex-1 flex max-w-[1400px] w-full mx-auto">
         {/* Sidebar toggle for mobile */}
         <button
-          className="md:hidden fixed bottom-6 left-6 z-40 w-12 h-12 rounded-full flex items-center justify-center"
+          className="md:hidden fixed bottom-6 left-6 z-40 w-12 h-12 rounded-sm flex items-center justify-center"
           style={{
             background: "var(--gold)",
           }}
@@ -156,18 +156,18 @@ export default function CourseDetailPage() {
             <h2 className="font-display text-[15px] mb-1" style={{ color: "var(--ox-fg)", fontWeight: 500 }}>
               {course?.title || "Course"}
             </h2>
-            <div className="flex items-center gap-2 text-[12px] mb-4" style={{ color: "var(--ox-muted)" }}>
+            <div className="flex items-center gap-2 font-body text-[12px] mb-4" style={{ color: "var(--ox-muted)" }}>
               <span>{course?.completed_lessons || 0} / {course?.total_lessons || 0} lessons</span>
-              <span className="font-semibold" style={{ color: "var(--ox-accent)" }}>
+              <span className="font-semibold" style={{ color: "var(--ochre)" }}>
                 {progressPercent}%
               </span>
             </div>
-            <div className="w-full rounded-full h-1.5 mb-5" style={{ background: "rgba(26,26,26,0.08)" }}>
+            <div className="w-full rounded-sm h-1.5 mb-5" style={{ background: "rgba(150,118,43,0.25)" }}>
               <div
-                className="h-1.5 rounded-full transition-all duration-500"
+                className="h-1.5 rounded-sm transition-all duration-500"
                 style={{
                   width: `${progressPercent}%`,
-                  background: "var(--gold)",
+                  background: "var(--mint)",
                 }}
               />
             </div>
@@ -266,8 +266,8 @@ export default function CourseDetailPage() {
               <ScrollReveal>
                 <div className="mb-6">
                   <span
-                    className="text-[11px] uppercase tracking-[0.2em] font-semibold"
-                    style={{ color: "var(--ox-accent)" }}
+                    className="font-display text-[11px] uppercase tracking-[0.2em]"
+                    style={{ color: "var(--ochre)" }}
                   >
                     {course?.level || "Level 1"}
                   </span>
@@ -292,11 +292,11 @@ export default function CourseDetailPage() {
 
               <ScrollReveal delay={140}>
                 <div
-                  className="ox-card rounded-2xl p-6 mb-6"
+                  className="ox-card rounded-sm p-6 mb-6"
                   style={{ background: "rgba(46,60,142,0.22)" }}
                 >
                   <div
-                    className="prose prose-sm max-w-none text-[14px] leading-relaxed"
+                    className="prose prose-sm max-w-none font-body text-[14px] leading-relaxed"
                     style={{ color: "var(--ox-fg)" }}
                     dangerouslySetInnerHTML={{ __html: activeLesson.content || "<p>Lesson content will appear here.</p>" }}
                   />
@@ -309,13 +309,12 @@ export default function CourseDetailPage() {
                     onClick={handleMarkComplete}
                     disabled={activeLesson.completed || markingComplete}
                     className={`h-11 px-7 text-[13px] font-semibold inline-flex items-center gap-2 transition-all ${
-                      activeLesson.completed ? "" : "ox-cta"
+                      activeLesson.completed ? "ox-ghost-light" : "ox-cta"
                     }`}
                     style={
                       activeLesson.completed
                         ? {
-                            background: "rgba(217,172,74,0.08)",
-                            color: "var(--ox-accent)",
+                            color: "var(--mint)",
                             cursor: "default",
                           }
                         : undefined
@@ -348,7 +347,7 @@ export default function CourseDetailPage() {
                     return (
                       <button
                         onClick={() => setActiveLesson(nextLesson)}
-                        className="ox-ghost-light h-11 rounded-full px-6 text-[13px] font-medium inline-flex items-center gap-2"
+                        className="ox-ghost-light h-11 px-6 text-[13px] font-medium inline-flex items-center gap-2"
                       >
                         Next lesson
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -364,7 +363,7 @@ export default function CourseDetailPage() {
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
                 <div
-                  className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+                  className="w-16 h-16 rounded-sm mx-auto mb-4 flex items-center justify-center"
                   style={{ background: "rgba(217,172,74,0.08)" }}
                 >
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -372,10 +371,10 @@ export default function CourseDetailPage() {
                     <circle cx="12" cy="12" r="10" stroke="var(--ox-accent)" strokeWidth="2" fill="none" />
                   </svg>
                 </div>
-                <p className="text-[14px] font-medium" style={{ color: "var(--ox-fg)" }}>
+                <p className="font-body text-[14px] font-medium" style={{ color: "var(--ox-fg)" }}>
                   Select a lesson to begin
                 </p>
-                <p className="text-[12px] mt-1" style={{ color: "var(--ox-muted)" }}>
+                <p className="font-body text-[12px] mt-1" style={{ color: "var(--ox-muted)" }}>
                   Choose a lesson from the sidebar to start learning
                 </p>
               </div>

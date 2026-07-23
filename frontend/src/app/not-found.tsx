@@ -8,7 +8,7 @@ export default function NotFound() {
       style={{ background: "var(--cream)", color: "var(--ink)" }}
     >
       <div className="text-center max-w-md">
-        <BrandMark variant="transparent" size={56} />
+        <BrandMark variant="cream" size={56} />
         <p
           className="font-display mt-8 text-[11px] tracking-[0.28em] uppercase"
           style={{ color: "var(--ochre)" }}
@@ -38,7 +38,7 @@ export default function NotFound() {
             href="/certification"
             className="inline-flex items-center h-11 px-7 text-[13px] tracking-[0.1em] uppercase font-display"
             style={{
-              border: "1px solid rgba(150,118,43,0.55)",
+              border: "1px solid rgba(12,15,18,0.35)",
               color: "var(--ink)",
               borderRadius: 2,
             }}

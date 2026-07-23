@@ -30,7 +30,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         className={`fixed top-16 bottom-0 left-0 z-40 w-60 md:static md:top-0 md:bottom-auto md:z-auto flex flex-col flex-shrink-0 transition-transform duration-200 ${
           mobileNavOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
-        style={{ background: "rgba(12,15,18,0.35)", borderRight: "1px solid rgba(150,118,43,0.35)" }}
+        style={{ background: "rgba(12,15,18,0.28)", borderRight: "1px solid rgba(150,118,43,0.35)" }}
       >
         <div className="h-16 flex items-center px-5" style={{ borderBottom: "1px solid rgba(150,118,43,0.35)" }}>
           <div className="flex items-center gap-2.5">
@@ -57,8 +57,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-display transition-colors"
                 style={{
                   color: active ? "var(--cream)" : "rgba(242,237,227,0.55)",
-                  borderLeft: active ? "2px solid var(--gold)" : "2px solid transparent",
-                  background: active ? "rgba(217,172,74,0.08)" : "transparent",
+                  borderLeft: active ? "2px solid var(--bronze)" : "2px solid transparent",
+                  background: "transparent",
                 }}
               >
                 <item.icon size={15} />
@@ -100,7 +100,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               className="md:hidden w-9 h-9 grid place-items-center"
-              style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--cream)", borderRadius: 2 }}
+              style={{ border: "1px solid rgba(150,118,43,0.4)", color: "var(--cream)", borderRadius: 2 }}
               onClick={() => setMobileNavOpen((prev) => !prev)}
               aria-label={mobileNavOpen ? "Close admin menu" : "Open admin menu"}
               aria-expanded={mobileNavOpen}
@@ -113,7 +113,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
           <div
             className="w-9 h-9 grid place-items-center text-sm font-display"
-            style={{ border: "1px solid rgba(150,118,43,0.5)", color: "var(--gold)", borderRadius: 2 }}
+            style={{ border: "1px solid rgba(150,118,43,0.4)", color: "var(--ochre)", borderRadius: 2 }}
           >
             A
           </div>

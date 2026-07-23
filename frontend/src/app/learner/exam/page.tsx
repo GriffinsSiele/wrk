@@ -55,36 +55,36 @@ export default function LearnerExamPage() {
   return (
     <main className="max-w-5xl mx-auto px-4 md:px-6 py-6">
         <h1 className="font-display text-3xl mb-2" style={{ fontWeight: 500 }}>Online Written Exam</h1>
-        <p className="text-[14px] mb-6" style={{ color: "var(--ox-muted)" }}>
+        <p className="font-body text-[14px] mb-6" style={{ color: "var(--ox-muted)" }}>
           Book and complete the supervised online written exam. A separate practical assessment PASS is also required before your certificate is issued.
         </p>
 
-        {status === "loading" && <p>Loading exam sessions...</p>}
-        {status === "error" && <p>Unable to load exam sessions.</p>}
+        {status === "loading" && <p className="font-body" style={{ color: "var(--ox-muted)" }}>Loading exam sessions...</p>}
+        {status === "error" && <p className="font-body" style={{ color: "var(--gold-bright)" }}>Unable to load exam sessions.</p>}
 
         {message && (
-          <div className="rounded-xl p-4 mb-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+          <div className="rounded-sm p-4 mb-4 font-body text-[14px]" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)", color: "var(--mint)" }}>
             {message}
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sessions.map((session) => (
-            <div key={session.id} className="rounded-xl p-5" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+          {sessions.map((session, idx) => (
+            <div key={session.id} className="rounded-sm p-5" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
               <h2 className="font-semibold text-lg">{session.title}</h2>
-              <p className="text-[13px]" style={{ color: "var(--ox-muted)" }}>
+              <p className="font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
                 Date: {new Date(session.date).toLocaleString()}
               </p>
-              <p className="text-[13px]" style={{ color: "var(--ox-muted)" }}>
+              <p className="font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
                 Mode: {session.location || "Online"}
               </p>
-              <p className="text-[13px] mb-3" style={{ color: "var(--ox-muted)" }}>
+              <p className="font-body text-[13px] mb-3" style={{ color: "var(--ox-muted)" }}>
                 Capacity: {session.capacity}
               </p>
               <button
                 onClick={() => bookSession(session.id)}
                 disabled={status === "booking"}
-                className="ox-cta h-9 px-5 text-[13px] font-semibold"
+                className={`${idx === 0 ? "ox-cta" : "ox-ghost-light"} h-9 px-5 text-[13px] font-semibold`}
               >
                 Register for Session
               </button>

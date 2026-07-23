@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+/** TEMP: set BYPASS_PORTAL_AUTH=true to open portals without login. Never enable in production. */
+const BYPASS_PORTAL_AUTH = process.env.BYPASS_PORTAL_AUTH === 'true'
+
 export function middleware(request: NextRequest) {
+  if (BYPASS_PORTAL_AUTH) {
+    return NextResponse.next()
+  }
+
   const token = request.cookies.get('token')?.value;
   const path = request.nextUrl.pathname;
 

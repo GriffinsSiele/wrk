@@ -82,22 +82,22 @@ export default function AdminUsersPage() {
   return (
     <div className="p-6 space-y-5">
       <h1 className="font-display text-3xl" style={{ fontWeight: 500 }}>User Management</h1>
-      <p className="text-[14px]" style={{ color: "var(--ox-muted)" }}>
+      <p className="font-body text-[14px]" style={{ color: "var(--ox-muted)" }}>
         Manage roles and status. Soft-delete anonymises identity while preserving audit history.
       </p>
-      {message && <p className="text-sm" style={{ color: "var(--ox-muted)" }}>{message}</p>}
+      {message && <p className="font-body text-sm" style={{ color: message.toLowerCase().includes("fail") ? "var(--gold-bright)" : "var(--mint)" }}>{message}</p>}
       {loading ? (
-        <p>Loading users...</p>
+        <p className="font-body" style={{ color: "var(--ox-muted)" }}>Loading users...</p>
       ) : (
-        <div className="rounded-2xl overflow-x-auto" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-surface)" }}>
-          <table className="w-full text-sm">
+        <div className="rounded-sm overflow-x-auto" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-surface)" }}>
+          <table className="w-full text-sm font-body">
             <thead style={{ background: "rgba(217,172,74,0.1)" }}>
               <tr>
-                <th className="text-left p-3">Name</th>
-                <th className="text-left p-3">Email</th>
-                <th className="text-left p-3">Role</th>
-                <th className="text-left p-3">Status</th>
-                <th className="text-left p-3">Actions</th>
+                <th className="text-left p-3 font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)" }}>Name</th>
+                <th className="text-left p-3 font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)" }}>Email</th>
+                <th className="text-left p-3 font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)" }}>Role</th>
+                <th className="text-left p-3 font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)" }}>Status</th>
+                <th className="text-left p-3 font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -109,7 +109,7 @@ export default function AdminUsersPage() {
                     <select
                       value={user.role}
                       onChange={(e) => updateRole(user.id, e.target.value)}
-                      className="h-9 rounded px-2"
+                      className="h-9 px-2 rounded-sm"
                       style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", color: "var(--ox-fg-dark)" }}
                     >
                       <option value="learner">learner</option>
@@ -117,34 +117,38 @@ export default function AdminUsersPage() {
                       <option value="admin">admin</option>
                     </select>
                   </td>
-                  <td className="p-3">{user.is_active ? "Active" : "Inactive"}</td>
+                  <td className="p-3">
+                    <span
+                      className="font-display text-[11px] tracking-[0.14em] uppercase"
+                      style={{
+                        color: user.is_active ? "var(--mint)" : "var(--ochre)",
+                        borderBottom: "1px solid rgba(150,118,43,0.55)",
+                      }}
+                    >
+                      {user.is_active ? "Active" : "Inactive"}
+                    </span>
+                  </td>
                   <td className="p-3">
                     <div className="flex flex-wrap gap-2">
                       {user.is_active ? (
                         <button
                           onClick={() => deactivate(user.id)}
-                          className="px-3 h-9 rounded"
-                          style={{ border: "1px solid rgba(150,118,43,0.4)" }}
+                          className="ox-ghost-light px-3 h-9 text-[12px] font-display"
                         >
                           Deactivate
                         </button>
                       ) : (
                         <button
                           onClick={() => activate(user.id)}
-                          className="px-3 h-9 rounded font-medium"
-                          style={{
-                            border: "1px solid rgba(217,172,74,0.35)",
-                            background: "rgba(217,172,74,0.08)",
-                            color: "var(--ox-accent)",
-                          }}
+                          className="ox-cta px-3 h-9 text-[12px] font-semibold"
                         >
                           Activate
                         </button>
                       )}
                       <button
                         onClick={() => softDelete(user.id)}
-                        className="px-3 h-9 rounded"
-                        style={{ border: "1px solid rgba(46,60,142,0.45)", color: "var(--ox-indigo)" }}
+                        className="px-3 h-9 text-[12px] font-display"
+                        style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--cream)", borderRadius: 2 }}
                       >
                         Soft-delete
                       </button>

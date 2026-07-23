@@ -66,7 +66,7 @@ function HeroContent() {
         <Link
           href="/work-with-us"
           className="inline-flex items-center h-12 px-8 text-[13px] tracking-[0.1em] uppercase font-display"
-          style={{ border: "1px solid rgba(150,118,43,0.65)", color: "var(--cream)", borderRadius: 2 }}
+          style={{ border: "1px solid rgba(242,237,227,0.45)", color: "var(--cream)", borderRadius: 2 }}
         >
           Join the pool
         </Link>
@@ -98,7 +98,7 @@ function ReadinessPanel() {
           <span className="font-display text-[11px] tracking-[0.2em] uppercase" style={{ color: "var(--ochre)" }}>
             Readiness
           </span>
-          <span className="font-body text-[13px]" style={{ color: "var(--gold)" }}>
+          <span className="font-body text-[13px]" style={{ color: "var(--cream)" }}>
             84
           </span>
         </div>
@@ -110,7 +110,7 @@ function ReadinessPanel() {
                 className="flex-1 ox-bar"
                 style={{
                   height: `${h}%`,
-                  background: i === 5 ? "var(--gold)" : "var(--mint)",
+                  background: "var(--mint)",
                   opacity: i === 5 ? 1 : 0.55,
                   animationDelay: `${i * 60}ms`,
                 }}
@@ -260,14 +260,14 @@ export default function Home() {
                 <div
                   className="p-5 h-full"
                   style={{
-                    border: "1px solid rgba(150,118,43,0.4)",
-                    background: i === 4 ? "rgba(217,172,74,0.08)" : "transparent",
+                    border: "1px solid rgba(150,118,43,0.35)",
+                    background: "transparent",
                   }}
                 >
                   <div className="font-display text-[11px] tracking-[0.2em] mb-3" style={{ color: "var(--ochre)" }}>
                     {step.id}
                   </div>
-                  <p className="font-display text-[1.05rem]" style={{ color: i === 4 ? "var(--gold)" : "var(--cream)" }}>
+                  <p className="font-display text-[1.05rem]" style={{ color: "var(--cream)" }}>
                     {step.title}
                   </p>
                   <p className="font-body text-[13px] mt-2" style={{ color: "rgba(242,237,227,0.5)" }}>
@@ -347,7 +347,7 @@ export default function Home() {
               <Link
                 href="/organisations"
                 className="inline-flex items-center h-12 px-8 text-[13px] tracking-[0.1em] uppercase font-display"
-                style={{ border: "1px solid rgba(150,118,43,0.65)", color: "var(--cream)", borderRadius: 2 }}
+                style={{ border: "1px solid rgba(242,237,227,0.45)", color: "var(--cream)", borderRadius: 2 }}
               >
                 For organisations →
               </Link>

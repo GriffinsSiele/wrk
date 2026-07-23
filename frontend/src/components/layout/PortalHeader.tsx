@@ -20,10 +20,8 @@ const PORTAL_ROOTS = new Set(["/learner", "/coach", "/admin"]);
 
 function isActivePath(pathname: string, href: string) {
   if (pathname === href) return true;
-  // Portal roots must not stay "active" for every nested route.
   if (PORTAL_ROOTS.has(href)) return false;
   if (href !== "/" && pathname.startsWith(`${href}/`)) return true;
-  // Keep Courses highlighted under /learner/courses/[id].
   if (href.includes("/courses") && pathname.startsWith("/learner/courses")) return true;
   return false;
 }
@@ -51,7 +49,7 @@ export function PortalHeader({ portalLabel, items }: PortalHeaderProps) {
             </div>
             {activeItem && (
               <div
-                className="text-[10px] font-display tracking-[0.14em] uppercase truncate md:hidden"
+                className="font-display text-[10px] tracking-[0.14em] uppercase truncate md:hidden"
                 style={{ color: "var(--ochre)" }}
               >
                 {activeItem.label}
@@ -73,7 +71,7 @@ export function PortalHeader({ portalLabel, items }: PortalHeaderProps) {
                 className="relative px-3.5 py-2 text-[13px] font-display whitespace-nowrap transition-colors"
                 style={{
                   color: active ? "var(--cream)" : "rgba(242,237,227,0.55)",
-                  borderBottom: active ? "1px solid var(--gold)" : "1px solid transparent",
+                  borderBottom: active ? "1px solid var(--bronze)" : "1px solid transparent",
                 }}
               >
                 {item.label}
@@ -87,7 +85,11 @@ export function PortalHeader({ portalLabel, items }: PortalHeaderProps) {
             <button
               type="submit"
               className="h-9 px-3.5 text-[12px] font-display tracking-[0.08em] uppercase transition-colors"
-              style={{ color: "rgba(242,237,227,0.55)", border: "1px solid rgba(150,118,43,0.45)", borderRadius: 2 }}
+              style={{
+                color: "rgba(242,237,227,0.55)",
+                border: "1px solid rgba(150,118,43,0.4)",
+                borderRadius: 2,
+              }}
             >
               Sign out
             </button>
@@ -95,7 +97,7 @@ export function PortalHeader({ portalLabel, items }: PortalHeaderProps) {
           <button
             type="button"
             className="md:hidden w-9 h-9 grid place-items-center"
-            style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--cream)", borderRadius: 2 }}
+            style={{ border: "1px solid rgba(150,118,43,0.4)", color: "var(--cream)", borderRadius: 2 }}
             onClick={() => setMobileOpen((prev) => !prev)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
@@ -108,7 +110,7 @@ export function PortalHeader({ portalLabel, items }: PortalHeaderProps) {
       {mobileOpen && (
         <div
           className="md:hidden border-t px-4 py-3 space-y-1"
-          style={{ background: "var(--teal-deep)", borderColor: "rgba(150,118,43,0.4)" }}
+          style={{ background: "var(--teal-deep)", borderColor: "rgba(150,118,43,0.35)" }}
         >
           {items.map((item) => {
             const active = isActivePath(pathname, item.href);
@@ -120,7 +122,7 @@ export function PortalHeader({ portalLabel, items }: PortalHeaderProps) {
                 className="block px-3 py-2.5 text-[13px] font-display"
                 style={{
                   color: active ? "var(--cream)" : "rgba(242,237,227,0.7)",
-                  borderLeft: active ? "2px solid var(--gold)" : "2px solid transparent",
+                  borderLeft: active ? "2px solid var(--bronze)" : "2px solid transparent",
                 }}
               >
                 {item.label}

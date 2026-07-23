@@ -16,7 +16,7 @@ import {
 const VALUES = [
   {
     title: "Evidence over noise",
-    body: "Programmes are built from applied practice—not content volume. Every module should survive contact with a real athlete, session, or clinic floor.",
+    body: "Programmes are built from applied practice—not content volume. Every module should survive contact with a real athlete or live performance session.",
   },
   {
     title: "Dual-gate integrity",
@@ -47,12 +47,10 @@ const AUDIENCES = [
   },
 ];
 
-const DISCIPLINE_MIX = [
-  { label: "Strength & conditioning", value: 28, color: "var(--ox-accent)" },
-  { label: "Rehab & return-to-play", value: 22, color: "var(--mint)" },
-  { label: "Performance analysis", value: 18, color: "var(--ox-gold)" },
-  { label: "Sport psychology", value: 16, color: "#c4a35a" },
-  { label: "Nutrition & recovery", value: 16, color: "#7a9e8e" },
+const PILLAR_MIX = [
+  { label: "Human Readiness", value: 34, color: "var(--teal)" },
+  { label: "Recovery", value: 33, color: "var(--mint)" },
+  { label: "Performance Intelligence", value: 33, color: "var(--bronze)" },
 ];
 
 const PATHWAY_BARS = [
@@ -85,11 +83,11 @@ export default function AboutPage() {
         />
         <div className="relative mx-auto max-w-3xl px-4 sm:px-6 pt-28 sm:pt-32 pb-10 sm:pb-12 text-center">
           <div className="flex justify-center">
-            <BrandMark variant="transparent" size={64} priority />
+            <BrandMark variant="cream" size={64} priority />
           </div>
           <p
-            className="mt-5 text-[11px] font-semibold tracking-[0.22em] uppercase"
-            style={{ color: "var(--ox-gold)" }}
+            className="mt-5 font-display text-[11px] tracking-[0.22em] uppercase"
+            style={{ color: "var(--ochre)" }}
           >
             About Praxis
           </p>
@@ -97,14 +95,14 @@ export default function AboutPage() {
             className="mt-3 font-display text-[clamp(2.35rem,6vw,3.75rem)] leading-[1.05] tracking-tight"
             style={{ color: "var(--ox-ink)" }}
           >
-            Where trusted specialists are made
+            Where trusted specialists are made.
           </h1>
           <div className="mt-5 flex justify-center">
             <Strapline size="lg" />
           </div>
           <p
-            className="mt-6 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto"
-            style={{ color: "var(--ox-muted)", fontFamily: "var(--font-body)" }}
+            className="font-body mt-6 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto"
+            style={{ color: "var(--ox-muted)" }}
           >
             Olynixx Praxis is the specialisation layer for performance coaches—built to turn
             serious practitioners into people organisations can trust with athletes.
@@ -120,7 +118,7 @@ export default function AboutPage() {
               href="/contact"
               className="inline-flex items-center h-12 px-8 text-[13px] tracking-[0.1em] uppercase font-display"
               style={{
-                border: "1px solid rgba(150,118,43,0.55)",
+                border: "1px solid rgba(12,15,18,0.35)",
                 color: "var(--ox-ink)",
                 borderRadius: 2,
               }}
@@ -139,8 +137,8 @@ export default function AboutPage() {
         <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
           <ScrollReveal>
             <p
-              className="text-[11px] font-semibold tracking-[0.2em] uppercase"
-              style={{ color: "var(--gold)" }}
+              className="font-display text-[11px] tracking-[0.2em] uppercase"
+              style={{ color: "var(--ochre)" }}
             >
               Why we exist
             </p>
@@ -148,8 +146,8 @@ export default function AboutPage() {
               The industry has courses. It needs specialists.
             </h2>
             <p
-              className="mt-3 text-base sm:text-lg leading-relaxed"
-              style={{ color: "rgba(247,241,230,0.72)", fontFamily: "var(--font-body)" }}
+              className="font-body mt-3 text-base sm:text-lg leading-relaxed"
+              style={{ color: "rgba(247,241,230,0.72)" }}
             >
               Performance environments do not fail for lack of slideshows. They fail when
               credentials outrun competence. Praxis exists to close that gap: structured learning,
@@ -165,8 +163,8 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <ScrollReveal className="text-center max-w-2xl mx-auto">
             <p
-              className="text-[11px] font-semibold tracking-[0.2em] uppercase"
-              style={{ color: "var(--gold)" }}
+              className="font-display text-[11px] tracking-[0.2em] uppercase"
+              style={{ color: "var(--ochre)" }}
             >
               The Praxis model
             </p>
@@ -176,7 +174,7 @@ export default function AboutPage() {
             >
               Learn. Certify. Deploy.
             </h2>
-            <p className="mt-3 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
+            <p className="font-body mt-3 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
               Three stages, one standard. Charts below are illustrative of how the pathway is
               designed—not live platform metrics.
             </p>
@@ -195,7 +193,7 @@ export default function AboutPage() {
                 <h3 className="font-display text-xl" style={{ color: "var(--ox-ink)" }}>
                   Funnel of the pathway
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
+                <p className="font-body mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
                   More people start learning than finish certification. Fewer still are ready for
                   deployment. That narrowing is intentional—quality over throughput.
                 </p>
@@ -220,7 +218,7 @@ export default function AboutPage() {
                 <h3 className="font-display text-xl" style={{ color: "var(--ox-ink)" }}>
                   Dual-gate standard
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
+                <p className="font-body mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
                   Both gates must pass. Knowledge without practice is incomplete; practice without
                   knowledge is unsafe.
                 </p>
@@ -264,42 +262,42 @@ export default function AboutPage() {
         <KhatamDivider />
       </div>
 
-      {/* Discipline mix + capability curve */}
+      {/* Three pillars */}
       <section className="py-10 sm:py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center">
             <ScrollReveal>
               <p
-                className="text-[11px] font-semibold tracking-[0.2em] uppercase"
-                style={{ color: "var(--ox-gold)" }}
+                className="font-display text-[11px] tracking-[0.2em] uppercase"
+                style={{ color: "var(--ochre)" }}
               >
-                Specialisation breadth
+                Specialisation architecture
               </p>
               <h2
                 className="mt-3 font-display text-3xl sm:text-4xl leading-tight"
                 style={{ color: "var(--ox-ink)" }}
               >
-                Built across the performance stack
+                Three pillars. One non-medical standard.
               </h2>
-              <p className="mt-4 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-                Praxis sits at the intersection of coaching craft and applied science. The mix
-                below shows how we think about curriculum weight across core specialisation
-                domains—not a live enrolment breakdown.
+              <p className="font-body mt-4 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
+                Praxis specialises coaches across Human Readiness, Recovery, and Performance
+                Intelligence—applied coaching craft, not clinical practice. The mix below is
+                illustrative curriculum weight, not live enrolment.
               </p>
               <ul className="mt-6 space-y-3">
                 {[
-                  "Strength, conditioning, and physical preparation",
-                  "Rehab, return-to-play, and load management",
-                  "Analysis, psychology, nutrition, and recovery",
+                  "Human Readiness — prepare the human before demand is placed",
+                  "Recovery — treat recovery as training, with calibrated protocols",
+                  "Performance Intelligence — turn signals into decisions organisations trust",
                 ].map((item) => (
                   <li
                     key={item}
-                    className="flex gap-3 text-sm leading-relaxed"
+                    className="font-body flex gap-3 text-sm leading-relaxed"
                     style={{ color: "var(--ox-muted)" }}
                   >
                     <span
                       className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                      style={{ background: "var(--ox-gold)" }}
+                      style={{ background: "var(--bronze)" }}
                       aria-hidden
                     />
                     {item}
@@ -318,12 +316,12 @@ export default function AboutPage() {
                 }}
               >
                 <MultiSegmentDonut
-                  segments={DISCIPLINE_MIX}
+                  segments={PILLAR_MIX}
                   size={200}
-                  centerValue="5"
-                  centerLabel="domains"
+                  centerValue="3"
+                  centerLabel="pillars"
                 />
-                <p className="mt-4 text-center text-[11px]" style={{ color: "var(--ox-muted)" }}>
+                <p className="font-body mt-4 text-center text-[11px]" style={{ color: "var(--ox-muted)" }}>
                   Illustrative curriculum emphasis
                 </p>
               </div>
@@ -340,8 +338,8 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <ScrollReveal className="text-center max-w-2xl mx-auto">
             <p
-              className="text-[11px] font-semibold tracking-[0.2em] uppercase"
-              style={{ color: "var(--ox-gold)" }}
+              className="font-display text-[11px] tracking-[0.2em] uppercase"
+              style={{ color: "var(--ochre)" }}
             >
               What we stand for
             </p>
@@ -359,7 +357,7 @@ export default function AboutPage() {
                 <div className="flex gap-4">
                   <span
                     className="font-display text-2xl leading-none shrink-0"
-                    style={{ color: "var(--ox-gold)" }}
+                    style={{ color: "var(--bronze)" }}
                     aria-hidden
                   >
                     {String(i + 1).padStart(2, "0")}
@@ -368,9 +366,9 @@ export default function AboutPage() {
                     <h3 className="font-display text-xl" style={{ color: "var(--ox-ink)" }}>
                       {v.title}
                     </h3>
-                    <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-                      {v.body}
-                    </p>
+                <p className="font-body mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
+                  {v.body}
+                </p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -384,8 +382,8 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <ScrollReveal className="text-center max-w-2xl mx-auto">
             <p
-              className="text-[11px] font-semibold tracking-[0.2em] uppercase"
-              style={{ color: "var(--ox-gold)" }}
+              className="font-display text-[11px] tracking-[0.2em] uppercase"
+              style={{ color: "var(--ochre)" }}
             >
               Who it&apos;s for
             </p>
@@ -403,13 +401,13 @@ export default function AboutPage() {
                 <div className="text-center md:text-left">
                   <div
                     className="mx-auto md:mx-0 h-px w-10 mb-4"
-                    style={{ background: "var(--ox-gold)" }}
+                    style={{ background: "var(--bronze)" }}
                     aria-hidden
                   />
                   <h3 className="font-display text-xl" style={{ color: "var(--ox-ink)" }}>
                     {a.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
+                  <p className="font-body mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
                     {a.body}
                   </p>
                 </div>
@@ -432,7 +430,7 @@ export default function AboutPage() {
             >
               Ready to specialise with integrity?
             </h2>
-            <p className="mt-3 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
+            <p className="font-body mt-3 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
               See the certification path, or tell us what you&apos;re building—we&apos;ll help you
               find the right entry point.
             </p>
@@ -445,7 +443,7 @@ export default function AboutPage() {
               </Link>
               <Link
                 href="/standards"
-                className="text-sm font-semibold underline-offset-4 hover:underline"
+                className="font-display text-sm underline-offset-4 hover:underline"
                 style={{ color: "var(--ox-ink)" }}
               >
                 Read our standards →

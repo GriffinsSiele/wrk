@@ -64,7 +64,7 @@ export default function LearnerCoursesPage() {
 
       {!loading && !error && enrollments.length === 0 && (
         <div
-          className="rounded-xl p-8 text-center"
+          className="rounded-sm p-8 text-center"
           style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}
         >
           <BookOpen size={28} className="mx-auto mb-3" style={{ color: "var(--ochre)" }} />
@@ -100,11 +100,11 @@ export default function LearnerCoursesPage() {
             return (
               <article
                 key={course.id}
-                className="rounded-xl p-5 flex flex-col sm:flex-row gap-4"
+                className="rounded-sm p-5 flex flex-col sm:flex-row gap-4"
                 style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}
               >
                 <div
-                  className="w-full sm:w-32 h-24 sm:h-auto rounded-lg flex-shrink-0 grid place-items-center"
+                  className="w-full sm:w-32 h-24 sm:h-auto rounded-sm flex-shrink-0 grid place-items-center"
                   style={{ background: "rgba(217,172,74,0.08)" }}
                 >
                   <Zap size={26} style={{ color: "var(--ox-accent)" }} />
@@ -113,10 +113,10 @@ export default function LearnerCoursesPage() {
                   <div>
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
                       <span
-                        className="text-[11px] uppercase tracking-[0.16em] px-2 py-0.5"
+                        className="font-display text-[11px] uppercase tracking-[0.16em]"
                         style={{
-                          color: pct >= 100 ? "var(--mint)" : "var(--ox-accent)",
-                          background: pct >= 100 ? "rgba(42,161,135,0.14)" : "rgba(217,172,74,0.12)",
+                          color: pct >= 100 ? "var(--mint)" : "var(--ochre)",
+                          borderBottom: "1px solid rgba(150,118,43,0.55)",
                         }}
                       >
                         {statusLabel}
@@ -144,15 +144,15 @@ export default function LearnerCoursesPage() {
                         {pct}% · {course.lessons_completed} / {course.lessons_total} lessons
                       </span>
                     </div>
-                    <div className="w-full rounded-full h-2 overflow-hidden" style={{ background: "rgba(150,118,43,0.25)" }}>
+                    <div className="w-full rounded-sm h-2 overflow-hidden" style={{ background: "rgba(150,118,43,0.25)" }}>
                       <div
-                        className="h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%`, background: "var(--gold)" }}
+                        className="h-2 rounded-sm transition-all duration-500"
+                        style={{ width: `${pct}%`, background: "var(--mint)" }}
                       />
                     </div>
                     <Link
                       href={`/learner/courses/${course.course_id}`}
-                      className="mt-3 ox-cta inline-flex items-center h-9 rounded-full px-5 text-[13px] font-semibold w-fit"
+                      className="mt-3 ox-ghost-light inline-flex items-center h-9 px-5 text-[13px] font-medium w-fit"
                     >
                       {pct >= 100 ? "Review course →" : pct > 0 ? "Continue learning →" : "Start course →"}
                     </Link>

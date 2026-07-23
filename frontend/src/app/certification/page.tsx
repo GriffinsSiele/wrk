@@ -198,7 +198,7 @@ export default function CertificationPage() {
                   fontSize: 13,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
-                  border: "1px solid rgba(150,118,43,0.65)",
+                  border: "1px solid rgba(242,237,227,0.45)",
                   color: "var(--cream)",
                   borderRadius: 2,
                 }}
@@ -824,7 +824,7 @@ export default function CertificationPage() {
                   fontSize: 13,
                   letterSpacing: "0.08em",
                   textTransform: "uppercase",
-                  border: "1px solid rgba(150,118,43,0.65)",
+                  border: "1px solid rgba(242,237,227,0.45)",
                   color: "var(--cream)",
                   borderRadius: 2,
                 }}
