@@ -71,6 +71,20 @@ async function forward(request: NextRequest, pathSegments: string[]) {
 
   const resp = await fetchUpstream(targetUrl, { method, body }, headers);
 
+  const upstreamType = resp.headers.get("content-type") || "";
+  if (
+    upstreamType.includes("application/pdf") ||
+    upstreamType.includes("application/octet-stream") ||
+    upstreamType.startsWith("image/")
+  ) {
+    const buf = await resp.arrayBuffer();
+    const out = new Headers();
+    out.set("content-type", upstreamType);
+    const disposition = resp.headers.get("content-disposition");
+    if (disposition) out.set("content-disposition", disposition);
+    return new NextResponse(buf, { status: resp.status, headers: out });
+  }
+
   const text = await resp.text();
   let payload: unknown = text;
   try {

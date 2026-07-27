@@ -241,6 +241,25 @@ body {
   transition-delay: 0.4s;
 }
 
+/* About page — equal pillar / model column rules */
+.about-equal-panel {
+  border-top: 1px solid rgba(150, 118, 43, 0.28);
+  align-items: flex-start;
+}
+.about-equal-panel[data-index="0"] {
+  border-top: none;
+}
+@media (min-width: 768px) {
+  .about-equal-panel {
+    border-top: none;
+    min-height: 100%;
+  }
+  .about-equal-panel[data-index="1"],
+  .about-equal-panel[data-index="2"] {
+    border-left: 1px solid rgba(150, 118, 43, 0.28);
+  }
+}
+
 /* Soft page enter — clears prior-route paint flash */
 .ox-page-enter {
   animation: ox-page-enter 180ms ease-out;

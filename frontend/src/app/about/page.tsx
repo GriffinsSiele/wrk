@@ -1,457 +1,409 @@
-"use client";
-
 import Link from "next/link";
-import { BrandMark } from "@/components/brand/BrandMark";
 import { Strapline } from "@/components/brand/Strapline";
 import { KhatamDivider } from "@/components/brand/KhatamDivider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import {
-  AnimatedBarChart,
-  DonutChart,
-  MultiSegmentDonut,
-} from "@/components/ui/Charts";
+import { AboutHero } from "./AboutHero";
 
-const VALUES = [
+const RECOVERY_STRANDS = [
   {
-    title: "Evidence over noise",
-    body: "Programmes are built from applied practice—not content volume. Every module should survive contact with a real athlete or live performance session.",
+    label: "Physical",
+    body: "sleep quality and duration, autonomic balance, tissue load and accumulated volume.",
   },
   {
-    title: "Dual-gate integrity",
-    body: "Written knowledge and demonstrated practice are both required. A badge without either gate is marketing, not specialisation.",
+    label: "Mental",
+    body: "brain energy, oxygenation, acid–base balance, hydration and sleep architecture. Measurable, not a matter of opinion.",
   },
   {
-    title: "Regional reality",
-    body: "GCC schedules, facilities, languages, and performance cultures shape how Praxis is taught, assessed, and deployed.",
+    label: "Metabolic",
+    body: "fuelling, hydration, energy availability and the timing of intake against load and sleep.",
   },
   {
-    title: "Deployment, not just diplomas",
-    body: "Certification is the midpoint. The product is a coach who can be trusted in a live performance environment.",
+    label: "Hormonal",
+    body: "the signalling that sets the ceiling on adaptation, read by pattern and trend rather than by blood work.",
   },
-];
+] as const;
 
-const AUDIENCES = [
+const PILLARS = [
   {
-    title: "Aspiring specialists",
-    body: "Coaches who want a clear path from general practice into a recognised specialisation—with proof, not just hours logged.",
+    title: "Human Readiness",
+    paragraphs: [
+      "Readiness is a dynamic physiological state — the capacity a body has, at this moment, to answer what is being asked of it. A training session. A change of diet. A demanding week. It is not a fitness score, it is not a personality, and it is not fixed. It can be measured in minutes.",
+      "Coaches learn to establish a baseline, read change against it, and set the input to what the reading shows rather than to what the plan says. The discipline is reading the trend, not the number.",
+    ],
   },
   {
-    title: "Working practitioners",
-    body: "Professionals already in the field who need structured depth, assessment, and a credential that holds under scrutiny.",
+    title: "Recovery",
+    paragraphs: [
+      "The systems do not recover together. Muscular, nervous, hormonal, cardio-pulmonary and metabolic each run their own curve at their own rate — which is why the same person can be ready to train hard and in no condition to start a diet on the same morning. Assuming they recover in step is a guess, and it is the guess most plans are built on.",
+      "Coaches learn to read four connected systems, each against that person’s own baseline:",
+    ],
+    strands: RECOVERY_STRANDS,
+    closing:
+      "Read the four. Find the limiting system. Set the load to it, or wait. Where a pattern suggests something clinical, refer.",
   },
   {
-    title: "Organisations",
-    body: "Clubs, academies, and high-performance units that need a reliable pipeline of specialists they can deploy with confidence.",
+    title: "Performance Intelligence",
+    paragraphs: [
+      "Measurement is only useful if it changes a decision. The decision is rarely which method. It is whether this person should start it at all, and when.",
+      "Coaches learn to run a baseline properly, to compare a person against themselves rather than against a population norm, and to tell a trend from a bad night.",
+      "And they learn to write it down — what was measured, what was decided and why — in a form a client, a physician, an employer or a project partner can rely on. The report is the part the client keeps.",
+    ],
   },
-];
+] as const;
 
-const PILLAR_MIX = [
-  { label: "Human Readiness", value: 34, color: "var(--teal)" },
-  { label: "Recovery", value: 33, color: "var(--mint)" },
-  { label: "Performance Intelligence", value: 33, color: "var(--bronze)" },
-];
+const MODEL_COLUMNS = [
+  {
+    title: "Learn",
+    body: "Structured specialisation built on the science, layered onto a qualification you already hold. Delivered in defined teaching hours against a published syllabus.",
+  },
+  {
+    title: "Certify",
+    body: "An assessed standard. Written examination and observed practical assessment, marked against published criteria. The certificate carries an issued number and a renewal date.",
+  },
+  {
+    title: "Deploy",
+    body: "The trusted pool. Certified specialists placed where performance matters — corporate programmes, health projects, sport, and partner facilities across the UAE.",
+  },
+] as const;
 
-const PATHWAY_BARS = [
-  { label: "Learn", value: 100 },
-  { label: "Assess", value: 72 },
-  { label: "Certify", value: 48 },
-  { label: "Deploy", value: 28 },
-];
+function BronzeHairline() {
+  return (
+    <div aria-hidden>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="h-px w-full" style={{ background: "rgba(150,118,43,0.32)" }} />
+      </div>
+    </div>
+  );
+}
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen" style={{ background: "var(--ox-cream)" }}>
       <Navbar />
-      {/* Hero — one composition */}
-      <section
-        className="relative overflow-hidden border-b"
-        style={{
-          borderColor: "var(--ox-line)",
-          background:
-            "radial-gradient(ellipse 90% 70% at 12% -10%, rgba(150,118,43,0.14), transparent 55%), radial-gradient(ellipse 70% 55% at 100% 0%, rgba(42,161,135,0.1), transparent 50%), linear-gradient(180deg, #f7f1e6 0%, var(--ox-cream) 100%)",
-        }}
-      >
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.035]"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='none' stroke='%231a1a18' stroke-width='0.6'/%3E%3C/svg%3E\")",
-          }}
-          aria-hidden
-        />
-        <div className="relative mx-auto max-w-3xl px-4 sm:px-6 pt-28 sm:pt-32 pb-10 sm:pb-12 text-center">
-          <div className="flex justify-center">
-            <BrandMark variant="cream" size={64} priority />
-          </div>
-          <p
-            className="mt-5 font-display text-[11px] tracking-[0.22em] uppercase"
-            style={{ color: "var(--ochre)" }}
-          >
-            About Praxis
-          </p>
-          <h1
-            className="mt-3 font-display text-[clamp(2.35rem,6vw,3.75rem)] leading-[1.05] tracking-tight"
-            style={{ color: "var(--ox-ink)" }}
-          >
-            Where trusted specialists are made.
-          </h1>
-          <div className="mt-5 flex justify-center">
-            <Strapline size="lg" />
-          </div>
-          <p
-            className="font-body mt-6 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto"
-            style={{ color: "var(--ox-muted)" }}
-          >
-            Olynixx Praxis is the specialisation layer for performance coaches—built to turn
-            serious practitioners into people organisations can trust with athletes.
-          </p>
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/certification"
-              className="ox-cta inline-flex items-center h-12 px-8 text-[13px] tracking-[0.14em] uppercase"
-            >
-              Explore certification
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center h-12 px-8 text-[13px] tracking-[0.1em] uppercase font-display"
-              style={{
-                border: "1px solid rgba(12,15,18,0.35)",
-                color: "var(--ox-ink)",
-                borderRadius: 2,
-              }}
-            >
-              Talk to us
-            </Link>
-          </div>
-        </div>
-      </section>
+      <AboutHero />
 
-      {/* Mission */}
-      <section
-        className="py-6 sm:py-8"
-        style={{ background: "var(--ink)", color: "var(--cream)" }}
-      >
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
+      <BronzeHairline />
+
+      {/* Section 02 — The Idea */}
+      <section className="py-10 sm:py-12" style={{ background: "var(--ox-cream)" }}>
+        <div className="mx-auto max-w-[40rem] px-4 sm:px-6">
           <ScrollReveal>
-            <p
-              className="font-display text-[11px] tracking-[0.2em] uppercase"
-              style={{ color: "var(--ochre)" }}
-            >
-              Why we exist
-            </p>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl leading-tight">
-              The industry has courses. It needs specialists.
-            </h2>
-            <p
-              className="font-body mt-3 text-base sm:text-lg leading-relaxed"
-              style={{ color: "rgba(247,241,230,0.72)" }}
-            >
-              Performance environments do not fail for lack of slideshows. They fail when
-              credentials outrun competence. Praxis exists to close that gap: structured learning,
-              dual-gate assessment, and a path into real deployment—so specialisation means
-              something when the session starts.
-            </p>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Model + charts */}
-      <section className="pt-6 sm:pt-8 pb-10 sm:pb-12">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <ScrollReveal className="text-center max-w-2xl mx-auto">
-            <p
-              className="font-display text-[11px] tracking-[0.2em] uppercase"
-              style={{ color: "var(--ochre)" }}
-            >
-              The Praxis model
-            </p>
             <h2
-              className="mt-2 font-display text-3xl sm:text-4xl leading-tight"
-              style={{ color: "var(--ink)" }}
+              className="font-display text-[clamp(1.85rem,4vw,2.65rem)] leading-[1.12] tracking-tight"
+              style={{ color: "var(--ox-ink)", fontWeight: 500 }}
             >
-              Learn. Certify. Deploy.
+              What has to be true before anything works
             </h2>
-            <p className="font-body mt-3 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-              Three stages, one standard. Charts below are illustrative of how the pathway is
-              designed—not live platform metrics.
-            </p>
+            <div className="mt-6 space-y-5">
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                A training block, a nutrition protocol, a supplement plan, a corporate wellness
+                programme, a race preparation — every one of them is an input. Every input assumes
+                the body receiving it has the capacity to answer. That capacity is not constant. It
+                is not the same between two people, and it is not the same in one person from one
+                month to the next.
+              </p>
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Almost nothing in the industry is timed to it. Advice is written for a population and
+                delivered to an individual. It is given on the day the person asked rather than on
+                the day their body could use it. Then everyone waits, and hopes.
+              </p>
+            </div>
+
+            <div className="mt-8 pt-7" style={{ borderTop: "1px solid rgba(150,118,43,0.38)" }}>
+              <p className="font-body text-[1.05rem] leading-[1.75]" style={{ color: "var(--ox-ink)" }}>
+                Conventional practice treats the plan as the thing to control. Olynixx Praxis teaches
+                the inversion: the body is the thing to control, and the plan is the instrument. You
+                measure the state first, and you set the input to it.
+              </p>
+            </div>
+
+            <div className="mt-6 space-y-5">
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                This is not another method competing with the ones above. It is the layer underneath
+                all of them — the part that decides whether any of them will work on this person,
+                this month. That is why the specialisation sits on top of a qualification rather than
+                replacing it, and why it has to be taught, assessed and certified rather than read
+                about once.
+              </p>
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Twenty years of measurement sit behind it. Not a theory that was later tested — a
+                practice that was measured from the beginning, and a method built out of what the
+                measurements kept showing.
+              </p>
+            </div>
           </ScrollReveal>
-
-          <div className="mt-6 grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-            <ScrollReveal>
-              <div
-                className="border p-6 sm:p-8"
-                style={{
-                  borderColor: "var(--ox-line)",
-                  background: "linear-gradient(165deg, #fffefb 0%, var(--ox-cream) 100%)",
-                  borderRadius: 2,
-                }}
-              >
-                <h3 className="font-display text-xl" style={{ color: "var(--ox-ink)" }}>
-                  Funnel of the pathway
-                </h3>
-                <p className="font-body mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-                  More people start learning than finish certification. Fewer still are ready for
-                  deployment. That narrowing is intentional—quality over throughput.
-                </p>
-                <div className="mt-6">
-                  <AnimatedBarChart data={PATHWAY_BARS} height={180} />
-                </div>
-                <p className="mt-4 text-[11px] tracking-wide" style={{ color: "var(--ox-muted)" }}>
-                  Illustrative relative volume across stages
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={80}>
-              <div
-                className="border p-6 sm:p-8"
-                style={{
-                  borderColor: "var(--ox-line)",
-                  background: "linear-gradient(165deg, #fffefb 0%, var(--ox-cream) 100%)",
-                  borderRadius: 2,
-                }}
-              >
-                <h3 className="font-display text-xl" style={{ color: "var(--ox-ink)" }}>
-                  Dual-gate standard
-                </h3>
-                <p className="font-body mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-                  Both gates must pass. Knowledge without practice is incomplete; practice without
-                  knowledge is unsafe.
-                </p>
-                <div className="mt-6 grid sm:grid-cols-2 gap-6 place-items-center">
-                  <div className="text-center">
-                    <DonutChart
-                      value={100}
-                      sublabel="Written"
-                      colors={["var(--ox-accent)"]}
-                      size={132}
-                    />
-                    <p className="mt-3 text-sm font-medium" style={{ color: "var(--ox-ink)" }}>
-                      Gate A — knowledge
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <DonutChart
-                      value={100}
-                      sublabel="Practice"
-                      colors={["var(--mint)"]}
-                      size={132}
-                    />
-                    <p className="mt-3 text-sm font-medium" style={{ color: "var(--ox-ink)" }}>
-                      Gate B — demonstration
-                    </p>
-                  </div>
-                </div>
-                <p
-                  className="mt-6 text-center text-sm font-medium"
-                  style={{ color: "var(--ox-ink)" }}
-                >
-                  Certificate unlocks only when both gates are complete
-                </p>
-              </div>
-            </ScrollReveal>
-          </div>
         </div>
       </section>
 
-      <div className="flex justify-center py-2">
+      <div className="flex justify-center py-1" style={{ background: "var(--ox-cream)" }}>
         <KhatamDivider />
       </div>
 
-      {/* Three pillars */}
-      <section className="py-10 sm:py-12">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center">
-            <ScrollReveal>
-              <p
-                className="font-display text-[11px] tracking-[0.2em] uppercase"
-                style={{ color: "var(--ochre)" }}
-              >
-                Specialisation architecture
-              </p>
-              <h2
-                className="mt-3 font-display text-3xl sm:text-4xl leading-tight"
-                style={{ color: "var(--ox-ink)" }}
-              >
-                Three pillars. One non-medical standard.
-              </h2>
-              <p className="font-body mt-4 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-                Praxis specialises coaches across Human Readiness, Recovery, and Performance
-                Intelligence—applied coaching craft, not clinical practice. The mix below is
-                illustrative curriculum weight, not live enrolment.
-              </p>
-              <ul className="mt-6 space-y-3">
-                {[
-                  "Human Readiness — prepare the human before demand is placed",
-                  "Recovery — treat recovery as training, with calibrated protocols",
-                  "Performance Intelligence — turn signals into decisions organisations trust",
-                ].map((item) => (
-                  <li
-                    key={item}
-                    className="font-body flex gap-3 text-sm leading-relaxed"
-                    style={{ color: "var(--ox-muted)" }}
-                  >
-                    <span
-                      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                      style={{ background: "var(--bronze)" }}
-                      aria-hidden
-                    />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </ScrollReveal>
-
-            <ScrollReveal delay={90}>
-              <div
-                className="border p-6 sm:p-8"
-                style={{
-                  borderColor: "var(--ox-line)",
-                  background: "var(--ox-cream-deep, #f0e8d8)",
-                  borderRadius: 2,
-                }}
-              >
-                <MultiSegmentDonut
-                  segments={PILLAR_MIX}
-                  size={200}
-                  centerValue="3"
-                  centerLabel="pillars"
-                />
-                <p className="font-body mt-4 text-center text-[11px]" style={{ color: "var(--ox-muted)" }}>
-                  Illustrative curriculum emphasis
-                </p>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Values */}
+      {/* Section 03 — The three pillars (equal panels) */}
       <section
-        className="py-10 sm:py-12 border-y"
-        style={{ borderColor: "var(--ox-line)", background: "var(--ox-cream-deep, #f0e8d8)" }}
+        className="py-10 sm:py-12"
+        style={{ background: "linear-gradient(180deg, #ebe4d6 0%, var(--ox-cream) 100%)" }}
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <ScrollReveal className="text-center max-w-2xl mx-auto">
-            <p
-              className="font-display text-[11px] tracking-[0.2em] uppercase"
-              style={{ color: "var(--ochre)" }}
-            >
-              What we stand for
-            </p>
+          <ScrollReveal className="text-center max-w-xl mx-auto">
             <h2
-              className="mt-3 font-display text-3xl sm:text-4xl"
-              style={{ color: "var(--ox-ink)" }}
+              className="font-display text-[clamp(1.85rem,4vw,2.65rem)] leading-[1.12] tracking-tight"
+              style={{ color: "var(--ox-ink)", fontWeight: 500 }}
             >
-              Principles that shape every programme
+              The three pillars
             </h2>
           </ScrollReveal>
 
-          <div className="mt-8 grid sm:grid-cols-2 gap-6 lg:gap-8">
-            {VALUES.map((v, i) => (
-              <ScrollReveal key={v.title} delay={i * 60}>
-                <div className="flex gap-4">
-                  <span
-                    className="font-display text-2xl leading-none shrink-0"
-                    style={{ color: "var(--bronze)" }}
+          <div
+            className="mt-8 grid md:grid-cols-3"
+            style={{ borderTop: "1px solid rgba(150,118,43,0.45)" }}
+          >
+            {PILLARS.map((pillar, i) => (
+              <ScrollReveal key={pillar.title} delay={i * 90} className="h-full">
+                <article
+                  className="h-full flex flex-col px-0 md:px-8 py-6 md:py-3 about-equal-panel"
+                  data-index={i}
+                >
+                  <div
+                    className="h-px w-10 mb-5"
+                    style={{ background: "rgba(150,118,43,0.55)" }}
                     aria-hidden
+                  />
+                  <h3
+                    className="font-display text-[1.35rem] sm:text-[1.5rem] leading-snug"
+                    style={{ color: "var(--ox-ink)", fontWeight: 500 }}
                   >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <h3 className="font-display text-xl" style={{ color: "var(--ox-ink)" }}>
-                      {v.title}
-                    </h3>
-                <p className="font-body mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-                  {v.body}
-                </p>
+                    {pillar.title}
+                  </h3>
+                  <div className="mt-5 space-y-4 flex-1">
+                    {pillar.paragraphs.map((p) => (
+                      <p
+                        key={p.slice(0, 48)}
+                        className="font-body text-[0.95rem] sm:text-[0.98rem] leading-[1.7]"
+                        style={{ color: "var(--ox-muted)" }}
+                      >
+                        {p}
+                      </p>
+                    ))}
+                    {"strands" in pillar && pillar.strands ? (
+                      <ul className="space-y-2 pt-0.5">
+                        {pillar.strands.map((s) => (
+                          <li
+                            key={s.label}
+                            className="font-body text-[0.95rem] sm:text-[0.98rem] leading-[1.65]"
+                            style={{ color: "var(--ox-muted)" }}
+                          >
+                            <span style={{ color: "var(--ox-ink)", fontWeight: 600 }}>{s.label}</span>
+                            {" — "}
+                            {s.body}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {"closing" in pillar && pillar.closing ? (
+                      <p
+                        className="font-body text-[0.95rem] sm:text-[0.98rem] leading-[1.7]"
+                        style={{ color: "var(--ox-muted)" }}
+                      >
+                        {pillar.closing}
+                      </p>
+                    ) : null}
                   </div>
-                </div>
+                </article>
               </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Who we serve */}
-      <section className="py-10 sm:py-12">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <ScrollReveal className="text-center max-w-2xl mx-auto">
-            <p
-              className="font-display text-[11px] tracking-[0.2em] uppercase"
-              style={{ color: "var(--ochre)" }}
-            >
-              Who it&apos;s for
-            </p>
+      <BronzeHairline />
+
+      {/* Section 04 — Who this is for */}
+      <section
+        className="py-10 sm:py-14"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 55% at 50% 0%, rgba(150,118,43,0.08), transparent 60%), #ebe4d6",
+        }}
+      >
+        <div className="mx-auto max-w-[38rem] px-4 sm:px-6 text-center">
+          <ScrollReveal>
             <h2
-              className="mt-3 font-display text-3xl sm:text-4xl"
-              style={{ color: "var(--ox-ink)" }}
+              className="font-display text-[clamp(1.85rem,4vw,2.65rem)] leading-[1.12] tracking-tight"
+              style={{ color: "var(--ox-ink)", fontWeight: 500 }}
             >
-              Built for people who take the craft seriously
+              Who this is for
+            </h2>
+            <div className="mt-6 space-y-4 max-w-[32rem] mx-auto">
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Coaches, trainers, nutritionists and health professionals who have run out of road
+                with the plan they were taught to write.
+              </p>
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Who have watched a sound programme fail on a committed client, and had nothing to say
+                about why.
+              </p>
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Who are tired of hoping, and would rather know.
+              </p>
+            </div>
+
+            <div
+              className="mt-8 mx-auto h-px w-14"
+              style={{ background: "rgba(150,118,43,0.5)" }}
+              aria-hidden
+            />
+
+            <p
+              className="mt-6 font-display text-[clamp(1.55rem,3.8vw,2.15rem)] leading-snug tracking-tight max-w-[24ch] mx-auto"
+              style={{ color: "var(--ox-ink)", fontWeight: 500 }}
+            >
+              You do not need another method. You need to know who it will work on, and when.
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      <BronzeHairline />
+
+      {/* Section 05 — The model */}
+      <section className="py-10 sm:py-12" style={{ background: "var(--ox-cream)" }}>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <ScrollReveal className="text-center">
+            <h2
+              className="font-display text-[clamp(1.85rem,4vw,2.65rem)] leading-[1.12] tracking-tight"
+              style={{ color: "var(--ox-ink)", fontWeight: 500 }}
+            >
+              Learn. Certify. Deploy.
             </h2>
           </ScrollReveal>
 
-          <div className="mt-8 grid md:grid-cols-3 gap-6">
-            {AUDIENCES.map((a, i) => (
-              <ScrollReveal key={a.title} delay={i * 70}>
-                <div className="text-center md:text-left">
-                  <div
-                    className="mx-auto md:mx-0 h-px w-10 mb-4"
-                    style={{ background: "var(--bronze)" }}
-                    aria-hidden
-                  />
-                  <h3 className="font-display text-xl" style={{ color: "var(--ox-ink)" }}>
-                    {a.title}
+          <div
+            className="mt-8 grid md:grid-cols-3"
+            style={{ borderTop: "1px solid rgba(150,118,43,0.45)" }}
+          >
+            {MODEL_COLUMNS.map((col, i) => (
+              <ScrollReveal key={col.title} delay={i * 80}>
+                <div className="px-0 md:px-8 py-6 md:py-3 about-equal-panel" data-index={i}>
+                  <h3
+                    className="font-display text-[1.35rem] sm:text-[1.5rem]"
+                    style={{ color: "var(--ox-ink)", fontWeight: 500 }}
+                  >
+                    {col.title}
                   </h3>
-                  <p className="font-body mt-2 text-sm leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-                    {a.body}
+                  <p
+                    className="font-body mt-4 text-[0.95rem] sm:text-[0.98rem] leading-[1.7]"
+                    style={{ color: "var(--ox-muted)" }}
+                  >
+                    {col.body}
                   </p>
                 </div>
               </ScrollReveal>
             ))}
           </div>
+
+          <ScrollReveal className="mt-10 flex justify-center">
+            <Strapline size="lg" deployTone="ink" />
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* Closing */}
-      <section className="pb-12 sm:pb-16 pt-2">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
+      {/* Section 06 — Scope of practice (cream ground; light-ground mark context) */}
+      <section
+        className="py-10 sm:py-12"
+        style={{
+          background: "linear-gradient(180deg, #ebe4d6 0%, var(--ox-cream) 100%)",
+        }}
+      >
+        <div className="mx-auto max-w-[40rem] px-4 sm:px-6">
           <ScrollReveal>
-            <div className="flex justify-center mb-4">
-              <KhatamDivider />
-            </div>
             <h2
-              className="font-display text-3xl sm:text-4xl leading-tight"
-              style={{ color: "var(--ox-ink)" }}
+              className="font-display text-[clamp(1.85rem,4vw,2.65rem)] leading-[1.12] tracking-tight"
+              style={{ color: "var(--ox-ink)", fontWeight: 500 }}
             >
-              Ready to specialise with integrity?
+              Scope of practice
             </h2>
-            <p className="font-body mt-3 text-[15px] leading-relaxed" style={{ color: "var(--ox-muted)" }}>
-              See the certification path, or tell us what you&apos;re building—we&apos;ll help you
-              find the right entry point.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-6 space-y-5">
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Olynixx Praxis certifies non-medical human performance coaches. The specialisation
+                does not authorise the diagnosis or treatment of any condition, the prescription of
+                medication or of individual diets, the recommendation of supplements, the ordering or
+                clinical interpretation of blood work or hormonal testing, the rehabilitation of
+                injury, or any form of psychological therapy or counselling.
+              </p>
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Certified specialists work with clients, not patients. They screen, they refer, and
+                they programme within the limits of the qualification they hold. Referral to a
+                physician, physiotherapist, registered dietitian or licensed mental-health
+                professional is a required competency — assessed at certification, and not an
+                optional courtesy.
+              </p>
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-ink)" }}>
+                We set the standard, and we vouch for whoever meets it. That guarantee only holds if
+                the boundary is clear.
+              </p>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      <div className="flex justify-center py-1" style={{ background: "var(--ox-cream)" }}>
+        <KhatamDivider />
+      </div>
+
+      {/* Section 07 — Who we are */}
+      <section className="py-10 sm:py-14 sm:pb-16" style={{ background: "var(--ox-cream)" }}>
+        <div className="mx-auto max-w-[38rem] px-4 sm:px-6 text-center">
+          <ScrollReveal>
+            <h2
+              className="font-display text-[clamp(1.85rem,4vw,2.65rem)] leading-[1.12] tracking-tight"
+              style={{ color: "var(--ox-ink)", fontWeight: 500 }}
+            >
+              Who we are
+            </h2>
+            <div className="mt-6 space-y-5">
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Olynixx Praxis is a specialisation and certification body for non-medical human
+                performance coaches, operating in the United Arab Emirates. Courses are delivered in
+                the UAE and taught by approved faculty against a published syllabus.
+              </p>
+              <p className="font-body text-[1.02rem] leading-[1.75]" style={{ color: "var(--ox-muted)" }}>
+                Learner and coach records are held under UAE data residency and processed in line
+                with the Personal Data Protection Law.
+              </p>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              {/* Primary CTA is ink/bronze — gold reserved for strapline in §05 (gold rationing) */}
               <Link
-                href="/certification"
-                className="ox-cta inline-flex items-center h-12 px-8 text-[13px] tracking-[0.14em] uppercase"
+                href="/work-with-us"
+                className="inline-flex items-center h-12 px-8 text-[13px] tracking-[0.14em] uppercase font-display"
+                style={{
+                  background: "var(--ink)",
+                  color: "var(--cream)",
+                  borderRadius: 2,
+                }}
               >
-                View certification
+                Join the pool
               </Link>
               <Link
-                href="/standards"
-                className="font-display text-sm underline-offset-4 hover:underline"
-                style={{ color: "var(--ox-ink)" }}
+                href="/certification"
+                className="inline-flex items-center h-12 px-8 text-[13px] tracking-[0.1em] uppercase font-display"
+                style={{
+                  border: "1px solid rgba(12,15,18,0.35)",
+                  color: "var(--ox-ink)",
+                  borderRadius: 2,
+                }}
               >
-                Read our standards →
+                View specialisations
               </Link>
             </div>
           </ScrollReveal>
         </div>
       </section>
+
       <Footer />
     </div>
   );

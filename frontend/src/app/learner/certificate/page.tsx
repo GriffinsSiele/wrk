@@ -320,16 +320,14 @@ export default function CertificatePage() {
                     >
                       {copiedCode === cert.verification_code ? "Copied" : "Copy verification code"}
                     </button>
-                    {cert.pdf_url && (
-                      <a
-                        href={cert.pdf_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="ox-ghost-light h-9 px-4 text-[12px] font-medium inline-flex items-center"
-                      >
-                        Download PDF
-                      </a>
-                    )}
+                    <a
+                      href={`/api/proxy/certificates/${cert.id}/pdf`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="ox-ghost-light h-9 px-4 text-[12px] font-medium inline-flex items-center"
+                    >
+                      View / download PDF
+                    </a>
                   </div>
                 </div>
               </article>
