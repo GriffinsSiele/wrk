@@ -2,8 +2,7 @@ import Link from "next/link";
 import { BrandMark } from "@/components/brand/BrandMark";
 
 export default function NotFound() {
-  return (
-    <div
+  return (<div
       className="min-h-screen flex items-center justify-center px-6"
       style={{ background: "var(--cream)", color: "var(--ink)" }}
     >
@@ -25,7 +24,7 @@ export default function NotFound() {
           className="font-body mt-4 text-[15px] leading-relaxed"
           style={{ color: "rgba(12,15,18,0.58)" }}
         >
-          That route doesn&apos;t exist — or it moved. Return home or explore the specialisation pathway.
+          That route doesn&apos;t exist, or it moved. Return home or explore the specialisation pathway.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
@@ -47,6 +46,5 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 }

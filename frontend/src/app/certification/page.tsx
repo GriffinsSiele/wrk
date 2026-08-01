@@ -20,7 +20,7 @@ const STEPS = [
   {
     num: "02",
     title: "Study",
-    desc: "Complete self-paced modules across readiness, recovery, and performance intelligence.",
+    desc: "Complete self-paced modules across Human Readiness, Recovery, and Performance Intelligence.",
   },
   {
     num: "03",
@@ -47,11 +47,11 @@ const STEPS = [
 const AUDIENCE = [
   {
     title: "Built for",
-    body: "Personal trainers, health coaches, physiotherapists, nutritionists, and related non-medical practitioners who already hold a qualification.",
+    body: "Coaches, trainers, nutritionists and health professionals who have run out of road with the plan they were taught to write, and who would rather know than hope.",
   },
   {
     title: "Not a replacement",
-    body: "Praxis sits on top of credentials you already hold. We specialise them — we don't replace them.",
+    body: "This specialisation sits on top of a qualification you already hold rather than replacing it. You do not need another method. You need to know who it will work on, and when.",
   },
   {
     title: "Pace & effort",
@@ -63,24 +63,24 @@ const DISCIPLINES = [
   {
     num: "01",
     title: "Human Readiness",
-    desc: "Assess physiological, psychological, and social state before demand is placed — then design sessions that meet people where they are.",
+    desc: "Readiness is a dynamic physiological state, the capacity a body has, at this moment, to answer what is being asked of it. Coaches learn to establish a baseline, read change against it, and set the input to what the reading shows rather than to what the plan says.",
   },
   {
     num: "02",
-    title: "Recovery Intelligence",
-    desc: "Treat recovery as training: evidence-based protocols across load, nervous system regulation, and recovery windows.",
+    title: "Recovery",
+    desc: "The systems do not recover together. Coaches learn to read four connected systems (Physical, Mental, Metabolic, Hormonal) each against that person’s own baseline. Find the limiting system. Set the load to it, or wait. Where a pattern suggests something clinical, refer.",
   },
   {
     num: "03",
     title: "Performance Intelligence",
-    desc: "Turn readiness and performance signals into programming decisions organisations can trust.",
+    desc: "Measurement is only useful if it changes a decision. Coaches learn to compare a person against themselves, tell a trend from a bad night, and write it down (what was measured, what was decided and why) in a form a client, physician, employer or project partner can rely on.",
   },
 ];
 
 const OUTCOMES = [
   {
     title: "Certificate",
-    body: "Issued only when both gates are complete — written knowledge and demonstrated practice.",
+    body: "Issued only when both gates are complete, written knowledge and demonstrated practice.",
   },
   {
     title: "Coach upgrade",
@@ -88,7 +88,7 @@ const OUTCOMES = [
   },
   {
     title: "Placement eligibility",
-    body: "Sign NDA + Code of Conduct to join the deployable pool for project dispatch.",
+    body: "Sign NDA + Code of Conduct to join the trusted pool for project dispatch.",
   },
   {
     title: "Stay active",
@@ -99,8 +99,7 @@ const OUTCOMES = [
 export default function CertificationPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  return (
-    <div style={{ background: "var(--cream)", color: "var(--ink)", minHeight: "100vh" }}>
+  return (<div style={{ background: "var(--cream)", color: "var(--ink)", minHeight: "100vh" }}>
       <Navbar />
 
       {/* Hero */}
@@ -156,8 +155,8 @@ export default function CertificationPage() {
                 margin: "0 auto 28px",
               }}
             >
-              A dual-gate pathway — written assessment and practical PASS — before you join the
-              deployable coach pool.
+              A dual-gate pathway of written examination and observed practical assessment, before you
+              join the trusted pool.
             </p>
           </ScrollReveal>
           <ScrollReveal delay={220}>
@@ -228,7 +227,7 @@ export default function CertificationPage() {
             className="font-body"
             style={{ color: "rgba(12,15,18,0.58)", fontSize: "1rem", lineHeight: 1.7 }}
           >
-            Level 1 is built for people who already practise — and want a credential that holds under
+            Level 1 is built for people who already practise, and want a credential that holds under
             scrutiny.
           </p>
         </ScrollReveal>
@@ -241,8 +240,7 @@ export default function CertificationPage() {
             marginTop: 40,
           }}
         >
-          {AUDIENCE.map((item, i) => (
-            <ScrollReveal key={item.title} delay={i * 60}>
+          {AUDIENCE.map((item, i) => (<ScrollReveal key={item.title} delay={i * 60}>
               <div>
                 <div
                   style={{
@@ -266,8 +264,7 @@ export default function CertificationPage() {
                   {item.body}
                 </p>
               </div>
-            </ScrollReveal>
-          ))}
+            </ScrollReveal>))}
         </div>
       </section>
 
@@ -323,15 +320,21 @@ export default function CertificationPage() {
               gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))",
               gap: 20,
               marginBottom: 28,
+              alignItems: "stretch",
             }}
           >
-            <ScrollReveal>
+            <ScrollReveal className="h-full">
               <div
                 style={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                   textAlign: "center",
                   padding: "28px 20px",
                   background: "var(--cream)",
                   color: "var(--ink)",
+                  boxSizing: "border-box",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "center" }}>
@@ -346,7 +349,7 @@ export default function CertificationPage() {
                   className="font-display"
                   style={{ marginTop: 14, fontSize: "1rem", fontWeight: 500, color: "var(--ink)" }}
                 >
-                  Gate A — knowledge
+                  Gate A: knowledge
                 </p>
                 <p
                   className="font-body"
@@ -357,19 +360,25 @@ export default function CertificationPage() {
                     maxWidth: 240,
                     marginLeft: "auto",
                     marginRight: "auto",
+                    flex: 1,
                   }}
                 >
                   Supervised online MCQ · timed · 70% pass mark
                 </p>
               </div>
             </ScrollReveal>
-            <ScrollReveal delay={80}>
+            <ScrollReveal className="h-full" delay={80}>
               <div
                 style={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                   textAlign: "center",
                   padding: "28px 20px",
                   background: "var(--cream)",
                   color: "var(--ink)",
+                  boxSizing: "border-box",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "center" }}>
@@ -384,7 +393,7 @@ export default function CertificationPage() {
                   className="font-display"
                   style={{ marginTop: 14, fontSize: "1rem", fontWeight: 500, color: "var(--ink)" }}
                 >
-                  Gate B — demonstration
+                  Gate B: demonstration
                 </p>
                 <p
                   className="font-body"
@@ -395,6 +404,7 @@ export default function CertificationPage() {
                     maxWidth: 240,
                     marginLeft: "auto",
                     marginRight: "auto",
+                    flex: 1,
                   }}
                 >
                   Assessor-scored practical · PASS / FAIL
@@ -434,14 +444,14 @@ export default function CertificationPage() {
               marginBottom: 12,
             }}
           >
-            Three disciplines. One standard.
+            The three pillars
           </h2>
           <p
             className="font-body"
             style={{ color: "rgba(12,15,18,0.58)", fontSize: "1rem", lineHeight: 1.7 }}
           >
-            Modules span readiness, recovery, and performance — the stack every Praxis specialist is
-            expected to hold.
+            Human Readiness, Recovery, and Performance Intelligence, the stack every Praxis
+            specialist is expected to hold.
           </p>
         </ScrollReveal>
 
@@ -454,8 +464,7 @@ export default function CertificationPage() {
             marginTop: 40,
           }}
         >
-          {DISCIPLINES.map((d, i) => (
-            <ScrollReveal key={d.num} delay={i * 70}>
+          {DISCIPLINES.map((d, i) => (<ScrollReveal key={d.num} delay={i * 70}>
               <div style={{ padding: "28px 24px", background: "var(--cream)", height: "100%" }}>
                 <div
                   className="font-display"
@@ -481,8 +490,7 @@ export default function CertificationPage() {
                   {d.desc}
                 </p>
               </div>
-            </ScrollReveal>
-          ))}
+            </ScrollReveal>))}
         </div>
 
         <ScrollReveal>
@@ -535,8 +543,7 @@ export default function CertificationPage() {
               background: "rgba(150,118,43,0.35)",
             }}
           >
-            {STEPS.map((s, i) => (
-              <ScrollReveal key={s.num} delay={i * 50}>
+            {STEPS.map((s, i) => (<ScrollReveal key={s.num} delay={i * 50}>
                 <div style={{ padding: "28px 24px", height: "100%", background: "var(--cream)" }}>
                   <div
                     className="font-display"
@@ -567,8 +574,7 @@ export default function CertificationPage() {
                     {s.desc}
                   </p>
                 </div>
-              </ScrollReveal>
-            ))}
+              </ScrollReveal>))}
           </div>
         </div>
       </section>
@@ -591,7 +597,7 @@ export default function CertificationPage() {
             className="font-body"
             style={{ color: "rgba(12,15,18,0.58)", fontSize: "1rem", lineHeight: 1.7 }}
           >
-            The product is a coach who can be trusted in a live performance environment — and
+            The product is a coach who can be trusted in a live performance environment, and
             dispatched with confidence.
           </p>
         </ScrollReveal>
@@ -604,8 +610,7 @@ export default function CertificationPage() {
             marginTop: 40,
           }}
         >
-          {OUTCOMES.map((o, i) => (
-            <ScrollReveal key={o.title} delay={i * 50}>
+          {OUTCOMES.map((o, i) => (<ScrollReveal key={o.title} delay={i * 50}>
               <div>
                 <span
                   className="font-display"
@@ -627,8 +632,7 @@ export default function CertificationPage() {
                   {o.body}
                 </p>
               </div>
-            </ScrollReveal>
-          ))}
+            </ScrollReveal>))}
         </div>
 
         <ScrollReveal>
@@ -702,8 +706,7 @@ export default function CertificationPage() {
         <div style={{ display: "flex", flexDirection: "column" }}>
           {CONTACT_FAQS.map((faq, i) => {
             const isOpen = openFaq === i;
-            return (
-              <ScrollReveal key={faq.q} delay={Math.min(i * 40, 200)}>
+            return (<ScrollReveal key={faq.q} delay={Math.min(i * 40, 200)}>
                 <div style={{ borderTop: "1px solid rgba(150,118,43,0.35)" }}>
                   <button
                     type="button"
@@ -748,8 +751,7 @@ export default function CertificationPage() {
                       +
                     </span>
                   </button>
-                  {isOpen && (
-                    <p
+                  {isOpen && (<p
                       className="font-body"
                       style={{
                         padding: "0 0 20px",
@@ -760,11 +762,9 @@ export default function CertificationPage() {
                       }}
                     >
                       {faq.a}
-                    </p>
-                  )}
+                    </p>)}
                 </div>
-              </ScrollReveal>
-            );
+              </ScrollReveal>);
           })}
           <div style={{ borderTop: "1px solid rgba(150,118,43,0.35)" }} />
         </div>
@@ -837,6 +837,5 @@ export default function CertificationPage() {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>);
 }

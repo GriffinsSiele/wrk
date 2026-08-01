@@ -119,8 +119,7 @@ export default function CertificatePage() {
     },
   ];
 
-  return (
-    <main className="max-w-5xl w-full mx-auto px-4 md:px-6 py-6">
+  return (<main className="max-w-5xl w-full mx-auto px-4 md:px-6 py-6">
       <div className="mb-6">
         <h1 className="font-display text-3xl mb-2" style={{ color: "var(--cream)", fontWeight: 500 }}>
           My certificates
@@ -141,8 +140,7 @@ export default function CertificatePage() {
           Dual-gate pathway
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {gateSteps.map((step) => (
-            <div
+          {gateSteps.map((step) => (<div
               key={step.label}
               className="p-4"
               style={{
@@ -151,11 +149,7 @@ export default function CertificatePage() {
               }}
             >
               <div className="flex items-center gap-2 mb-2">
-                {step.done ? (
-                  <CheckCircle size={16} style={{ color: "var(--mint)" }} />
-                ) : (
-                  <Clock size={16} style={{ color: "var(--ochre)" }} />
-                )}
+                {step.done ? (<CheckCircle size={16} style={{ color: "var(--mint)" }} />) : (<Clock size={16} style={{ color: "var(--ochre)" }} />)}
                 <span
                   className="font-display text-[12px] tracking-[0.12em] uppercase"
                   style={{ color: step.done ? "var(--mint)" : "var(--ochre)" }}
@@ -169,18 +163,14 @@ export default function CertificatePage() {
               <p className="font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
                 {step.detail}
               </p>
-              {step.href && !step.done && (
-                <Link href={step.href} className="inline-block mt-3 text-[13px]" style={{ color: "var(--gold)" }}>
+              {step.href && !step.done && (<Link href={step.href} className="inline-block mt-3 text-[13px]" style={{ color: "var(--gold)" }}>
                   Continue →
-                </Link>
-              )}
-            </div>
-          ))}
+                </Link>)}
+            </div>))}
         </div>
       </section>
 
-      {practicals.length > 0 && (
-        <section
+      {practicals.length > 0 && (<section
           className="mb-6 p-5"
           style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}
         >
@@ -193,8 +183,7 @@ export default function CertificatePage() {
           <div className="space-y-2">
             {practicals.slice(0, 5).map((p) => {
               const passed = p.result === "PASS";
-              return (
-                <div key={p.id} className="flex items-center justify-between gap-3 text-[13px] font-body">
+              return (<div key={p.id} className="flex items-center justify-between gap-3 text-[13px] font-body">
                   <span style={{ color: "var(--cream)" }}>
                     {p.certification_level || "Level 1"}
                     {p.assessed_at
@@ -214,31 +203,24 @@ export default function CertificatePage() {
                   >
                     {p.result}
                   </span>
-                </div>
-              );
+                </div>);
             })}
           </div>
-        </section>
-      )}
+        </section>)}
 
-      {loading ? (
-        <div className="flex justify-center py-16">
+      {loading ? (<div className="flex justify-center py-16">
           <div
             className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
             style={{ borderColor: "var(--gold)", borderTopColor: "transparent" }}
           />
-        </div>
-      ) : error && certificates.length === 0 ? (
-        <div
+        </div>) : error && certificates.length === 0 ? (<div
           className="p-8 text-center"
           style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}
         >
           <p className="font-body text-[14px]" style={{ color: "var(--gold-bright)" }}>
             {error}
           </p>
-        </div>
-      ) : certificates.length === 0 ? (
-        <div
+        </div>) : certificates.length === 0 ? (<div
           className="p-8 text-center"
           style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}
         >
@@ -253,13 +235,10 @@ export default function CertificatePage() {
           <Link href="/learner/exam" className="ox-cta inline-flex items-center h-10 px-6 text-[13px] font-semibold">
             Go to exam
           </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        </div>) : (<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {certificates.map((cert) => {
             const active = (cert.status || "ACTIVE").toString().toUpperCase() === "ACTIVE";
-            return (
-              <article
+            return (<article
                 key={cert.id}
                 style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}
               >
@@ -293,7 +272,7 @@ export default function CertificatePage() {
                               month: "short",
                               year: "numeric",
                             })
-                          : "—"}
+                          : "-"}
                       </span>
                     </div>
                     <div className="flex justify-between gap-3 items-center">
@@ -330,11 +309,8 @@ export default function CertificatePage() {
                     </a>
                   </div>
                 </div>
-              </article>
-            );
+              </article>);
           })}
-        </div>
-      )}
-    </main>
-  );
+        </div>)}
+    </main>);
 }

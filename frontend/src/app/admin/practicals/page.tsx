@@ -58,7 +58,7 @@ export default function AdminPracticalsPage() {
   }
 
   function userDisplayName(userId?: number | null) {
-    if (!userId) return "—";
+    if (!userId) return "-";
     const user = users.find((u) => u.id === userId);
     if (!user) return `User #${userId}`;
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ").trim();
@@ -92,18 +92,15 @@ export default function AdminPracticalsPage() {
       setMessage(err.detail || "Failed to save practical assessment");
       return;
     }
-    setMessage(
-      form.result === "PASS"
+    setMessage(form.result === "PASS"
         ? "Practical PASS recorded. Certificate issues automatically if written exam also passed."
-        : "Practical FAIL recorded."
-    );
+        : "Practical FAIL recorded.");
     setForm({ user_id: "", certification_level: "Level 1", result: "PASS", notes: "" });
     setChecklist({ ...DEFAULT_CHECKLIST });
     loadAll();
   }
 
-  return (
-    <div className="p-6 space-y-5">
+  return (<div className="p-6 space-y-5">
       <div>
         <h1 className="font-display text-2xl" style={{ color: "var(--ox-fg)", fontWeight: 500 }}>
           Practical Assessments
@@ -123,11 +120,9 @@ export default function AdminPracticalsPage() {
             style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", color: "var(--ox-fg-dark)" }}
           >
             <option value="">Select user</option>
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.first_name} {u.last_name} — {u.email} ({u.role})
-              </option>
-            ))}
+            {users.map((u) => (<option key={u.id} value={u.id}>
+                {u.first_name} {u.last_name}, {u.email} ({u.role})
+              </option>))}
           </select>
           <select
             value={form.certification_level}
@@ -162,16 +157,14 @@ export default function AdminPracticalsPage() {
             14-point checklist
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {Object.keys(checklist).map((key) => (
-              <label key={key} className="flex items-center gap-2 font-body text-[13px]" style={{ color: "var(--ox-fg)" }}>
+            {Object.keys(checklist).map((key) => (<label key={key} className="flex items-center gap-2 font-body text-[13px]" style={{ color: "var(--ox-fg)" }}>
                 <input
                   type="checkbox"
                   checked={(checklist as Record<string, boolean>)[key]}
                   onChange={(e) => setChecklist({ ...checklist, [key]: e.target.checked })}
                 />
                 {key.replaceAll("_", " ")}
-              </label>
-            ))}
+              </label>))}
           </div>
         </div>
 
@@ -189,14 +182,11 @@ export default function AdminPracticalsPage() {
           <table className="w-full text-left text-[13px] font-body">
             <thead>
               <tr>
-                {["ID", "Name", "Level", "Result", "Assessed"].map((h) => (
-                  <th key={h} className="px-5 py-3 font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)" }}>{h}</th>
-                ))}
+                {["ID", "Name", "Level", "Result", "Assessed"].map((h) => (<th key={h} className="px-5 py-3 font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)" }}>{h}</th>))}
               </tr>
             </thead>
             <tbody>
-              {practicals.map((p) => (
-                <tr key={p.id} style={{ borderTop: "1px solid var(--ox-line)" }}>
+              {practicals.map((p) => (<tr key={p.id} style={{ borderTop: "1px solid var(--ox-line)" }}>
                   <td className="px-5 py-3">{p.id}</td>
                   <td className="px-5 py-3">{userDisplayName(p.user_id)}</td>
                   <td className="px-5 py-3">{p.certification_level}</td>
@@ -211,20 +201,16 @@ export default function AdminPracticalsPage() {
                       {p.result}
                     </span>
                   </td>
-                  <td className="px-5 py-3">{p.assessed_at ? new Date(p.assessed_at).toLocaleString() : "—"}</td>
-                </tr>
-              ))}
-              {practicals.length === 0 && (
-                <tr>
+                  <td className="px-5 py-3">{p.assessed_at ? new Date(p.assessed_at).toLocaleString() : "-"}</td>
+                </tr>))}
+              {practicals.length === 0 && (<tr>
                   <td colSpan={5} className="px-5 py-8 text-center font-body" style={{ color: "var(--ox-muted)" }}>
                     No practical assessments yet.
                   </td>
-                </tr>
-              )}
+                </tr>)}
             </tbody>
           </table>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 }

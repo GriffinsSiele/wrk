@@ -1,6 +1,5 @@
 export default function AdminSettingsPage() {
-  return (
-    <div className="p-6 space-y-5">
+  return (<div className="p-6 space-y-5">
       <h1 className="font-display text-2xl" style={{ fontWeight: 500, color: "var(--cream)" }}>
         Admin Settings
       </h1>
@@ -15,9 +14,8 @@ export default function AdminSettingsPage() {
           <li>Level prerequisites: <strong style={{ color: "var(--gold)" }}>L2 requires active L1; L3 requires active L2</strong></li>
           <li>Coach assignment model: <strong style={{ color: "var(--gold)" }}>admin dispatch</strong></li>
           <li>Placement gate: <strong style={{ color: "var(--gold)" }}>placement_eligible + signed NDA &amp; Code of Conduct</strong></li>
-          <li>Brand system: <strong style={{ color: "var(--gold)" }}>Olynixx Praxis v1.1</strong> — Deep Teal portal ground, flat colour</li>
+          <li>Brand system: <strong style={{ color: "var(--gold)" }}>Olynixx Praxis v1.1</strong>, Deep Teal portal ground, flat colour</li>
         </ul>
       </div>
-    </div>
-  );
+    </div>);
 }

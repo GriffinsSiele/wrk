@@ -17,7 +17,7 @@ export function ScrollReveal({
     const el = ref.current;
     if (!el) return;
 
-    // Reveal immediately if already in (or near) the viewport — avoids blank heroes on route change.
+    // Reveal immediately if already in (or near) the viewport, avoids blank heroes on route change.
     const rect = el.getBoundingClientRect();
     const inView = rect.top < window.innerHeight * 0.92 && rect.bottom > 0;
     if (inView) {
@@ -25,26 +25,22 @@ export function ScrollReveal({
       return () => window.clearTimeout(t);
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
+    const observer = new IntersectionObserver(([entry]) => {
         if (entry.isIntersecting) {
           el.classList.add("visible");
           observer.disconnect();
         }
       },
-      { threshold: 0.08, rootMargin: "0px 0px -4% 0px" }
-    );
+      { threshold: 0.08, rootMargin: "0px 0px -4% 0px" });
     observer.observe(el);
     return () => observer.disconnect();
   }, [delay]);
 
-  return (
-    <div
+  return (<div
       ref={ref}
       className={`ox-reveal min-h-0 ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
-    </div>
-  );
+    </div>);
 }

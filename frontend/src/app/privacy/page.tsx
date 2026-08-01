@@ -22,6 +22,11 @@ export default function PrivacyPolicyPage() {
       </LegalSection>
 
       <LegalSection number="02" title="Who we are">
+        <LegalP>
+          Olynixx Praxis is a specialisation and certification body for non-medical human performance coaches,
+          operating in the United Arab Emirates. Learner and coach records are held under UAE data residency and
+          processed in line with the Personal Data Protection Law.
+        </LegalP>
         <LegalP>Data Controller: Olynixx Praxis</LegalP>
         <LegalP>
           Privacy: <LegalLink href="mailto:privacy@olynixx.com">privacy@olynixx.com</LegalLink>

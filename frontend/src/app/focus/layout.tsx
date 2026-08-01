@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
+import { PILLARS_INLINE } from "@/lib/brand-copy";
 
 export const metadata: Metadata = {
   title: "Our Focus",
-  description:
-    "Human Readiness, Recovery Intelligence, and Performance Intelligence — the three disciplines of Olynixx Praxis.",
+  description: `${PILLARS_INLINE}, the three pillars of Olynixx Praxis.`,
   alternates: { canonical: "/focus" },
   openGraph: {
     title: "Our Focus | Olynixx Praxis",
-    description:
-      "Human Readiness, Recovery Intelligence, and Performance Intelligence — the three disciplines of Olynixx Praxis.",
+    description: `${PILLARS_INLINE}, the three pillars of Olynixx Praxis.`,
     url: "/focus",
   },
 };

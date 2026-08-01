@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
+import { DEPLOY_WHERE, SITE_POSITIONING } from "@/lib/brand-copy";
 
 export const metadata: Metadata = {
   title: "For Organisations",
-  description:
-    "Deploy Praxis-certified specialists into corporate, sport, and project environments — taught, tested, and vouched for.",
+  description: `The trusted pool. Certified specialists placed into ${DEPLOY_WHERE}. ${SITE_POSITIONING}`,
   alternates: { canonical: "/organisations" },
   openGraph: {
     title: "For Organisations | Olynixx Praxis",
-    description:
-      "Deploy Praxis-certified specialists into corporate, sport, and project environments — taught, tested, and vouched for.",
+    description: `The trusted pool. Certified specialists placed into ${DEPLOY_WHERE}.`,
     url: "/organisations",
   },
 };

@@ -78,15 +78,12 @@ export default function CoachDashboard() {
   const placementSpark = data?.placement_spark ?? [0, 0, 0, 0, 0, 0];
 
   if (!loaded) {
-    return (
-      <main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-8 font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
+    return (<main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-8 font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
         Loading dashboard…
-      </main>
-    );
+      </main>);
   }
 
-  return (
-    <main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-5">
+  return (<main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-5">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <ScrollReveal className="lg:col-span-12">
           <div
@@ -113,16 +110,14 @@ export default function CoachDashboard() {
                   { label: "Utilisation", value: `${utilisation}%` },
                   { label: "Placement", value: data?.placement_eligible ? "Eligible" : "Blocked" },
                   { label: "Score", value: `${placementScore}` },
-                ].map((chip) => (
-                  <div
+                ].map((chip) => (<div
                     key={chip.label}
                     className="px-3 py-2 text-center min-w-[72px]"
                     style={{ border: "1px solid rgba(150,118,43,0.45)" }}
                   >
                     <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--ochre)" }}>{chip.label}</div>
                     <div className="font-display text-lg leading-tight" style={{ color: "var(--cream)", fontWeight: 500 }}>{chip.value}</div>
-                  </div>
-                ))}
+                  </div>))}
               </div>
             </div>
           </div>
@@ -151,14 +146,12 @@ export default function CoachDashboard() {
               </div>
             </div>
             <div className="p-5 flex-1 flex flex-col gap-3">
-              {activeAssignments.length > 0 ? (
-                <>
+              {activeAssignments.length > 0 ? (<>
                   <div className="space-y-3 flex-1 overflow-y-auto max-h-[340px] pr-1">
                     {activeAssignments.map((item) => {
                       // Legacy "offered" and current "pending" both need a response.
                       const isPending = item.status === "pending" || item.status === "offered";
-                      return (
-                        <div
+                      return (<div
                           key={item.id}
                           className="rounded-sm p-4 ox-kpi-float"
                           style={{
@@ -178,24 +171,21 @@ export default function CoachDashboard() {
                                 >
                                   {item.status}
                                 </span>
-                                {item.project_type && (
-                                  <span className="font-body text-[11px]" style={{ color: "var(--ox-muted)" }}>
+                                {item.project_type && (<span className="font-body text-[11px]" style={{ color: "var(--ox-muted)" }}>
                                     {item.project_type}
-                                  </span>
-                                )}
+                                  </span>)}
                               </div>
                               <h3 className="font-bold text-[15px] leading-snug" style={{ color: "var(--ox-fg)" }}>
                                 {item.project_title}
                               </h3>
                               <p className="font-body text-[13px] mt-1" style={{ color: "var(--ox-muted)" }}>
                                 {item.client_name || "Client"}
-                                {item.notes ? ` — ${item.notes}` : ""}
+                                {item.notes ? `, ${item.notes}` : ""}
                               </p>
                             </div>
                             <Briefcase size={16} className="shrink-0 mt-1" style={{ color: "var(--ox-blue)" }} />
                           </div>
-                        </div>
-                      );
+                        </div>);
                     })}
                   </div>
                   <div className="flex flex-wrap gap-2 pt-1">
@@ -206,9 +196,7 @@ export default function CoachDashboard() {
                       Check agreements
                     </Link>
                   </div>
-                </>
-              ) : (
-                <div className="rounded-sm p-5 h-full flex flex-col justify-center" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}>
+                </>) : (<div className="rounded-sm p-5 h-full flex flex-col justify-center" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}>
                   <p className="font-medium text-[15px]" style={{ color: "var(--ox-fg)" }}>No active assignments</p>
                   <p className="font-body text-[13px] mt-1 mb-4" style={{ color: "var(--ox-muted)" }}>
                     When admin dispatches a project, it will appear here and on your board.
@@ -216,8 +204,7 @@ export default function CoachDashboard() {
                   <Link href="/coach/projects" className="ox-cta h-9 px-5 text-[13px] font-semibold inline-flex items-center w-fit">
                     Open project board
                   </Link>
-                </div>
-              )}
+                </div>)}
             </div>
           </div>
         </ScrollReveal>
@@ -257,7 +244,7 @@ export default function CoachDashboard() {
               <div className="mt-3 flex items-center justify-between font-body text-[12px]">
                 <span style={{ color: "var(--ox-muted)" }}>CECs</span>
                 <span className="font-medium" style={{ color: "var(--ox-fg)" }}>
-                  {data?.cec_status || "—"} · {data?.cec_credits ?? 0} credits
+                  {data?.cec_status || "-"} · {data?.cec_credits ?? 0} credits
                 </span>
               </div>
             </div>
@@ -277,8 +264,7 @@ export default function CoachDashboard() {
           <div className="ox-card ox-kpi-float rounded-sm p-5 h-full flex flex-col" style={{ background: "var(--ox-surface)" }}>
             <p className="font-display text-[12px] uppercase tracking-[0.14em] mb-3" style={{ color: "var(--ochre)" }}>Delivery mix</p>
             <div className="flex-1 grid place-items-center">
-              {deliveryMix.length ? (
-                <MultiSegmentDonut
+              {deliveryMix.length ? (<MultiSegmentDonut
                   size={118}
                   thickness={14}
                   centerValue={String(throughput.reduce((s, x) => s + x.value, 0))}
@@ -288,10 +274,7 @@ export default function CoachDashboard() {
                     color: COLOR_MAP[s.color_key] || "var(--ox-blue)",
                     label: s.label,
                   }))}
-                />
-              ) : (
-                <p className="font-body text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No assignments yet</p>
-              )}
+                />) : (<p className="font-body text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No assignments yet</p>)}
             </div>
           </div>
         </ScrollReveal>
@@ -338,16 +321,13 @@ export default function CoachDashboard() {
                 { label: "Utilisation", value: `${utilisation}%` },
                 { label: "Placement", value: `${placementScore}` },
                 { label: "Momentum", value: utilisation >= 60 ? "Rising" : "Building" },
-              ].map((s) => (
-                <div key={s.label} className="rounded-sm py-2" style={{ background: "rgba(217,172,74,0.08)", border: "1px solid rgba(150,118,43,0.35)" }}>
+              ].map((s) => (<div key={s.label} className="rounded-sm py-2" style={{ background: "rgba(217,172,74,0.08)", border: "1px solid rgba(150,118,43,0.35)" }}>
                   <p className="font-body text-[11px]" style={{ color: "var(--ox-muted)" }}>{s.label}</p>
                   <p className="font-semibold text-[14px]" style={{ color: "var(--ox-fg)" }}>{s.value}</p>
-                </div>
-              ))}
+                </div>))}
             </div>
           </div>
         </ScrollReveal>
       </div>
-    </main>
-  );
+    </main>);
 }

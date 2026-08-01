@@ -1,7 +1,6 @@
-/** Hairline bronze rule with a khatam node — page 08 divider system. */
+/** Hairline bronze rule with a khatam node, page 08 divider system. */
 export function KhatamDivider({ className = "" }: { className?: string }) {
-  return (
-    <div
+  return (<div
       className={`flex items-center gap-3 ${className}`}
       aria-hidden
     >
@@ -11,6 +10,5 @@ export function KhatamDivider({ className = "" }: { className?: string }) {
         <circle cx="10" cy="10" r="6.5" stroke="var(--bronze)" strokeWidth="0.8" fill="none" opacity="0.7" />
       </svg>
       <div className="flex-1 h-px" style={{ background: "var(--bronze)", opacity: 0.45 }} />
-    </div>
-  );
+    </div>);
 }

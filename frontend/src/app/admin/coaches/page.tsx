@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { SPECIALTY_OPTIONS } from "@/lib/brand-copy";
 
 type Coach = {
   id: number;
@@ -28,16 +29,7 @@ const EMIRATES = [
   "Fujairah",
 ] as const;
 
-const SPECIALTIES = [
-  "Readiness",
-  "Recovery",
-  "Performance",
-  "HRV Coaching",
-  "Workplace Wellbeing",
-  "Human Readiness",
-  "Recovery Intelligence",
-  "Performance Intelligence",
-] as const;
+const SPECIALTIES = SPECIALTY_OPTIONS;
 
 const selectStyle = {
   background: "var(--ox-input-bg)",
@@ -85,8 +77,7 @@ export default function AdminTalentPoolPage() {
 
   const eligibleCount = coaches.filter((c) => c.coach_attributes?.placement_eligible).length;
 
-  return (
-    <div className="p-6 space-y-5">
+  return (<div className="p-6 space-y-5">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl" style={{ fontWeight: 500, color: "var(--cream)" }}>
@@ -117,11 +108,9 @@ export default function AdminTalentPoolPage() {
           aria-label="Emirate"
         >
           <option value="">All emirates</option>
-          {EMIRATES.map((emirate) => (
-            <option key={emirate} value={emirate}>
+          {EMIRATES.map((emirate) => (<option key={emirate} value={emirate}>
               {emirate}
-            </option>
-          ))}
+            </option>))}
         </select>
         <select
           value={filters.specialty}
@@ -131,11 +120,9 @@ export default function AdminTalentPoolPage() {
           aria-label="Specialty"
         >
           <option value="">All specialties</option>
-          {SPECIALTIES.map((specialty) => (
-            <option key={specialty} value={specialty}>
+          {SPECIALTIES.map((specialty) => (<option key={specialty} value={specialty}>
               {specialty}
-            </option>
-          ))}
+            </option>))}
         </select>
         <select
           value={filters.availability}
@@ -162,10 +149,7 @@ export default function AdminTalentPoolPage() {
         </button>
       </div>
 
-      {loading ? (
-        <p className="font-body" style={{ color: "var(--ox-muted)" }}>Loading coaches…</p>
-      ) : (
-        <div className="overflow-x-auto" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-surface)" }}>
+      {loading ? (<p className="font-body" style={{ color: "var(--ox-muted)" }}>Loading coaches…</p>) : (<div className="overflow-x-auto" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-surface)" }}>
           <table className="w-full text-sm font-body">
             <thead style={{ background: "rgba(217,172,74,0.1)" }}>
               <tr>
@@ -179,15 +163,14 @@ export default function AdminTalentPoolPage() {
               </tr>
             </thead>
             <tbody>
-              {coaches.map((coach) => (
-                <tr key={coach.id} style={{ borderTop: "1px solid rgba(150,118,43,0.25)" }}>
+              {coaches.map((coach) => (<tr key={coach.id} style={{ borderTop: "1px solid rgba(150,118,43,0.25)" }}>
                   <td className="p-3" style={{ color: "var(--cream)" }}>
                     {[coach.profile?.first_name, coach.profile?.last_name].filter(Boolean).join(" ") || coach.email}
                   </td>
-                  <td className="p-3" style={{ color: "var(--ox-muted)" }}>{coach.coach_attributes?.specialty || "—"}</td>
-                  <td className="p-3" style={{ color: "var(--ox-muted)" }}>{coach.coach_attributes?.emirate || "—"}</td>
+                  <td className="p-3" style={{ color: "var(--ox-muted)" }}>{coach.coach_attributes?.specialty || "-"}</td>
+                  <td className="p-3" style={{ color: "var(--ox-muted)" }}>{coach.coach_attributes?.emirate || "-"}</td>
                   <td className="p-3" style={{ color: "var(--ox-muted)" }}>
-                    {(coach.coach_attributes?.languages || []).join(", ") || "—"}
+                    {(coach.coach_attributes?.languages || []).join(", ") || "-"}
                   </td>
                   <td className="p-3" style={{ color: "var(--ox-muted)" }}>
                     {coach.coach_attributes?.availability_status ? "Available" : "Unavailable"}
@@ -196,21 +179,16 @@ export default function AdminTalentPoolPage() {
                     {coach.coach_attributes?.placement_eligible ? "Eligible" : "Blocked"}
                   </td>
                   <td className="p-3" style={{ color: "var(--ox-muted)" }}>
-                    {coach.coach_attributes?.certification_level || "—"}
+                    {coach.coach_attributes?.certification_level || "-"}
                   </td>
-                </tr>
-              ))}
-              {coaches.length === 0 && (
-                <tr>
+                </tr>))}
+              {coaches.length === 0 && (<tr>
                   <td colSpan={7} className="p-6 text-center" style={{ color: "var(--ox-muted)" }}>
                     No coaches match these filters.
                   </td>
-                </tr>
-              )}
+                </tr>)}
             </tbody>
           </table>
-        </div>
-      )}
-    </div>
-  );
+        </div>)}
+    </div>);
 }

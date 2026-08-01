@@ -13,7 +13,7 @@ type Props = {
 /**
  * Primary lockup per brand book pages 03 & 05:
  * mark + OLYNIXX (wide-tracked capitals) / PRAXIS (small caps between bronze rules).
- * No official wordmark SVG in the pack — typed in Playfair Display only.
+ * No official wordmark SVG in the pack, typed in Playfair Display only.
  */
 export function BrandLockup({
   variant = "transparent",
@@ -28,8 +28,7 @@ export function BrandLockup({
   const ruleColor = "var(--bronze)";
 
   if (layout === "stacked") {
-    return (
-      <div className={`flex flex-col items-center text-center ${className}`}>
+    return (<div className={`flex flex-col items-center text-center ${className}`}>
         <BrandMark variant={variant} size={markSize} priority />
         <div className="mt-5" style={{ color: nameColor }}>
           <div
@@ -63,20 +62,16 @@ export function BrandLockup({
             <span style={{ width: 28, height: 1, background: ruleColor }} />
           </div>
         </div>
-        {showTagline && (
-          <p
+        {showTagline && (<p
             className="font-body italic mt-4 text-[15px] max-w-xs"
             style={{ color: tone === "light" ? "rgba(242,237,227,0.72)" : "var(--bronze)" }}
           >
             Where trusted specialists are made.
-          </p>
-        )}
-      </div>
-    );
+          </p>)}
+      </div>);
   }
 
-  return (
-    <div className={`flex items-center gap-3 ${className}`}>
+  return (<div className={`flex items-center gap-3 ${className}`}>
       <BrandMark variant={variant} size={markSize} priority />
       <div className="leading-none" style={{ color: nameColor }}>
         <div
@@ -103,6 +98,5 @@ export function BrandLockup({
           PRAXIS
         </div>
       </div>
-    </div>
-  );
+    </div>);
 }

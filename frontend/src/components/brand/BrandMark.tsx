@@ -24,15 +24,14 @@ type Props = {
   priority?: boolean;
 };
 
-/** Eight-point khatam star — SVG only, never recoloured or shadowed. */
+/** Eight-point khatam star, SVG only, never recoloured or shadowed. */
 export function BrandMark({
   variant = "transparent",
   size = 40,
   className = "",
   priority = false,
 }: Props) {
-  return (
-    <Image
+  return (<Image
       src={MARKS[variant]}
       alt="Olynixx Praxis"
       width={size}
@@ -40,6 +39,5 @@ export function BrandMark({
       className={className}
       priority={priority}
       unoptimized
-    />
-  );
+    />);
 }

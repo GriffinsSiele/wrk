@@ -6,10 +6,9 @@ interface GlassCardProps {
   dark?: boolean;
 }
 
-/** Flat surface card — no glass, blur, or drop-shadow (Praxis v1.1). */
+/** Flat surface card, no glass, blur, or drop-shadow (Praxis v1.1). */
 export function GlassCard({ children, className = "", dark = false }: GlassCardProps) {
-  return (
-    <div
+  return (<div
       className={className}
       style={{
         border: `1px solid ${dark ? "rgba(150,118,43,0.4)" : "rgba(150,118,43,0.35)"}`,
@@ -18,6 +17,5 @@ export function GlassCard({ children, className = "", dark = false }: GlassCardP
       }}
     >
       {children}
-    </div>
-  );
+    </div>);
 }

@@ -42,7 +42,8 @@ export function Footer() {
               className="font-body italic text-[14px] leading-relaxed mt-3 max-w-xs"
               style={{ color: "rgba(242,237,227,0.7)" }}
             >
-              Where trusted specialists are made.
+              Where trusted specialists are made. Specialisation and certification for non-medical human
+              performance coaches.
             </p>
             <Strapline className="mt-3" deployTone="cream" size="sm" />
             <div className="mt-4 flex items-center gap-2.5" aria-label="Social media">

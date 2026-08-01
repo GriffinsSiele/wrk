@@ -17,7 +17,7 @@ const standards = [
   {
     code: "02",
     title: "Scope of practice",
-    desc: "Coaches operate strictly within the non-medical scope defined here. Concerns requiring medical intervention are referred onward.",
+    desc: "Coaches operate strictly within the non-medical scope. They do not diagnose or treat conditions, prescribe medication or individual diets, recommend supplements, order or clinically interpret blood work, rehabilitate injury, or provide psychological therapy. Referral is a required competency.",
   },
   {
     code: "03",
@@ -44,32 +44,31 @@ const standards = [
 const scopeTable = [
   {
     area: "Readiness assessment",
-    inScope: "Sleep, stress, nutrition status, HRV-based readiness screening",
+    inScope: "Baseline and trend reading of capacity; sleep, load, autonomic and readiness screening within non-medical limits",
     outOfScope: "Clinical diagnosis, medical assessment, prescribing medication",
   },
   {
-    area: "Recovery protocols",
-    inScope: "Cold/heat therapy, breathwork, active recovery, neuromuscular techniques",
-    outOfScope: "Physiotherapy treatment, medical rehabilitation, surgery",
+    area: "Recovery reading",
+    inScope: "Reading Physical, Mental, Metabolic and Hormonal systems against a personal baseline; setting load or waiting",
+    outOfScope: "Physiotherapy treatment, medical rehabilitation, clinical blood/hormone interpretation, supplement prescription",
   },
   {
-    area: "Performance planning",
-    inScope: "Periodisation, wellness questionnaires, wearable data interpretation",
+    area: "Performance decisions",
+    inScope: "Deciding whether and when to start an input; documenting what was measured, decided and why",
     outOfScope: "Sports medicine decisions, injury management, clinical psychology",
   },
   {
     area: "Client interaction",
-    inScope: "Coaching, education, behaviour-change frameworks",
-    outOfScope: "Medical advice, diagnosis, prescribing therapeutic interventions",
+    inScope: "Coaching and education within the qualification held; mandatory referral when patterns suggest clinical need",
+    outOfScope: "Medical advice, diagnosis, psychological therapy or counselling, prescribing therapeutic interventions",
   },
 ];
 
 export default function StandardsPage() {
-  return (
-    <div style={{ background: "var(--cream)", color: "var(--ink)", minHeight: "100vh" }}>
+  return (<div style={{ background: "var(--cream)", color: "var(--ink)", minHeight: "100vh" }}>
       <Navbar />
 
-      {/* Hero — one composition: brand, headline, one sentence */}
+      {/* Hero, one composition: brand, headline, one sentence */}
       <section
         style={{
           position: "relative",
@@ -155,14 +154,14 @@ export default function StandardsPage() {
               textAlign: "center",
             }}
           >
-            We specialise coaches — we do not practise medicine. Clarity of scope protects clients, organisations, and
-            the professionals who carry our name.
+            We set the standard, and we vouch for whoever meets it. That guarantee only holds if the boundary is clear : 
+            we specialise coaches; we do not practise medicine.
           </p>
           <KhatamDivider className="mt-10" />
         </ScrollReveal>
       </section>
 
-      {/* Standards — one job: list the six */}
+      {/* Standards, one job: list the six */}
       <section style={{ padding: "24px 24px 88px", maxWidth: 820, margin: "0 auto" }}>
         <ScrollReveal>
           <h2
@@ -190,8 +189,7 @@ export default function StandardsPage() {
         </ScrollReveal>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          {standards.map((s, i) => (
-            <ScrollReveal key={s.code} delay={i * 50}>
+          {standards.map((s, i) => (<ScrollReveal key={s.code} delay={i * 50}>
               <article
                 style={{
                   display: "grid",
@@ -225,12 +223,11 @@ export default function StandardsPage() {
                   </p>
                 </div>
               </article>
-            </ScrollReveal>
-          ))}
+            </ScrollReveal>))}
         </div>
       </section>
 
-      {/* Scope — visual in / out, not a dense spreadsheet */}
+      {/* Scope, visual in / out, not a dense spreadsheet */}
       <section
         style={{
           padding: "72px 24px 96px",
@@ -263,7 +260,7 @@ export default function StandardsPage() {
                 marginRight: "auto",
               }}
             >
-              What Praxis coaches may do — and where they must stop and refer.
+              What Praxis coaches may do, and where they must stop and refer.
             </p>
           </ScrollReveal>
 
@@ -276,8 +273,7 @@ export default function StandardsPage() {
               padding: "0 4px",
             }}
           >
-            {["Area", "Within scope", "Outside scope"].map((h) => (
-              <div
+            {["Area", "Within scope", "Outside scope"].map((h) => (<div
                 key={h}
                 className="font-display"
                 style={{
@@ -288,13 +284,11 @@ export default function StandardsPage() {
                 }}
               >
                 {h}
-              </div>
-            ))}
+              </div>))}
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {scopeTable.map((row, i) => (
-              <ScrollReveal key={row.area} delay={i * 60}>
+            {scopeTable.map((row, i) => (<ScrollReveal key={row.area} delay={i * 60}>
                 <div
                   style={{
                     display: "grid",
@@ -355,8 +349,7 @@ export default function StandardsPage() {
                     </p>
                   </div>
                 </div>
-              </ScrollReveal>
-            ))}
+              </ScrollReveal>))}
           </div>
         </div>
       </section>
@@ -393,6 +386,5 @@ export default function StandardsPage() {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>);
 }

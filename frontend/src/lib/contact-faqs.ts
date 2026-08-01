@@ -1,7 +1,7 @@
 export const CONTACT_FAQS = [
   {
     q: "Who is the Level 1 specialisation for?",
-    a: "Non-medical professionals with an existing qualification — personal trainers, health coaches, physios, nutritionists, and related practitioners — who want a specialisation in readiness, recovery, and performance.",
+    a: "Coaches, trainers, nutritionists and health professionals who already hold a qualification, and who want to specialise in Human Readiness, Recovery, and Performance Intelligence rather than collect another method.",
   },
   {
     q: "How long does the course take?",
@@ -9,11 +9,11 @@ export const CONTACT_FAQS = [
   },
   {
     q: "What is the exam format?",
-    a: "Dual gate: a supervised online written exam (multiple-choice, timed, 70% pass mark) plus a practical assessment scored PASS/FAIL by an assessor. Both are required for certification.",
+    a: "Dual gate: a supervised online written exam (multiple-choice, timed, 70% pass mark) plus a practical assessment scored PASS/FAIL by an assessor. Both are required for certification. The certificate carries an issued number and a renewal date.",
   },
   {
     q: "Does Praxis replace my existing certification?",
-    a: "No. We don't replace your certification — we specialise it. Praxis sits on top of qualifications you already hold.",
+    a: "No. We don't replace your certification. We specialise it. The specialisation sits on top of a qualification you already hold.",
   },
   {
     q: "What happens after I pass?",

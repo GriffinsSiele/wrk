@@ -87,15 +87,12 @@ export default function AdminDashboard() {
   ];
 
   if (!loaded) {
-    return (
-      <div className="px-4 md:px-6 py-8 font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
+    return (<div className="px-4 md:px-6 py-8 font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
         Loading dashboard…
-      </div>
-    );
+      </div>);
   }
 
-  return (
-    <div className="px-4 md:px-6 py-5">
+  return (<div className="px-4 md:px-6 py-5">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <ScrollReveal className="lg:col-span-12">
           <div
@@ -132,8 +129,7 @@ export default function AdminDashboard() {
           </div>
         </ScrollReveal>
 
-        {kpis.map((k, i) => (
-          <ScrollReveal key={k.label} delay={i * 50} className="lg:col-span-3 h-full">
+        {kpis.map((k, i) => (<ScrollReveal key={k.label} delay={i * 50} className="lg:col-span-3 h-full">
             <div className="ox-card ox-kpi-float p-4 rounded-sm h-full flex flex-col" style={{ background: "var(--ox-surface-strong)" }}>
               <div className="flex items-start justify-between mb-2">
                 <div className="w-9 h-9 rounded-sm grid place-items-center" style={{ background: "rgba(217,172,74,0.12)", color: k.color }}>
@@ -145,8 +141,7 @@ export default function AdminDashboard() {
               <div className="font-display text-3xl leading-none mb-1" style={{ color: "var(--ox-fg)", fontWeight: 500 }}>{k.value}</div>
               <div className="font-body text-[11px] mt-auto" style={{ color: k.color }}>{k.change} vs last period</div>
             </div>
-          </ScrollReveal>
-        ))}
+          </ScrollReveal>))}
 
         <ScrollReveal delay={80} className="lg:col-span-8 h-full">
           <div className="ox-card rounded-sm p-5 h-full flex flex-col" style={{ background: "var(--ox-surface-strong)" }}>
@@ -179,12 +174,10 @@ export default function AdminDashboard() {
                 { label: "Certificates", value: stats.total_certificates },
                 { label: "Courses", value: stats.total_courses },
                 { label: "Leads", value: stats.total_leads },
-              ].map((row) => (
-                <div key={row.label} className="rounded-sm px-2.5 py-2" style={{ background: "rgba(217,172,74,0.08)", border: "1px solid rgba(150,118,43,0.35)" }}>
+              ].map((row) => (<div key={row.label} className="rounded-sm px-2.5 py-2" style={{ background: "rgba(217,172,74,0.08)", border: "1px solid rgba(150,118,43,0.35)" }}>
                   <div className="font-body" style={{ color: "var(--ox-muted)" }}>{row.label}</div>
                   <div className="font-semibold" style={{ color: "var(--ox-fg)" }}>{row.value}</div>
-                </div>
-              ))}
+                </div>))}
             </div>
           </div>
         </ScrollReveal>
@@ -194,8 +187,7 @@ export default function AdminDashboard() {
             <h3 className="font-semibold text-[15px] mb-0.5" style={{ color: "var(--ox-fg)" }}>Talent Mix</h3>
             <p className="font-body text-[12px] mb-3" style={{ color: "var(--ox-muted)" }}>Pool composition by readiness</p>
             <div className="flex-1 grid place-items-center">
-              {talentMix.length ? (
-                <MultiSegmentDonut
+              {talentMix.length ? (<MultiSegmentDonut
                   size={130}
                   thickness={15}
                   centerValue={`${poolHealth}%`}
@@ -205,10 +197,7 @@ export default function AdminDashboard() {
                     color: COLOR_MAP[s.color_key] || "var(--ox-blue)",
                     label: s.label,
                   }))}
-                />
-              ) : (
-                <p className="font-body text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No coaches in pool yet</p>
-              )}
+                />) : (<p className="font-body text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No coaches in pool yet</p>)}
             </div>
           </div>
         </ScrollReveal>
@@ -218,8 +207,7 @@ export default function AdminDashboard() {
             <h3 className="font-semibold text-[15px] mb-0.5" style={{ color: "var(--ox-fg)" }}>Dispatch Matrix</h3>
             <p className="font-body text-[12px] mb-3" style={{ color: "var(--ox-muted)" }}>Cross-track execution quality and throughput health</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
-              {(dispatch.length ? dispatch : [{ track: "No projects yet", active: 0, completion: 0, risk: "Watch" }]).map((row, i) => (
-                <div key={row.track} className="rounded-sm p-3.5 flex flex-col" style={{ background: "rgba(12,15,18,0.25)", border: "1px solid rgba(150,118,43,0.3)" }}>
+              {(dispatch.length ? dispatch : [{ track: "No projects yet", active: 0, completion: 0, risk: "Watch" }]).map((row, i) => (<div key={row.track} className="rounded-sm p-3.5 flex flex-col" style={{ background: "rgba(12,15,18,0.25)", border: "1px solid rgba(150,118,43,0.3)" }}>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="font-medium text-[13px] leading-snug" style={{ color: "var(--ox-fg-dark)" }}>{row.track}</div>
                     <span
@@ -246,8 +234,7 @@ export default function AdminDashboard() {
                       }}
                     />
                   </div>
-                </div>
-              ))}
+                </div>))}
             </div>
           </div>
         </ScrollReveal>
@@ -262,8 +249,7 @@ export default function AdminDashboard() {
               <Link href="/admin/coaches" className="font-body text-[13px] font-medium" style={{ color: "var(--ochre)" }}>View all →</Link>
             </div>
             <div className="divide-y" style={{ borderColor: "var(--ox-line)" }}>
-              {(recentCoaches.length ? recentCoaches : [{ name: "No coaches yet", emirate: "—", specialty: "—", level: "—", available: false, placement: false }]).map((coach) => (
-                <div key={coach.name} className="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group transition-colors hover:bg-[rgba(217,172,74,0.06)]">
+              {(recentCoaches.length ? recentCoaches : [{ name: "No coaches yet", emirate: "-", specialty: "-", level: "-", available: false, placement: false }]).map((coach) => (<div key={coach.name} className="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group transition-colors hover:bg-[rgba(217,172,74,0.06)]">
                   <div className="flex items-center gap-3 min-w-0">
                     <div
                       className="w-9 h-9 rounded-sm grid place-items-center text-sm font-bold text-white shrink-0"
@@ -273,11 +259,11 @@ export default function AdminDashboard() {
                     </div>
                     <div className="min-w-0">
                       <div className="font-medium text-[14px] truncate" style={{ color: "var(--ox-fg)" }}>{coach.name}</div>
-                      <div className="font-body text-[12px] truncate" style={{ color: "var(--ox-muted)" }}>{coach.specialty || "—"} · {coach.emirate || "—"}</div>
+                      <div className="font-body text-[12px] truncate" style={{ color: "var(--ox-muted)" }}>{coach.specialty || "-"} · {coach.emirate || "-"}</div>
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-3 sm:justify-end">
-                    <span className="font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)", borderBottom: "1px solid rgba(150,118,43,0.55)" }}>{coach.level || "—"}</span>
+                    <span className="font-display text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--ochre)", borderBottom: "1px solid rgba(150,118,43,0.55)" }}>{coach.level || "-"}</span>
                     <span
                       className="font-display text-[11px] tracking-[0.14em] uppercase"
                       style={{
@@ -297,12 +283,10 @@ export default function AdminDashboard() {
                       {coach.placement ? "Placement OK" : "Blocked"}
                     </span>
                   </div>
-                </div>
-              ))}
+                </div>))}
             </div>
           </div>
         </ScrollReveal>
       </div>
-    </div>
-  );
+    </div>);
 }

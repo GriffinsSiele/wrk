@@ -1,4 +1,6 @@
 /** Canonical site URL for metadata, sitemap, and JSON-LD. */
+import { PILLARS_INLINE, SITE_POSITIONING, SITE_SPECIALISE } from "@/lib/brand-copy";
+
 export function getSiteUrl(): string {
   const fromEnv =
     process.env.NEXT_PUBLIC_SITE_URL ||
@@ -11,9 +13,8 @@ export function getSiteUrl(): string {
 }
 
 export const SITE_NAME = "Olynixx Praxis";
-export const SITE_TAGLINE = "Where trusted specialists are made.";
-export const DEFAULT_DESCRIPTION =
-  "We don't replace your certification. We specialise it. Learn, certify, and deploy performance specialists across the UAE.";
+export const SITE_TAGLINE = SITE_POSITIONING;
+export const DEFAULT_DESCRIPTION = `${SITE_SPECIALISE} Olynixx Praxis teaches, certifies, and deploys non-medical human performance coaches across ${PILLARS_INLINE} in the UAE.`;
 
 export const PUBLIC_ROUTES = [
   { path: "/", priority: 1, changeFrequency: "weekly" as const },

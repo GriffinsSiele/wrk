@@ -1,4 +1,5 @@
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, getSiteUrl } from "@/lib/seo";
+import { PILLARS } from "@/lib/brand-copy";
 
 /** Course / educational program JSON-LD for the specialisations page. */
 export function CourseJsonLd() {
@@ -30,11 +31,7 @@ export function CourseJsonLd() {
         name: "United Arab Emirates",
       },
     },
-    about: [
-      "Human Readiness",
-      "Recovery Intelligence",
-      "Performance Intelligence",
-    ],
+    about: [...PILLARS],
     teaches: SITE_TAGLINE,
   };
 

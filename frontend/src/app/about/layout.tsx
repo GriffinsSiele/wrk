@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import { PILLARS_INLINE, SITE_POSITIONING, WHO_WE_ARE } from "@/lib/brand-copy";
 
 export const metadata: Metadata = {
   title: "About",
-  description:
-    "Where trusted specialists are made. Olynixx Praxis specialises non-medical human performance coaches across readiness, recovery, and performance intelligence — including health, nutrition, and wellness programming.",
+  description: `${SITE_POSITIONING} ${WHO_WE_ARE} Pillars: ${PILLARS_INLINE}.`,
   alternates: { canonical: "/about" },
   openGraph: {
     title: "About | Olynixx Praxis",

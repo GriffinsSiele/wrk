@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { BrandMark } from "@/components/brand/BrandMark";
 
 /**
- * Section 01 hero — staggered enter only. Copy locked to About v3.0 FINAL.
+ * Section 01 hero, staggered enter only. Copy locked to About v3.0 FINAL.
  * Display beats: H1 = positioning; lede = opening beat (larger presence under H1).
  */
 export function AboutHero() {
@@ -24,8 +24,7 @@ export function AboutHero() {
     transition: "opacity 0.75s ease, transform 0.75s ease",
   } as const;
 
-  return (
-    <section
+  return (<section
       className="relative overflow-hidden"
       style={{
         minHeight: "min(78vh, 760px)",
@@ -38,7 +37,7 @@ export function AboutHero() {
           <BrandMark variant="cream" size={64} priority />
         </div>
 
-        {/* Positioning statement — present, not competing with the lede beat */}
+        {/* Positioning statement, present, not competing with the lede beat */}
         <h1
           className="about-hero-enter font-display mt-7 text-[clamp(1.85rem,4.2vw,2.75rem)] leading-[1.12] tracking-[-0.015em]"
           style={{ ...enter, color: "var(--ox-ink)", fontWeight: 500 }}
@@ -46,7 +45,7 @@ export function AboutHero() {
           Where trusted specialists are made.
         </h1>
 
-        {/* Lede — the opening display beat of the page (larger than body; carries the page) */}
+        {/* Lede, the opening display beat of the page (larger than body; carries the page) */}
         <p
           className="about-hero-enter mt-8 font-display text-[clamp(1.55rem,3.8vw,2.15rem)] leading-snug tracking-tight max-w-[24ch] mx-auto"
           style={{ ...enter, color: "var(--ox-ink)", fontWeight: 500 }}
@@ -62,7 +61,7 @@ export function AboutHero() {
             The ketogenic diet works. So does the high-carb one. Hybrid racing works, and so does
             walking. Fasting works. Eating breakfast works. Cold water works. Every method in the
             health and performance industry has people it transformed, and every one of them has
-            people it did nothing for — or quietly cost.
+            people it did nothing for, or quietly cost.
           </p>
           <p className="font-body text-[1.05rem] sm:text-lg leading-[1.7]" style={{ color: "var(--ox-muted)" }}>
             So the methods keep selling, and nobody has to explain the failures. They are put down
@@ -70,13 +69,13 @@ export function AboutHero() {
           </p>
           <p className="font-body text-[1.05rem] sm:text-lg leading-[1.7]" style={{ color: "var(--ox-muted)" }}>
             They are usually none of those things. A body that is rested adapts to what is asked of
-            it. A body that is not rested does not adapt — it absorbs. Same plan, same diet, same
+            it. A body that is not rested does not adapt, it absorbs. Same plan, same diet, same
             discipline, opposite outcome. And nobody checked, because checking is not what the
             industry sells.
           </p>
         </div>
 
-        {/* Pull quote — display, centred, full-measure hairline rules above and below */}
+        {/* Pull quote, display, centred, full-measure hairline rules above and below */}
         <div className="about-hero-enter mt-10 max-w-[34rem] mx-auto" style={enter}>
           <div className="h-px w-full" style={{ background: "rgba(150,118,43,0.45)" }} aria-hidden />
           <p
@@ -88,6 +87,5 @@ export function AboutHero() {
           <div className="h-px w-full" style={{ background: "rgba(150,118,43,0.45)" }} aria-hidden />
         </div>
       </div>
-    </section>
-  );
+    </section>);
 }

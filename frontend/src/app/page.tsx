@@ -17,8 +17,7 @@ function HeroContent() {
     });
   }, []);
 
-  return (
-    <>
+  return (<>
       <div
         className="hero-enter"
         style={{ opacity: 0, transform: "translateY(12px)", transition: "all 0.7s ease" }}
@@ -71,16 +70,14 @@ function HeroContent() {
           Join the pool
         </Link>
       </div>
-    </>
-  );
+    </>);
 }
 
-/** Illustrative readiness widget — not live product data. */
+/** Illustrative readiness widget, not live product data. */
 function ReadinessPanel() {
   const bars = [62, 78, 54, 88, 70, 92, 66, 48, 80, 58];
 
-  return (
-    <div className="relative w-full max-w-[400px] mx-auto">
+  return (<div className="relative w-full max-w-[400px] mx-auto">
       <p
         className="font-display text-[10px] tracking-[0.28em] uppercase mb-3 text-center"
         style={{ color: "var(--ochre)" }}
@@ -104,8 +101,7 @@ function ReadinessPanel() {
         </div>
         <div className="p-5">
           <div className="flex items-end gap-1.5 h-28 mb-5">
-            {bars.map((h, i) => (
-              <div
+            {bars.map((h, i) => (<div
                 key={i}
                 className="flex-1 ox-bar"
                 style={{
@@ -114,55 +110,50 @@ function ReadinessPanel() {
                   opacity: i === 5 ? 1 : 0.55,
                   animationDelay: `${i * 60}ms`,
                 }}
-              />
-            ))}
+              />))}
           </div>
           <div className="grid grid-cols-3 gap-3 text-center">
             {[
               { label: "Recovery", value: "72" },
               { label: "Load", value: "61" },
               { label: "Sleep", value: "88" },
-            ].map((m) => (
-              <div key={m.label} style={{ borderTop: "1px solid rgba(150,118,43,0.28)", paddingTop: 10 }}>
+            ].map((m) => (<div key={m.label} style={{ borderTop: "1px solid rgba(150,118,43,0.28)", paddingTop: 10 }}>
                 <div className="font-display text-lg" style={{ color: "var(--cream)" }}>
                   {m.value}
                 </div>
                 <div className="font-display text-[9px] tracking-[0.18em] uppercase mt-1" style={{ color: "rgba(242,237,227,0.45)" }}>
                   {m.label}
                 </div>
-              </div>
-            ))}
+              </div>))}
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 }
 
 const pillars = [
   {
     num: "I",
     title: "Learn",
-    desc: "Structured specialisation built on the science, layered onto a qualification you already hold.",
+    desc: "Structured specialisation built on the science, layered onto a qualification you already hold. Delivered in defined teaching hours against a published syllabus.",
   },
   {
     num: "II",
     title: "Certify",
-    desc: "An assessed standard that means something — the seal a graduate carries into the field.",
+    desc: "An assessed standard. Written examination and observed practical assessment, marked against published criteria. The certificate carries an issued number and a renewal date.",
   },
   {
     num: "III",
     title: "Deploy",
-    desc: "The trusted pool. Certified specialists placed where performance matters, across the UAE.",
+    desc: "The trusted pool. Certified specialists placed where performance matters across corporate programmes, health projects, sport, and partner facilities across the UAE.",
   },
 ];
 
 export default function Home() {
-  return (
-    <div className="flex flex-col w-full">
+  return (<div className="flex flex-col w-full">
       <Navbar />
 
-      {/* Hero — midnight, brand-first, one gold accent (CTA) */}
+      {/* Hero, midnight, brand-first, one gold accent (CTA) */}
       <section
         className="relative min-h-screen overflow-hidden flex items-center ox-midnight"
         style={{ background: "var(--ink)" }}
@@ -204,14 +195,14 @@ export default function Home() {
               className="font-body mt-5 mx-auto max-w-xl text-[1.05rem] leading-relaxed"
               style={{ color: "rgba(12,15,18,0.62)" }}
             >
-              Olynixx Praxis sits on top of what a coach already holds and turns it into a recognised specialisation
-              in readiness, recovery, and performance. We teach it, we certify it, and we place those who earn it.
+              Conventional practice treats the plan as the thing to control. Olynixx Praxis teaches the inversion: the
+              body is the thing to control, and the plan is the instrument. We teach it, we certify it, and we place
+              those who earn it.
             </p>
           </ScrollReveal>
 
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-            {pillars.map((p, i) => (
-              <ScrollReveal key={p.num} delay={i * 100}>
+            {pillars.map((p, i) => (<ScrollReveal key={p.num} delay={i * 100}>
                 <div className="h-full pt-2" style={{ borderTop: "1px solid rgba(150,118,43,0.35)" }}>
                   <div className="font-display text-[11px] tracking-[0.28em] uppercase mb-4" style={{ color: "var(--bronze)" }}>
                     {p.num}
@@ -223,13 +214,12 @@ export default function Home() {
                     {p.desc}
                   </p>
                 </div>
-              </ScrollReveal>
-            ))}
+              </ScrollReveal>))}
           </div>
         </div>
       </section>
 
-      {/* Pipeline — evidence-precise, no traction claims */}
+      {/* Pipeline, evidence-precise, no traction claims */}
       <section className="ox-section" style={{ background: "var(--ink)", color: "var(--cream)" }}>
         <div className="mx-auto max-w-screen-2xl">
           <ScrollReveal className="text-center mx-auto max-w-3xl">
@@ -244,7 +234,8 @@ export default function Home() {
               className="font-body mt-4 mx-auto max-w-lg text-[1.05rem]"
               style={{ color: "rgba(242,237,227,0.65)" }}
             >
-              Every specialist we send has completed the dual gate — written assessment and practical PASS — before joining the deployable pool.
+              Every specialist we send has completed the dual gate of written examination and observed practical
+              assessment before joining the trusted pool.
             </p>
           </ScrollReveal>
 
@@ -255,8 +246,7 @@ export default function Home() {
               { id: "03", title: "Written", note: "Online exam" },
               { id: "04", title: "Practical", note: "Assessor PASS" },
               { id: "05", title: "Deploy", note: "Pool placement" },
-            ].map((step, i) => (
-              <ScrollReveal key={step.id} delay={i * 70}>
+            ].map((step, i) => (<ScrollReveal key={step.id} delay={i * 70}>
                 <div
                   className="p-5 h-full"
                   style={{
@@ -274,8 +264,7 @@ export default function Home() {
                     {step.note}
                   </p>
                 </div>
-              </ScrollReveal>
-            ))}
+              </ScrollReveal>))}
           </div>
         </div>
       </section>
@@ -297,18 +286,17 @@ export default function Home() {
             {[
               {
                 title: "Corporate programmes",
-                desc: "Readiness and recovery specialists for organisations that take human performance seriously.",
+                desc: "Certified specialists placed where performance matters within a clear non-medical scope.",
               },
               {
-                title: "Sport & performance",
-                desc: "Load, recovery, and readiness support within a clear non-medical scope of practice.",
+                title: "Health projects & sport",
+                desc: "Measure the state first, then set the input. Specialists from the trusted pool across the UAE.",
               },
               {
-                title: "Events & projects",
-                desc: "Shortlisted from the vetted pool and assigned by admin — taught, tested, vouched for.",
+                title: "Partner facilities",
+                desc: "Shortlisted from the trusted pool and assigned by admin, taught, tested, vouched for.",
               },
-            ].map((card) => (
-              <ScrollReveal key={card.title}>
+            ].map((card) => (<ScrollReveal key={card.title}>
                 <div className="h-full p-8 md:p-10" style={{ background: "var(--cream)" }}>
                   <h3 className="font-display text-[1.2rem] mb-3" style={{ color: "var(--teal)", fontWeight: 500 }}>
                     {card.title}
@@ -317,13 +305,12 @@ export default function Home() {
                     {card.desc}
                   </p>
                 </div>
-              </ScrollReveal>
-            ))}
+              </ScrollReveal>))}
           </div>
         </div>
       </section>
 
-      {/* Closing CTA — one gold accent */}
+      {/* Closing CTA, one gold accent */}
       <section className="px-6 py-10 sm:py-12" style={{ background: "var(--teal-deep)" }}>
         <div className="mx-auto max-w-screen-2xl text-center">
           <ScrollReveal>
@@ -357,6 +344,5 @@ export default function Home() {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>);
 }

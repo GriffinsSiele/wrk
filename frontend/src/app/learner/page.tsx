@@ -68,7 +68,7 @@ export default function LearnerDashboard() {
   const weeklyLearning = data?.weekly_learning ?? [];
   const trendValues = weeklyLearning.map((p) => p.value);
   const lessonsCompleted = data?.lessons_completed ?? 0;
-  const nextModule = data?.next_module ?? "—";
+  const nextModule = data?.next_module ?? "-";
   // Prefer `courses[]`; fall back to legacy single-course dashboard fields.
   const enrolledCourses: LearnerCourse[] =
     data?.courses?.length
@@ -97,15 +97,12 @@ export default function LearnerDashboard() {
   ];
 
   if (!loaded) {
-    return (
-      <main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-8 font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
+    return (<main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-8 font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
         Loading dashboard…
-      </main>
-    );
+      </main>);
   }
 
-  return (
-    <main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-5">
+  return (<main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-5">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <ScrollReveal className="lg:col-span-12">
           <div
@@ -132,16 +129,14 @@ export default function LearnerDashboard() {
                   { label: "Course", value: `${courseProgress}%` },
                   { label: "Readiness", value: `${readiness}%` },
                   { label: "Gate", value: `${Math.min(gateStep, 4)} / 4` },
-                ].map((chip) => (
-                  <div
+                ].map((chip) => (<div
                     key={chip.label}
                     className="px-3 py-2 text-center min-w-[72px]"
                     style={{ border: "1px solid rgba(150,118,43,0.45)" }}
                   >
                     <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--ochre)" }}>{chip.label}</div>
                     <div className="font-display text-lg leading-tight" style={{ color: "var(--cream)", fontWeight: 500 }}>{chip.value}</div>
-                  </div>
-                ))}
+                  </div>))}
               </div>
             </div>
           </div>
@@ -149,8 +144,7 @@ export default function LearnerDashboard() {
 
         <ScrollReveal delay={40} className="lg:col-span-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {steps.map((item, i) => (
-              <div
+            {steps.map((item, i) => (<div
                 key={item.step}
                 className="rounded-sm px-3.5 py-3 ox-kpi-float"
                 style={{
@@ -161,8 +155,7 @@ export default function LearnerDashboard() {
               >
                 <div className="font-display text-[11px] uppercase tracking-[0.16em]" style={{ color: item.done ? "var(--mint)" : "var(--ochre)" }}>{item.step}</div>
                 <div className="font-body text-[13px] font-medium mt-0.5" style={{ color: "var(--ox-fg)" }}>{item.label}</div>
-              </div>
-            ))}
+              </div>))}
           </div>
         </ScrollReveal>
 
@@ -180,12 +173,10 @@ export default function LearnerDashboard() {
               </div>
             </div>
             <div className="p-5 flex-1 flex flex-col gap-3">
-              {enrolledCourses.length > 0 ? (
-                enrolledCourses.map((course) => {
+              {enrolledCourses.length > 0 ? (enrolledCourses.map((course) => {
                   const pct = Math.max(0, Math.min(100, course.progress));
                   const statusLabel = pct >= 100 ? "Completed" : pct > 0 ? "In progress" : "Not started";
-                  return (
-                    <div
+                  return (<div
                       key={course.course_id}
                       className="flex flex-col sm:flex-row gap-4 rounded-sm p-4"
                       style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}
@@ -240,11 +231,8 @@ export default function LearnerDashboard() {
                           </Link>
                         </div>
                       </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="rounded-sm p-5 flex flex-col justify-center" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}>
+                    </div>);
+                })) : (<div className="rounded-sm p-5 flex flex-col justify-center" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}>
                   <p className="font-medium text-[15px]" style={{ color: "var(--ox-fg)" }}>No courses enrolled yet</p>
                   <p className="font-body text-[13px] mt-1 mb-4" style={{ color: "var(--ox-muted)" }}>
                     When you are enrolled in a specialisation course, progress will appear here.
@@ -252,8 +240,7 @@ export default function LearnerDashboard() {
                   <Link href="/learner/courses" className="ox-ghost-light h-9 px-5 text-[13px] font-medium inline-flex items-center w-fit">
                     Open courses
                   </Link>
-                </div>
-              )}
+                </div>)}
             </div>
           </div>
         </ScrollReveal>
@@ -297,8 +284,7 @@ export default function LearnerDashboard() {
               <span className="font-display text-[12px] uppercase tracking-[0.14em]">Focus mix</span>
             </div>
             <div className="flex-1 grid place-items-center">
-              {focusMix.length ? (
-                <MultiSegmentDonut
+              {focusMix.length ? (<MultiSegmentDonut
                   size={118}
                   thickness={14}
                   centerValue={String(lessonsCompleted)}
@@ -308,10 +294,7 @@ export default function LearnerDashboard() {
                     color: COLOR_MAP[s.color_key] || "var(--ox-blue)",
                     label: s.label,
                   }))}
-                />
-              ) : (
-                <p className="font-body text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No activity yet</p>
-              )}
+                />) : (<p className="font-body text-[12px] text-center" style={{ color: "var(--ox-muted)" }}>No activity yet</p>)}
             </div>
           </div>
         </ScrollReveal>
@@ -366,23 +349,20 @@ export default function LearnerDashboard() {
               {[
                 {
                   label: "Average",
-                  value: data?.assessment_avg != null ? `${data.assessment_avg}%` : "—",
+                  value: data?.assessment_avg != null ? `${data.assessment_avg}%` : "-",
                 },
                 {
                   label: "Best",
-                  value: data?.assessment_best != null ? `${data.assessment_best}%` : "—",
+                  value: data?.assessment_best != null ? `${data.assessment_best}%` : "-",
                 },
                 { label: "Status", value: readiness >= 60 ? "On track" : "Building" },
-              ].map((s) => (
-                <div key={s.label} className="rounded-sm py-2" style={{ background: "rgba(217,172,74,0.08)", border: "1px solid rgba(150,118,43,0.35)" }}>
+              ].map((s) => (<div key={s.label} className="rounded-sm py-2" style={{ background: "rgba(217,172,74,0.08)", border: "1px solid rgba(150,118,43,0.35)" }}>
                   <p className="font-body text-[11px]" style={{ color: "var(--ox-muted)" }}>{s.label}</p>
                   <p className="font-semibold text-[14px]" style={{ color: "var(--ox-fg)" }}>{s.value}</p>
-                </div>
-              ))}
+                </div>))}
             </div>
           </div>
         </ScrollReveal>
       </div>
-    </main>
-  );
+    </main>);
 }

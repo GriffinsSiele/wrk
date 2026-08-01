@@ -65,7 +65,7 @@
   src: url("/fonts/eb-garamond-latin-700-normal.woff2") format("woff2");
 }
 
-/* ── Olynixx Praxis v1.1 — page 08 tokens ─────────────── */
+/* ── Olynixx Praxis v1.1, page 08 tokens ─────────────── */
 :root {
   --ink: #0c0f12;
   --gold: #d9ac4a;
@@ -77,7 +77,7 @@
   --teal: #1b7a6b;
   --mint: #2aa187;
 
-  /* Page 05 — self-hosted serif register */
+  /* Page 05, self-hosted serif register */
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "EB Garamond", Georgia, "Times New Roman", serif;
 
@@ -112,7 +112,7 @@
 }
 
 @theme inline {
-  /* Brand type — serif register only (page 05). No sans substitution. */
+  /* Brand type, serif register only (page 05). No sans substitution. */
   --font-sans: "EB Garamond", Georgia, "Times New Roman", serif;
   --font-serif: "Playfair Display", Georgia, serif;
   --font-display: "Playfair Display", Georgia, serif;
@@ -121,8 +121,8 @@
 }
 
 *,
-*::before,
-*::after {
+*:before,
+*:after {
   box-sizing: border-box;
 }
 
@@ -159,7 +159,7 @@ body {
   --ox-muted: rgba(242, 237, 227, 0.62);
   --ox-muted-dark: rgba(242, 237, 227, 0.55);
   --ox-accent: var(--gold);
-  /* Charts / secondary UI — mint & teal, not gold blocks */
+  /* Charts / secondary UI, mint & teal, not gold blocks */
   --ox-blue: var(--mint);
   --ox-indigo: var(--teal);
   --ox-card-border: rgba(150, 118, 43, 0.35);
@@ -173,7 +173,7 @@ body {
   font-family: "EB Garamond", Georgia, "Times New Roman", serif;
 }
 
-/* Portal composition — flat panels, bronze structure, rationed gold */
+/* Portal composition, flat panels, bronze structure, rationed gold */
 .ox-portal .ox-card {
   border-radius: 2px;
   background: var(--ox-surface);
@@ -241,7 +241,7 @@ body {
   transition-delay: 0.4s;
 }
 
-/* About page — equal pillar / model column rules */
+/* About page, equal pillar / model column rules */
 .about-equal-panel {
   border-top: 1px solid rgba(150, 118, 43, 0.28);
   align-items: flex-start;
@@ -260,7 +260,7 @@ body {
   }
 }
 
-/* Soft page enter — clears prior-route paint flash */
+/* Soft page enter, clears prior-route paint flash */
 .ox-page-enter {
   animation: ox-page-enter 180ms ease-out;
 }
@@ -273,7 +273,7 @@ body {
   }
 }
 
-/* ── Surfaces — flat only ─────────────────────────────── */
+/* ── Surfaces, flat only ─────────────────────────────── */
 .ox-card {
   border: 1px solid var(--ox-line);
   background: var(--ox-surface);
@@ -314,7 +314,7 @@ body {
   border-top: 1px solid rgba(150, 118, 43, 0.4);
 }
 
-/* ── Buttons — flat gold CTA ──────────────────────────── */
+/* ── Buttons, flat gold CTA ──────────────────────────── */
 .ox-cta {
   background: var(--gold);
   color: var(--ink);
@@ -412,7 +412,7 @@ a:focus-visible {
 }
 
 .ox-donut-spin {
-  /* no glow — brand forbids drop-shadow prestige tricks */
+  /* no glow, brand forbids drop-shadow prestige tricks */
 }
 
 .ox-line-draw {
@@ -448,7 +448,7 @@ a:focus-visible {
   }
 }
 
-.ox-hero-shimmer::after {
+.ox-hero-shimmer:after {
   display: none;
 }
 
@@ -521,7 +521,7 @@ a:focus-visible {
   padding: 96px 24px;
 }
 
-/* ── Public nav — flat cream, no glass ────────────────── */
+/* ── Public nav, flat cream, no glass ────────────────── */
 .ox-glass-nav {
   background: var(--cream);
   border-bottom: 1px solid rgba(150, 118, 43, 0.35);

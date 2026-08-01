@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SPECIALTY_OPTIONS } from "@/lib/brand-copy";
 
 type CoachProfileResponse = {
   email: string;
@@ -32,16 +33,7 @@ const EMIRATES = [
   "Fujairah",
 ] as const;
 
-const SPECIALTIES = [
-  "Readiness",
-  "Recovery",
-  "Performance",
-  "HRV Coaching",
-  "Workplace Wellbeing",
-  "Human Readiness",
-  "Recovery Intelligence",
-  "Performance Intelligence",
-] as const;
+const SPECIALTIES = SPECIALTY_OPTIONS;
 
 const FOCUS_AREAS = [
   "Executive Recovery",
@@ -160,8 +152,7 @@ export default function CoachProfilePage() {
     setProfile({ ...profile, coach_attributes: { ...attrs, languages: next } });
   }
 
-  return (
-    <main className="max-w-5xl mx-auto px-4 md:px-6 py-6">
+  return (<main className="max-w-5xl mx-auto px-4 md:px-6 py-6">
       <h1 className="font-display text-3xl mb-2" style={{ fontWeight: 500 }}>
         Coach Profile
       </h1>
@@ -170,8 +161,7 @@ export default function CoachProfilePage() {
         certification + signed agreements.
       </p>
 
-      {profile && (
-        <div
+      {profile && (<div
           className="mb-5 rounded-sm px-4 py-3 font-body text-[14px]"
           style={{
             background: "rgba(12,15,18,0.28)",
@@ -182,22 +172,17 @@ export default function CoachProfilePage() {
           <strong style={{ color: attrs.placement_eligible ? "var(--mint)" : "var(--ochre)" }}>
             {attrs.placement_eligible ? "Eligible" : "Not eligible"}
           </strong>
-          {!attrs.placement_eligible && (
-            <span style={{ color: "var(--ox-muted)" }}> — sign agreements under Agreements to unlock dispatch.</span>
-          )}
-        </div>
-      )}
+          {!attrs.placement_eligible && (<span style={{ color: "var(--ox-muted)" }}>, sign agreements under Agreements to unlock dispatch.</span>)}
+        </div>)}
 
       {status === "loading" && <p>Loading profile...</p>}
       {status === "error" && !profile && <p>Unable to load profile.</p>}
 
-      {profile && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {profile && (<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
             ["First name", profile.first_name || "", (v: string) => setProfile({ ...profile, first_name: v })],
             ["Last name", profile.last_name || "", (v: string) => setProfile({ ...profile, last_name: v })],
-          ].map(([label, value, onChange]) => (
-            <div key={label as string} className="rounded-sm p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+          ].map(([label, value, onChange]) => (<div key={label as string} className="rounded-sm p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
               <label className="block font-display text-xs tracking-[0.12em] uppercase mb-2" style={{ color: "var(--ochre)" }}>
                 {label as string}
               </label>
@@ -207,8 +192,7 @@ export default function CoachProfilePage() {
                 className="w-full h-10 rounded-sm px-3 text-sm outline-none"
                 style={fieldStyle}
               />
-            </div>
-          ))}
+            </div>))}
 
           <div className="rounded-sm p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
             <label className="block font-display text-xs tracking-[0.12em] uppercase mb-2" style={{ color: "var(--ochre)" }}>
@@ -221,11 +205,9 @@ export default function CoachProfilePage() {
               style={fieldStyle}
             >
               <option value="">Select specialty</option>
-              {withCurrentOption(SPECIALTIES, attrs.specialty).map((item) => (
-                <option key={item} value={item}>
+              {withCurrentOption(SPECIALTIES, attrs.specialty).map((item) => (<option key={item} value={item}>
                   {item}
-                </option>
-              ))}
+                </option>))}
             </select>
           </div>
 
@@ -240,11 +222,9 @@ export default function CoachProfilePage() {
               style={fieldStyle}
             >
               <option value="">Select focus area</option>
-              {withCurrentOption(FOCUS_AREAS, attrs.focus_area).map((item) => (
-                <option key={item} value={item}>
+              {withCurrentOption(FOCUS_AREAS, attrs.focus_area).map((item) => (<option key={item} value={item}>
                   {item}
-                </option>
-              ))}
+                </option>))}
             </select>
           </div>
 
@@ -259,11 +239,9 @@ export default function CoachProfilePage() {
               style={fieldStyle}
             >
               <option value="">Select emirate</option>
-              {withCurrentOption(EMIRATES, attrs.emirate).map((item) => (
-                <option key={item} value={item}>
+              {withCurrentOption(EMIRATES, attrs.emirate).map((item) => (<option key={item} value={item}>
                   {item}
-                </option>
-              ))}
+                </option>))}
             </select>
           </div>
 
@@ -288,16 +266,12 @@ export default function CoachProfilePage() {
               <option value="">Add a language</option>
               {languageOptions
                 .filter((lang) => !selectedLanguages.includes(lang))
-                .map((lang) => (
-                  <option key={lang} value={lang}>
+                .map((lang) => (<option key={lang} value={lang}>
                     {lang}
-                  </option>
-                ))}
+                  </option>))}
             </select>
-            {selectedLanguages.length > 0 ? (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {selectedLanguages.map((lang) => (
-                  <button
+            {selectedLanguages.length > 0 ? (<div className="mt-2 flex flex-wrap gap-1.5">
+                {selectedLanguages.map((lang) => (<button
                     key={lang}
                     type="button"
                     onClick={() => toggleLanguage(lang)}
@@ -305,21 +279,16 @@ export default function CoachProfilePage() {
                     style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--cream)", borderRadius: 2 }}
                   >
                     {lang} ×
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-2 font-body text-[11px]" style={{ color: "var(--ox-muted)" }}>
+                  </button>))}
+              </div>) : (<p className="mt-2 font-body text-[11px]" style={{ color: "var(--ox-muted)" }}>
                 No languages selected yet.
-              </p>
-            )}
+              </p>)}
           </div>
 
           {[
             ["CEC status", attrs.cec_status || "", (v: string) => setProfile({ ...profile, coach_attributes: { ...attrs, cec_status: v } })],
             ["Certification level", attrs.certification_level || "", (v: string) => setProfile({ ...profile, coach_attributes: { ...attrs, certification_level: v } })],
-          ].map(([label, value, onChange]) => (
-            <div key={label as string} className="rounded-sm p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+          ].map(([label, value, onChange]) => (<div key={label as string} className="rounded-sm p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
               <label className="block font-display text-xs tracking-[0.12em] uppercase mb-2" style={{ color: "var(--ochre)" }}>
                 {label as string}
               </label>
@@ -329,8 +298,7 @@ export default function CoachProfilePage() {
                 className="w-full h-10 rounded-sm px-3 text-sm outline-none"
                 style={fieldStyle}
               />
-            </div>
-          ))}
+            </div>))}
 
           <div className="rounded-sm p-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
             <label className="block font-display text-xs tracking-[0.12em] uppercase mb-2" style={{ color: "var(--ochre)" }}>
@@ -365,8 +333,7 @@ export default function CoachProfilePage() {
               <option value="false">No travel</option>
             </select>
           </div>
-        </div>
-      )}
+        </div>)}
 
       <div className="mt-6 flex items-center gap-3">
         <button onClick={saveProfile} disabled={status === "saving"} className="ox-cta h-10 px-6 text-[14px] font-semibold">
@@ -374,6 +341,5 @@ export default function CoachProfilePage() {
         </button>
         {message && <span className="font-body" style={{ color: message.toLowerCase().includes("fail") || message.toLowerCase().includes("unable") ? "var(--gold-bright)" : "var(--mint)" }}>{message}</span>}
       </div>
-    </main>
-  );
+    </main>);
 }

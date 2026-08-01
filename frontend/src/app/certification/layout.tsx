@@ -4,21 +4,19 @@ import { CourseJsonLd } from "@/components/seo/CourseJsonLd";
 export const metadata: Metadata = {
   title: "Specialisations",
   description:
-    "Dual-gate specialisation for performance coaches — written assessment and practical PASS — then join the deployable coach pool. We don't replace your certification; we specialise it.",
+    "Dual-gate specialisation in Human Readiness, Recovery, and Performance Intelligence. Written examination and observed practical assessment, then join the trusted pool. We don't replace your certification; we specialise it.",
   alternates: { canonical: "/certification" },
   openGraph: {
     title: "Specialisations | Olynixx Praxis",
     description:
-      "Dual-gate specialisation for performance coaches — written assessment and practical PASS — then join the deployable coach pool.",
+      "Dual-gate specialisation in Human Readiness, Recovery, and Performance Intelligence. Then join the trusted pool.",
     url: "/certification",
   },
 };
 
 export default function CertificationLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
+  return (<>
       <CourseJsonLd />
       {children}
-    </>
-  );
+    </>);
 }

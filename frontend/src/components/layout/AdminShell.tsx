@@ -37,7 +37,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <BrandMark variant="transparent" size={32} />
             <div>
               <div className="font-display text-[11px] tracking-[0.2em] uppercase" style={{ color: "var(--cream)" }}>
-                Olynixx
+                Olynixx Praxis
               </div>
               <div className="font-display text-[9px] tracking-[0.28em] uppercase" style={{ color: "var(--ochre)" }}>
                 Admin

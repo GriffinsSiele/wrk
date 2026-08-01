@@ -22,8 +22,8 @@ export default function TermsPage() {
 
       <LegalSection number="02" title="About Olynixx Praxis">
         <LegalP>
-          Olynixx Praxis provides non-medical education, certification pathways, coach profiling, and related
-          services focused on human readiness, recovery, and performance intelligence.
+          Olynixx Praxis is a specialisation and certification body for non-medical human performance coaches,
+          focused on Human Readiness, Recovery, and Performance Intelligence.
         </LegalP>
         <LegalP>
           Contact: <LegalLink href="mailto:hello@olynixx.com">hello@olynixx.com</LegalLink>
