@@ -47,7 +47,7 @@ export default function CourseDetailPage() {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        // Prefer proxy in other pages; direct call uses browser→API URL (auth via cookie if CORS allows).
+        // Prefer /api/proxy elsewhere; this page hits the API URL directly (cookie auth if CORS allows).
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
         const res = await fetch(`${apiUrl}/api/courses/${courseId}`, { credentials: "include" });
         if (res.ok) {

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
@@ -22,13 +22,47 @@ class QuestionDisplay(BaseModel):
     pillar_tag: Optional[str] = None
 
 class AttemptStartResponse(BaseModel):
+    """Legacy-compatible wrapper; prefer AttemptProgressResponse for Phase 1 UI."""
     attempt_id: int
     started_at: datetime
     time_limit_minutes: int
-    questions: List[QuestionDisplay]
+    questions: List[QuestionDisplay] = Field(default_factory=list)
+    # Phase 1 fields
+    current_index: int = 0
+    total_questions: int = 0
+    seconds_per_question: int = 90
+    question: Optional[QuestionDisplay] = None
+    question_remaining_seconds: int = 90
+    overall_remaining_seconds: int = 3600
+    resumed: bool = False
+    paused: bool = False
+    one_way: bool = True
+
+class AttemptProgressResponse(BaseModel):
+    attempt_id: int
+    started_at: datetime
+    time_limit_minutes: int
+    current_index: int
+    total_questions: int
+    seconds_per_question: int
+    question: Optional[QuestionDisplay] = None
+    question_remaining_seconds: int = 0
+    overall_remaining_seconds: int = 0
+    answered_count: int = 0
+    paused: bool = False
+    completed: bool = False
+    needs_admin_review: bool = False
+    one_way: bool = True
+
+class AttemptAnswerRequest(BaseModel):
+    selected: Optional[str] = None  # a|b|c|d; null/omit = blank lock (timeout)
+
+class AttemptAnomalyRequest(BaseModel):
+    code: str  # tab_blur | focus_loss | visibility_hidden | client_disconnect
+    detail: Optional[str] = None
 
 class AttemptSubmit(BaseModel):
-    answers: Dict[str, str]
+    answers: Dict[str, str] = Field(default_factory=dict)
 
 class AttemptResultResponse(BaseModel):
     id: int
@@ -36,6 +70,8 @@ class AttemptResultResponse(BaseModel):
     passed: Optional[bool] = None
     submitted_at: Optional[datetime] = None
     approved_at: Optional[datetime] = None
+    needs_admin_review: Optional[bool] = None
+    anomaly_flags: Optional[List[Dict[str, Any]]] = None
     class Config:
         from_attributes = True
 

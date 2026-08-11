@@ -13,6 +13,7 @@ def get_password_hash(password: str) -> str:
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
+    # Signed with SECRET_KEY; refresh uses REFRESH_SECRET_KEY so the two cannot be swapped.
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire, "type": "access"})
@@ -28,6 +29,7 @@ def create_refresh_token(data: dict) -> str:
 
 
 def decode_refresh_token(token: str) -> dict | None:
+    # Returns None for expired, forged, or wrong-type tokens (no distinction exposed).
     try:
         payload = jwt.decode(token, settings.REFRESH_SECRET_KEY, algorithms=[settings.ALGORITHM])
         if payload.get("type") != "refresh":

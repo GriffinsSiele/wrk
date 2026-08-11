@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedBarChart, AreaTrendChart, DonutChart, MultiSegmentDonut } from "@/components/ui/Charts";
@@ -235,7 +235,7 @@ export default function LearnerDashboard() {
                 })) : (<div className="rounded-sm p-5 flex flex-col justify-center" style={{ border: "1px solid var(--ox-line)", background: "var(--ox-bg)" }}>
                   <p className="font-medium text-[15px]" style={{ color: "var(--ox-fg)" }}>No courses enrolled yet</p>
                   <p className="font-body text-[13px] mt-1 mb-4" style={{ color: "var(--ox-muted)" }}>
-                    When you are enrolled in a specialisation course, progress will appear here.
+                    Open Courses to enrol in a published specialisation. Progress will appear here.
                   </p>
                   <Link href="/learner/courses" className="ox-ghost-light h-9 px-5 text-[13px] font-medium inline-flex items-center w-fit">
                     Open courses

@@ -11,6 +11,8 @@ type ExamAttempt = {
   passed?: boolean | null;
   submitted_at?: string | null;
   approved_at?: string | null;
+  needs_admin_review?: boolean;
+  anomaly_flags?: Array<{ code?: string; detail?: string; at?: string }>;
   name?: string;
 };
 
@@ -133,16 +135,16 @@ export default function AdminExamsPage() {
         style={{ border: "1px solid rgba(150,118,43,0.4)", background: "rgba(12,15,18,0.28)", color: "rgba(242,237,227,0.7)" }}
       >
         <div>
-          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>01 Â· Session</span>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>01 · Session</span>
           <p className="mt-1">Create an exam session and add questions.</p>
         </div>
         <div>
-          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>02 Â· Learner</span>
-          <p className="mt-1">Learner Portal â†’ Exam: start, answer, submit.</p>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>02 · Learner</span>
+          <p className="mt-1">Learner Portal → Exam: start, one-at-a-time answers, resume on disconnect.</p>
         </div>
         <div>
-          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>03 Â· Review</span>
-          <p className="mt-1">Attempts appear below; approve written gate when ready.</p>
+          <span className="font-display text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--ochre)" }}>03 · Review</span>
+          <p className="mt-1">Attempts appear below; anomaly flags mark integrity review; approve written gate when ready.</p>
         </div>
       </div>
       <p className="text-[14px] font-body" style={{ color: "var(--ox-muted)" }}>
@@ -192,6 +194,7 @@ export default function AdminExamsPage() {
               <th className="text-left py-2">Learner</th>
               <th className="text-left py-2">Score</th>
               <th className="text-left py-2">Passed</th>
+              <th className="text-left py-2">Flags</th>
               <th className="text-left py-2">Submitted</th>
               <th className="text-left py-2">Approved</th>
               <th className="text-left py-2">Action</th>
@@ -201,9 +204,18 @@ export default function AdminExamsPage() {
             {attempts.map((a) => (
               <tr key={a.id} style={{ borderTop: "1px solid var(--ox-line)" }}>
                 <td className="py-2">{a.name || `User #${a.user_id}`}</td>
-                <td className="py-2">{a.score ?? "â€”"}</td>
+                <td className="py-2">{a.score ?? "-"}</td>
                 <td className="py-2">{a.passed ? "Yes" : "No"}</td>
-                <td className="py-2">{a.submitted_at ? new Date(a.submitted_at).toLocaleString() : "â€”"}</td>
+                <td className="py-2">
+                  {a.needs_admin_review ? (
+                    <span title={(a.anomaly_flags || []).map((f) => f.code).join(", ")} style={{ color: "var(--gold-bright)" }}>
+                      Review ({(a.anomaly_flags || []).length})
+                    </span>
+                  ) : (
+                    <span style={{ color: "var(--ox-muted)" }}>-</span>
+                  )}
+                </td>
+                <td className="py-2">{a.submitted_at ? new Date(a.submitted_at).toLocaleString() : "-"}</td>
                 <td className="py-2">{a.approved_at ? new Date(a.approved_at).toLocaleString() : "Pending"}</td>
                 <td className="py-2">
                   <button
@@ -221,7 +233,7 @@ export default function AdminExamsPage() {
             ))}
             {attempts.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-6 text-center" style={{ color: "var(--ox-muted)" }}>
+                <td colSpan={7} className="py-6 text-center" style={{ color: "var(--ox-muted)" }}>
                   No attempts yet.
                 </td>
               </tr>

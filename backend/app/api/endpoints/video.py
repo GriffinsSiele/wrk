@@ -17,7 +17,10 @@ async def get_video_token(lesson_id: int, current_user: User = Depends(get_curre
     if not lesson or not lesson.bunny_video_id:
         raise HTTPException(status_code=404, detail="Video not found")
     if not settings.BUNNY_TOKEN_AUTH_KEY or not settings.BUNNY_CDN_HOSTNAME:
-        return {"url": f"https://example-bunny-stream.b-cdn.net/{lesson.bunny_video_id}/playlist.m3u8", "expires": None}
+        raise HTTPException(
+            status_code=503,
+            detail="Video streaming is not configured. Set BUNNY_TOKEN_AUTH_KEY and BUNNY_CDN_HOSTNAME.",
+        )
     expiry = int(time.time()) + 3600
     path = f"/{lesson.bunny_video_id}/playlist.m3u8"
     token = hashlib.sha256((settings.BUNNY_TOKEN_AUTH_KEY + path + str(expiry)).encode()).hexdigest()

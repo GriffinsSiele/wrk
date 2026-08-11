@@ -72,6 +72,7 @@ async function forward(request: NextRequest, pathSegments: string[]) {
   const resp = await fetchUpstream(targetUrl, { method, body }, headers);
 
   const upstreamType = resp.headers.get("content-type") || "";
+  // Binary (PDF/images) passthrough; everything else JSON-wrapped for the client.
   if (
     upstreamType.includes("application/pdf") ||
     upstreamType.includes("application/octet-stream") ||

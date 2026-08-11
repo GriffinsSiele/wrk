@@ -10,10 +10,17 @@ venv/
 .venv/
 *.db
 
-# ──────────────────────── Environment ────────────────────────
+# ──────────────────────── Environment / secrets ────────────────────────
 .env
+.env.*
+!.env.example
 .env.local
 .env.*.local
+.env.prod
+*.pem
+*.key
+credentials.json
+service-account*.json
 
 # ──────────────────────── Node / Next.js ────────────────────────
 node_modules/
@@ -30,6 +37,17 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# ──────────────────────── Generated artifacts ────────────────────────
+backend/storage/certificates/*
+!backend/storage/certificates/.gitkeep
+sample-certificate.pdf
+john-certificate.pdf
+john-certificate-proxy.pdf
+sample-certificate-proxy.pdf
+smoke-*.txt
+smoke-results.json
+*.log
 
 # ──────────────────────── IDE / Editor ────────────────────────
 .vscode/

@@ -16,6 +16,7 @@ COPY alembic.ini .
 COPY alembic ./alembic
 COPY app ./app
 COPY seed.py ./seed.py
+COPY scripts ./scripts
 
 # Non-root user for container hardening
 RUN useradd --create-home --uid 10001 appuser \
@@ -28,6 +29,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD curl -fsS http://127.0.0.1:8000/health || exit 1
 
-# Migrations should run as a one-shot job / release command before traffic.
-# Example: alembic upgrade head
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# Migrations: Railway releaseCommand / one-shot job → alembic upgrade head
+# PORT is injected by Railway; default 8000 for local/compose.
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 2"]

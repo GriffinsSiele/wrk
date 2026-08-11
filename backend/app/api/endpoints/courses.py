@@ -87,6 +87,7 @@ async def _sync_enrollment_progress(
     return pct
 
 
+@router.get("", response_model=List[CourseListResponse])
 @router.get("/", response_model=List[CourseListResponse])
 async def list_courses(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Course).where(Course.is_published == True))
@@ -298,6 +299,7 @@ async def get_course(course_id: int, db: AsyncSession = Depends(get_db)):
     return course
 
 
+@router.post("", response_model=CourseListResponse)
 @router.post("/", response_model=CourseListResponse)
 async def create_course(course_in: CourseCreate, db: AsyncSession = Depends(get_db), _: User = Depends(get_current_active_admin)):
     course = Course(**course_in.model_dump())
@@ -322,6 +324,14 @@ async def update_course(course_id: int, course_in: CourseCreate, db: AsyncSessio
 
 @router.post("/{course_id}/enroll")
 async def enroll_in_course(course_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    course = (
+        await db.execute(select(Course).where(Course.id == course_id))
+    ).scalars().first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    if not course.is_published:
+        raise HTTPException(status_code=400, detail="Course is not published")
+
     result = await db.execute(
         select(CourseEnrollment).where(
             CourseEnrollment.user_id == current_user.id,
@@ -330,9 +340,9 @@ async def enroll_in_course(course_id: int, current_user: User = Depends(get_curr
     )
     if result.scalars().first():
         raise HTTPException(status_code=400, detail="Already enrolled")
-    db.add(CourseEnrollment(user_id=current_user.id, course_id=course_id))
+    db.add(CourseEnrollment(user_id=current_user.id, course_id=course_id, status="active"))
     await db.commit()
-    return {"message": "Enrolled successfully"}
+    return {"message": "Enrolled successfully", "course_id": course_id}
 
 
 @router.post("/{course_id}/progress")

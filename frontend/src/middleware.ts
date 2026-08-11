@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Edge RBAC: decode only (signature verified on the API). Admin/coach restricted; /learner open to any signed-in role.
+  // Edge RBAC: decode only (API verifies signature). Admin/coach gated; any signed-in role may open /learner.
   if (token) {
     try {
       const base64Url = token.split('.')[1];

@@ -1,10 +1,8 @@
 import enum
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import (
-    Column, Integer, String, Boolean, DateTime,
-    ForeignKey, Enum, Text, JSON
-)
+from sqlalchemy import (Column, Integer, String, Boolean, DateTime,
+    ForeignKey, Enum, Text, JSON)
 from sqlalchemy.orm import relationship
 from .base import Base
 
@@ -66,11 +64,9 @@ class User(Base):
     exam_registrations = relationship("ExamRegistration", back_populates="user")
     exam_attempts = relationship("ExamAttempt", back_populates="user", foreign_keys="ExamAttempt.user_id")
     certificates = relationship("Certificate", back_populates="user")
-    practical_assessments = relationship(
-        "PracticalAssessment",
+    practical_assessments = relationship("PracticalAssessment",
         back_populates="user",
-        foreign_keys="PracticalAssessment.user_id",
-    )
+        foreign_keys="PracticalAssessment.user_id",)
     coach_agreements = relationship("CoachAgreement", back_populates="user")
 
 
@@ -287,6 +283,14 @@ class ExamAttempt(Base):
     ip_address = Column(String, nullable=True)
     approved_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     approved_at = Column(DateTime(timezone=True), nullable=True)
+    # Phase 1 progressive delivery (one-at-a-time, 90s locks, resume)
+    current_index = Column(Integer, default=0, nullable=False)
+    question_started_at = Column(DateTime(timezone=True), nullable=True)
+    seconds_per_question = Column(Integer, default=90, nullable=False)
+    paused_at = Column(DateTime(timezone=True), nullable=True)
+    total_pause_seconds = Column(Integer, default=0, nullable=False)
+    anomaly_flags = Column(JSON, nullable=True)
+    needs_admin_review = Column(Boolean, default=False, nullable=False)
 
     user = relationship("User", back_populates="exam_attempts", foreign_keys=[user_id])
     session = relationship("ExamSession", back_populates="attempts")
@@ -318,14 +322,12 @@ class Certificate(Base):
     attempt_id = Column(Integer, ForeignKey("exam_attempts.id"), nullable=True)
     practical_assessment_id = Column(Integer, ForeignKey("practical_assessments.id"), nullable=True)
     issued_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-    verification_code = Column(
-        String,
+    verification_code = Column(String,
         unique=True,
         nullable=False,
-        default=lambda: str(uuid.uuid4()).replace("-", "")[:16].upper(),
-    )
+        default=lambda: str(uuid.uuid4()).replace("-", "")[:16].upper(),)
     pdf_url = Column(String, nullable=True)
-    certification_level = Column(String, default="Level 1 — Human Readiness Coach")
+    certification_level = Column(String, default="Level 1: Human Readiness Coach")
     status = Column(Enum(CertificateStatus, native_enum=False), default=CertificateStatus.ACTIVE, nullable=False)
 
     user = relationship("User", back_populates="certificates")

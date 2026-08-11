@@ -85,7 +85,7 @@ When running backend outside Docker, it can fall back to SQLite (`olynixx.db`). 
 
 ## Demo credentials (local / Docker seed only)
 
-These accounts are created by `seed.py` for development. They are **not** shown on the public login page — never ship them in production UI, and rotate or disable them before a public launch.
+These accounts are created by `seed.py` for development. They are **not** shown on the public login page, never ship them in production UI, and rotate or disable them before a public launch.
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -163,18 +163,18 @@ Defined in `.env.example`. Copy to `.env` and set production values.
 | `POSTGRES_PASSWORD` | Database password | `postgres` |
 | `POSTGRES_DB` | Database name | `olynixx` |
 | `DATABASE_URL` | Async DB URL | `postgresql+asyncpg://...` |
-| `SECRET_KEY` | JWT signing key — **change in production** | — |
-| `REFRESH_SECRET_KEY` | Refresh token signing key | — |
+| `SECRET_KEY` | JWT signing key (**change in production** |) |
+| `REFRESH_SECRET_KEY` | Refresh token signing key |, |
 | `ALGORITHM` | JWT algorithm | `HS256` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Access token TTL | `30` |
 | `REFRESH_TOKEN_EXPIRE_DAYS` | Refresh token TTL | `7` |
 | `NEXT_PUBLIC_API_URL` | Browser → API URL | `http://localhost:8000` |
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL (SEO / OG / sitemap) | `http://localhost:3000` |
 | `INTERNAL_API_URL` | Frontend container → backend | `http://backend:8000` |
-| `BUNNY_LIBRARY_ID` | Bunny Stream library | — |
-| `BUNNY_API_KEY` | Bunny API key | — |
-| `BUNNY_CDN_HOSTNAME` | Bunny CDN hostname | — |
-| `BUNNY_TOKEN_AUTH_KEY` | Bunny token auth key | — |
+| `BUNNY_LIBRARY_ID` | Bunny Stream library |, |
+| `BUNNY_API_KEY` | Bunny API key |, |
+| `BUNNY_CDN_HOSTNAME` | Bunny CDN hostname |, |
+| `BUNNY_TOKEN_AUTH_KEY` | Bunny token auth key |, |
 | `REDIS_URL` | Redis (optional locally) | `redis://localhost:6379/0` |
 | `CELERY_BROKER_URL` | Celery broker | `redis://localhost:6379/0` |
 | `EXAM_PASS_MARK` | Default pass mark | `70` |
@@ -304,12 +304,12 @@ olynixx_academy/
 
 ## Certification & placement model
 
-1. **Study** — enroll, complete lessons (progress % from completed lessons / total).
-2. **Written exam** — online attempt; admin approval marks written gate.
-3. **Practical PASS** — recorded by admin under compliance.
-4. **Certificate** — issued only when both gates pass (`ACTIVE` / `EXPIRED` / `REVOKED`).
-5. **Coach upgrade** — successful dual-gate can promote learner → coach.
-6. **Placement** — requires active cert + signed NDA and Code of Conduct (`placement_eligible`) before project assignment.
+1. **Study**, enroll, complete lessons (progress % from completed lessons / total).
+2. **Written exam**, online attempt; admin approval marks written gate.
+3. **Practical PASS**, recorded by admin under compliance.
+4. **Certificate**, issued only when both gates pass (`ACTIVE` / `EXPIRED` / `REVOKED`).
+5. **Coach upgrade**, successful dual-gate can promote learner → coach.
+6. **Placement**, requires active cert + signed NDA and Code of Conduct (`placement_eligible`) before project assignment.
 
 ---
 

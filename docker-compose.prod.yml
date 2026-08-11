@@ -4,6 +4,8 @@
 #   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 #
 # Do NOT run seed.py against production data.
+# Frontend demo stays on https://olynixx-academy.vercel.app/ — point Vercel INTERNAL_API_URL
+# at this API after deploy. See docs/PRODUCTION_BACKEND.md.
 
 services:
   db:
@@ -43,6 +45,8 @@ services:
       EXAM_MAX_ATTEMPTS: ${EXAM_MAX_ATTEMPTS:-3}
       EXAM_SUBMIT_GRACE_MINUTES: ${EXAM_SUBMIT_GRACE_MINUTES:-2}
       EXAM_DELIVERY_MODE: ${EXAM_DELIVERY_MODE:-online}
+      EXAM_SECONDS_PER_QUESTION: ${EXAM_SECONDS_PER_QUESTION:-90}
+      EXAM_MAX_DISCONNECT_PAUSE_SECONDS: ${EXAM_MAX_DISCONNECT_PAUSE_SECONDS:-300}
       ENABLE_DOCS: ${ENABLE_DOCS:-false}
       CERTIFICATE_STORAGE_DIR: /app/storage/certificates
     volumes:

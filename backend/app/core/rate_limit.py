@@ -1,4 +1,7 @@
-"""Simple per-process rate limiter for auth/public endpoints."""
+"""Simple per-process rate limiter for auth/public endpoints.
+
+In-memory only — resets on restart and does not share state across replicas.
+"""
 
 from __future__ import annotations
 
@@ -35,6 +38,7 @@ limiter = SlidingWindowLimiter()
 
 
 def client_ip(request: Request) -> str:
+    # Prefer X-Forwarded-For when behind a trusted proxy; first hop is the client.
     forwarded = request.headers.get("x-forwarded-for")
     if forwarded:
         return forwarded.split(",")[0].strip()

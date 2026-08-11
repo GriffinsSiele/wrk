@@ -9,12 +9,15 @@ from app.db.models import User, UserRole, CoachAttribute, ProjectAssignment, Ass
 from app.schemas.coach import CoachResponse, CoachAttributeBase
 from app.schemas.project import AssignmentResponse, AssignmentStatusUpdate
 from app.schemas.admin import CoachDashboardResponse, SeriesPoint, TalentMixSegment
-from app.api.deps import get_current_user, get_current_active_admin
+from app.api.deps import get_current_active_admin, get_current_active_coach
 from app.services.certification import ensure_mandatory_agreement_rows, refresh_placement_eligibility
 from app.services.analytics import weekly_bucket_counts, sparkline_from_weeks, checklist_score
 
 router = APIRouter()
 
+# Register both "" and "/" so clients without a trailing slash are not 307→401'd
+# (redirects drop Authorization when followed automatically).
+@router.get("", response_model=List[CoachResponse])
 @router.get("/", response_model=List[CoachResponse])
 async def get_coaches(
     emirate: Optional[str] = None,
@@ -44,7 +47,7 @@ async def get_coaches(
     return coaches
 
 @router.patch("/me/profile")
-async def update_coach_profile(updates: CoachAttributeBase, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def update_coach_profile(updates: CoachAttributeBase, current_user: User = Depends(get_current_active_coach), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(CoachAttribute).where(CoachAttribute.user_id == current_user.id))
     attrs = result.scalars().first()
     if not attrs:
@@ -59,7 +62,7 @@ async def update_coach_profile(updates: CoachAttributeBase, current_user: User =
     return {"message": "Coach profile updated"}
 
 @router.get("/me/dashboard", response_model=CoachDashboardResponse)
-async def coach_dashboard(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def coach_dashboard(current_user: User = Depends(get_current_active_coach), db: AsyncSession = Depends(get_db)):
     await ensure_mandatory_agreement_rows(db, current_user.id)
     await refresh_placement_eligibility(db, current_user.id)
     await db.commit()
@@ -173,7 +176,7 @@ async def coach_dashboard(current_user: User = Depends(get_current_user), db: As
     )
 
 @router.get("/me/profile")
-async def get_my_coach_profile(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def get_my_coach_profile(current_user: User = Depends(get_current_active_coach), db: AsyncSession = Depends(get_db)):
     await ensure_mandatory_agreement_rows(db, current_user.id)
     await refresh_placement_eligibility(db, current_user.id)
     await db.commit()
@@ -210,7 +213,7 @@ async def get_my_coach_profile(current_user: User = Depends(get_current_user), d
     }
 
 @router.patch("/me/availability")
-async def toggle_availability(available: bool, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def toggle_availability(available: bool, current_user: User = Depends(get_current_active_coach), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(CoachAttribute).where(CoachAttribute.user_id == current_user.id))
     attrs = result.scalars().first()
     if not attrs:
@@ -221,7 +224,7 @@ async def toggle_availability(available: bool, current_user: User = Depends(get_
     return {"available": available, "placement_eligible": attrs.placement_eligible}
 
 @router.get("/assignments", response_model=List[AssignmentResponse])
-async def get_my_assignments(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def get_my_assignments(current_user: User = Depends(get_current_active_coach), db: AsyncSession = Depends(get_db)):
     ca_result = await db.execute(select(CoachAttribute).where(CoachAttribute.user_id == current_user.id))
     attrs = ca_result.scalars().first()
     if not attrs:
@@ -230,7 +233,7 @@ async def get_my_assignments(current_user: User = Depends(get_current_user), db:
     return result.scalars().all()
 
 @router.get("/assignments/board")
-async def get_my_assignment_board(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def get_my_assignment_board(current_user: User = Depends(get_current_active_coach), db: AsyncSession = Depends(get_db)):
     ca_result = await db.execute(select(CoachAttribute).where(CoachAttribute.user_id == current_user.id))
     attrs = ca_result.scalars().first()
     if not attrs:
@@ -257,7 +260,7 @@ async def get_my_assignment_board(current_user: User = Depends(get_current_user)
     ]
 
 @router.patch("/assignments/{assignment_id}")
-async def respond_to_assignment(assignment_id: int, update: AssignmentStatusUpdate, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def respond_to_assignment(assignment_id: int, update: AssignmentStatusUpdate, current_user: User = Depends(get_current_active_coach), db: AsyncSession = Depends(get_db)):
     ca_result = await db.execute(select(CoachAttribute).where(CoachAttribute.user_id == current_user.id))
     attrs = ca_result.scalars().first()
     result = await db.execute(select(ProjectAssignment).where(ProjectAssignment.id == assignment_id, ProjectAssignment.coach_id == attrs.id))

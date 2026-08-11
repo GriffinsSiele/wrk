@@ -97,6 +97,7 @@ async def create_operator(
     return operator
 
 
+@router.get("", response_model=List[ProjectResponse])
 @router.get("/", response_model=List[ProjectResponse])
 async def list_projects(db: AsyncSession = Depends(get_db), _: User = Depends(get_current_active_admin)):
     result = await db.execute(
@@ -113,6 +114,7 @@ async def list_projects(db: AsyncSession = Depends(get_db), _: User = Depends(ge
     return [_to_project_response(p) for p in projects]
 
 
+@router.post("", response_model=ProjectResponse)
 @router.post("/", response_model=ProjectResponse)
 async def create_project(
     project_in: ProjectCreate,
