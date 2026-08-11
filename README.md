@@ -2,90 +2,88 @@
 
 Full-stack specialisation, certification, and coach placement platform.
 
-**Stack:** Next.js (frontend) · FastAPI (backend) · PostgreSQL · Docker Compose
+**Learn → Certify → Deploy**
 
-> We don’t replace your certification. We specialise it.  
-> **Learn + Certify + Deploy**
+| Layer | Tech |
+|-------|------|
+| Frontend | Next.js (App Router) |
+| Backend | FastAPI |
+| Database | PostgreSQL 15 |
+| Local run | Docker Compose |
+
+Demo frontend (hosted): [olynixx-academy.vercel.app](https://olynixx-academy.vercel.app/)
 
 ---
 
-## Quick start
+## Run the whole system (recommended)
+
+This is the supported local path. One command starts **Postgres + API + frontend**.
 
 ### Prerequisites
 
-| Tool | Version |
-|------|---------|
-| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | 4.x+ |
-| Node.js *(local frontend only)* | 18+ |
-| Python *(local backend only)* | 3.11+ |
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) running (4.x+)
+- Git
 
-### 1. Configure
+### 1. Open the project
 
 ```bash
 cd olynixx_academy
-cp .env.example .env   # change secrets before production
 ```
 
-### 2. Start the stack
+### 2. Create your env file
+
+```bash
+# macOS / Linux
+cp .env.example .env
+
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
+For local Docker you can keep the defaults in `.env.example`. Change secrets before any shared or production deploy.
+
+### 3. Start everything
 
 ```bash
 docker compose up -d --build
 ```
 
+Wait until containers are up (first build can take a few minutes).
+
 | Service | URL |
 |---------|-----|
 | Frontend | http://localhost:3000 |
 | Backend API | http://localhost:8000 |
-| API docs | http://localhost:8000/docs |
+| API docs (Swagger) | http://localhost:8000/docs |
+| Health check | http://localhost:8000/health |
 | PostgreSQL | `localhost:5432` |
 
-### 3. Migrations & seed
+### 4. Apply database migrations
+
+Required on first run (and after pulling new migrations):
 
 ```bash
 docker compose exec backend alembic upgrade head
+```
+
+### 5. Seed demo data (local only)
+
+```bash
 docker compose exec backend python seed.py --force
 ```
 
-`SEED_MODE` controls volume (also `--mode demo|minimal`):
+That creates demo users, courses, exam config, and sample activity so the portals have data to show.
 
-| Mode | Use | Contents |
-|------|-----|----------|
-| `demo` (default) | Local / staging | Full cohort + multi-week dated activity so portal charts have real series |
-| `minimal` | Production bootstrap | Admin account + exam config only; charts stay empty until real activity |
+| Mode | Command | Use |
+|------|---------|-----|
+| `demo` (default) | `docker compose exec -e SEED_MODE=demo backend python seed.py --force` | Local / staging — full demo cohort |
+| `minimal` | `docker compose exec -e SEED_MODE=minimal backend python seed.py` | Admin bootstrap only — safer for production |
 
-```bash
-# Demo (charts look alive, honestly)
-docker compose exec -e SEED_MODE=demo backend python seed.py --force
+**Do not run demo seed against a real production database.**
 
-# Prod-safe bootstrap
-docker compose exec -e SEED_MODE=minimal backend python seed.py
-```
+### 6. Log in
 
-Portal dashboards read live DB counts only (no padded floors / hardcoded SVG trends). Empty periods render as zeros / “No activity”.
-
-### 4. Local dev (without Docker)
-
-```bash
-# Backend
-cd backend
-python -m venv venv
-# Windows: venv\Scripts\activate
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-
-# Frontend
-cd frontend
-npm install && npm run dev
-```
-
-When running backend outside Docker, it can fall back to SQLite (`olynixx.db`). Prefer `DATABASE_URL` pointing at Postgres for full compatibility.
-
----
-
-## Demo credentials (local / Docker seed only)
-
-These accounts are created by `seed.py` for development. They are **not** shown on the public login page, never ship them in production UI, and rotate or disable them before a public launch.
+Open http://localhost:3000/login
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -93,244 +91,218 @@ These accounts are created by `seed.py` for development. They are **not** shown 
 | Coach | `coach@olynixx.com` | `coach123` |
 | Learner | `learner@olynixx.com` | `learner123` |
 
-Additional seeded learners (e.g. `maya@olynixx.com` / `learner123`) include dual-gate certificates for certificate UI demos.
-
-Before production, set a real `NEXT_PUBLIC_SITE_URL`, strong `SECRET_KEY` / `REFRESH_SECRET_KEY`, and `CORS_ORIGINS` to your live frontend origin(s).
+These exist only after seeding. Never ship them in production UI.
 
 ---
 
-## What is in the product
+## Everyday commands
+
+```bash
+# Start (if already built)
+docker compose up -d
+
+# Restart all services
+docker compose restart db backend frontend
+
+# Follow logs
+docker compose logs -f backend
+docker compose logs -f frontend
+
+# Stop
+docker compose down
+
+# Stop and wipe the database volume (destructive)
+docker compose down -v
+```
+
+After `down -v`, run migrations + seed again (steps 4–5).
+
+---
+
+## Verify it is healthy
+
+```bash
+docker compose ps
+curl http://localhost:8000/health
+```
+
+Expect backend JSON like `{"status":"ok",...}` and frontend at http://localhost:3000 returning 200.
+
+On Windows PowerShell:
+
+```powershell
+Invoke-WebRequest http://localhost:8000/health -UseBasicParsing
+Invoke-WebRequest http://localhost:3000 -UseBasicParsing
+```
+
+---
+
+## What you can do in each portal
 
 ### Public site
-- Brand-aligned Praxis marketing pages (home, focus, certification, organisations, work-with-us, standards, about, contact)
-- Strapline and mark assets under `frontend/public/brand/`
-- Login with role-based redirect into portals
+Marketing pages, login, certificate verification.
 
-### Learner portal (`/learner`)
-- Dashboard with live course progress (% complete from lesson completions)
-- Enrolled courses list (`/learner/courses`) and course player
-- Quizzes, online exam booking/attempts, dual-gate certificate status
+### Learner (`/learner`)
+Course player, quizzes, Phase 1 online exam (90s/question, one-way, resume on disconnect), dual-gate certificate status.
 
-### Coach portal (`/coach`)
-- Dashboard with assignment counts (active, pending, accepted, completed, declined)
-- Profile editing (specialty, emirate, focus area, languages as dropdowns)
-- Project board (accept / decline / complete)
-- Agreements (NDA + Code of Conduct) and CEC tracking
-- Placement eligibility gate before dispatch
+### Coach (`/coach`)
+Assignments board, profile, NDA / Code of Conduct, CEC, placement eligibility.
 
-### Admin portal (`/admin`)
-- Ops dashboard and user management
-- Talent pool (filter by emirate / specialty)
-- Project dispatch with assignment status
-- Content management (create/edit/publish courses + modules)
-- Exam engine and practical assessments
-- Compliance / agreements oversight
+### Admin (`/admin`)
+Users, talent pool, project dispatch, **content management** (courses → modules → lessons + Bunny video IDs), exams (including anomaly flags), practical assessments, agreements.
+
+### Course content & video
+
+1. Admin → **Content management**
+2. Create **course** → **module** → **lesson**
+3. Upload the video in **Bunny Stream**, paste the video GUID into the lesson
+4. Set `BUNNY_*` and `NEXT_PUBLIC_BUNNY_LIBRARY_ID` in `.env` for playback (optional locally; without Bunny keys, video APIs return 503 / player shows a placeholder)
+
+Videos are **not** uploaded to this app’s server — only the Bunny GUID is stored.
 
 ---
 
-## Brand system (Praxis v1.1)
+## Certification path (dual-gate)
 
-Tokens live in `frontend/src/app/globals.css`. Portals use `.ox-portal` (Deep Teal shell).
-
-| Token | Role |
-|-------|------|
-| Ink `#0c0f12` | Primary dark |
-| Cream `#f2ede3` | Light text / public surfaces |
-| Gold / Ochre / Bronze | Accents and CTAs |
-| Teal / Mint | Portal status and success |
-
-Fonts: **Playfair Display** (display) + **EB Garamond** (body) via `next/font`.  
-Brand components: `frontend/src/components/brand/` (`BrandMark`, `BrandLockup`, `Strapline`, `KhatamDivider`).
+1. Study — enrol and complete lessons  
+2. Written exam — attempt + **admin approval**  
+3. Practical — admin records **PASS**  
+4. Certificate issued when **both** gates pass  
+5. Learner may be upgraded to coach; placement needs active cert + signed NDA & Code of Conduct  
 
 ---
 
-## SEO
+## How the pieces talk to each other
 
-- `robots.txt` and `sitemap.xml` are generated by Next.js (`app/robots.ts`, `app/sitemap.ts`).
-- Set `NEXT_PUBLIC_SITE_URL` to your production origin (e.g. `https://praxis.olynixx.com`) so canonical URLs, Open Graph, and the sitemap resolve correctly.
-- Portals (`/learner`, `/coach`, `/admin`) and `/login` are `noindex`.
-- Organization, Course, and FAQ JSON-LD ship on home, certification, and contact respectively.
+```
+Browser  →  http://localhost:3000  (Next.js)
+                │
+                │  /api/proxy/...  (httpOnly cookie → Bearer)
+                ▼
+         http://backend:8000/api/...  (FastAPI, Docker network)
+                │
+                ▼
+         PostgreSQL (db:5432)
+```
+
+- Browser-facing API URL: `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`)
+- Server-side proxy inside Docker: `INTERNAL_API_URL` (default `http://backend:8000`)
+- Interactive API reference: http://localhost:8000/docs
 
 ---
 
 ## Environment variables
 
-Defined in `.env.example`. Copy to `.env` and set production values.
+Full template: **`.env.example`**. Copy to `.env` and edit.
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `POSTGRES_USER` | Database username | `postgres` |
-| `POSTGRES_PASSWORD` | Database password | `postgres` |
-| `POSTGRES_DB` | Database name | `olynixx` |
-| `DATABASE_URL` | Async DB URL | `postgresql+asyncpg://...` |
-| `SECRET_KEY` | JWT signing key (**change in production** |) |
-| `REFRESH_SECRET_KEY` | Refresh token signing key |, |
-| `ALGORITHM` | JWT algorithm | `HS256` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | Access token TTL | `30` |
-| `REFRESH_TOKEN_EXPIRE_DAYS` | Refresh token TTL | `7` |
-| `NEXT_PUBLIC_API_URL` | Browser → API URL | `http://localhost:8000` |
-| `NEXT_PUBLIC_SITE_URL` | Canonical site URL (SEO / OG / sitemap) | `http://localhost:3000` |
-| `INTERNAL_API_URL` | Frontend container → backend | `http://backend:8000` |
-| `BUNNY_LIBRARY_ID` | Bunny Stream library |, |
-| `BUNNY_API_KEY` | Bunny API key |, |
-| `BUNNY_CDN_HOSTNAME` | Bunny CDN hostname |, |
-| `BUNNY_TOKEN_AUTH_KEY` | Bunny token auth key |, |
-| `REDIS_URL` | Redis (optional locally) | `redis://localhost:6379/0` |
-| `CELERY_BROKER_URL` | Celery broker | `redis://localhost:6379/0` |
-| `EXAM_PASS_MARK` | Default pass mark | `70` |
-| `EXAM_TIME_LIMIT_MINUTES` | Default duration | `60` |
-| `EXAM_MAX_ATTEMPTS` | Max attempts | `3` |
-| `EXAM_RANDOMISE` | Randomise questions | `true` |
-| `EXAM_DELIVERY_MODE` | `online` or `in_person` | `online` |
+| Variable | Purpose | Local default |
+|----------|---------|---------------|
+| `POSTGRES_*` | Postgres user / password / db name | `postgres` / `postgres` / `olynixx` |
+| `SECRET_KEY` | JWT access signing | change for shared envs |
+| `REFRESH_SECRET_KEY` | JWT refresh signing | change for shared envs |
+| `CORS_ORIGINS` | Allowed browser origins | `http://localhost:3000` |
+| `NEXT_PUBLIC_API_URL` | Browser → API | `http://localhost:8000` |
+| `NEXT_PUBLIC_SITE_URL` | Canonical site (SEO) | `http://localhost:3000` |
+| `INTERNAL_API_URL` | Next container → API | `http://backend:8000` |
+| `BUNNY_LIBRARY_ID` | Bunny Stream library | empty |
+| `NEXT_PUBLIC_BUNNY_LIBRARY_ID` | Same ID for iframe player | empty |
+| `BUNNY_API_KEY` / `BUNNY_CDN_HOSTNAME` / `BUNNY_TOKEN_AUTH_KEY` | Signed streaming | empty |
+| `EXAM_SECONDS_PER_QUESTION` | Phase 1 per-question timer | `90` |
+| `EXAM_TIME_LIMIT_MINUTES` | Overall exam ceiling | `60` |
+| `CERTIFICATE_STORAGE_DIR` | Generated PDF path | `storage/certificates` |
+
+Production refuses weak default secrets and SQLite. See deployment docs below.
 
 ---
 
-## API summary
+## Optional: run without Docker
 
-Base path: `/api` · Interactive docs: `/docs`
+Use this only if you already run Postgres yourself (or accept SQLite fallback).
 
-Frontend calls go through the Next.js proxy at `/api/proxy/...` (forwards to the backend with auth cookies).
+**Backend**
 
-### Auth
-| Method | Path | Access |
-|--------|------|--------|
-| POST | `/auth/login` | Public |
-| POST | `/auth/register` | Public |
-| POST | `/auth/refresh` | User |
+```bash
+cd backend
+python -m venv venv
 
-### Courses & learning
-| Method | Path | Access |
-|--------|------|--------|
-| GET | `/courses/` | Public (published) |
-| GET | `/courses/all` | Admin |
-| GET | `/courses/my/dashboard` | Learner dashboard |
-| GET | `/courses/my/enrollments` | Enrolled courses + live progress |
-| GET | `/courses/{id}` | Course detail |
-| POST | `/courses/` | Admin create |
-| PATCH | `/courses/{id}` | Admin update |
-| POST | `/courses/{id}/enroll` | Enroll |
-| POST | `/courses/{id}/progress` | Lesson completion (syncs enrollment %) |
+# Windows
+venv\Scripts\activate
 
-### Modules, lessons, quizzes
-| Method | Path | Access |
-|--------|------|--------|
-| POST | `/courses/{id}/modules` | Admin |
-| PATCH / DELETE | `/modules/{id}` | Admin |
-| POST | `/modules/{id}/lessons` | Admin |
-| PATCH / DELETE | `/lessons/{id}` | Admin |
-| GET / POST | `/modules/{id}/quiz` | User / Admin |
-| POST | `/quizzes/{id}/submit` | User |
+# macOS / Linux
+source venv/bin/activate
 
-### Exams
-| Method | Path | Access |
-|--------|------|--------|
-| GET / POST | `/exams/sessions` | User / Admin |
-| POST | `/exams/sessions/{id}/book` | User |
-| POST | `/exams/attempts/start` | User |
-| POST | `/exams/attempts/{id}/submit` | User |
-| GET | `/exams/attempts/{id}/result` | User |
-| POST | `/exams/attempts/{id}/approve` | Admin |
-| GET / POST | `/exams/questions` | Admin |
-| GET | `/exams/attempts` | Admin |
+pip install -r requirements.txt
+# Point DATABASE_URL at Postgres (see .env.example)
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
 
-### Coaches & placement
-| Method | Path | Access |
-|--------|------|--------|
-| GET | `/coaches/` | Admin pool |
-| GET / PATCH | `/coaches/me/profile` | Coach |
-| GET | `/coaches/me/dashboard` | Coach dashboard |
-| GET | `/coaches/assignments/board` | Coach board |
-| PATCH | `/coaches/assignments/{id}` | Accept / decline / complete |
+**Frontend** (separate terminal)
 
-### Projects & operators
-| Method | Path | Access |
-|--------|------|--------|
-| GET / POST | `/projects/` | Admin |
-| PATCH | `/projects/{id}` | Admin |
-| POST | `/projects/{id}/assign` | Admin |
-| GET / POST | `/projects/operators` | Admin |
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### Compliance & certificates
-| Method | Path | Access |
-|--------|------|--------|
-| GET / POST | `/compliance/practical-assessments` | Admin |
-| GET | `/compliance/practical-assessments/me` | Learner |
-| GET | `/compliance/agreements/me` | Coach |
-| POST | `/compliance/agreements/me/sign` | Coach |
-| GET | `/certificates/me` | User |
-| GET | `/certificates/verify/{code}` | Public |
-
-### Admin & leads
-| Method | Path | Access |
-|--------|------|--------|
-| GET | `/admin/dashboard` | Admin |
-| GET | `/admin/stats` | Admin |
-| GET | `/admin/users` | Admin |
-| PATCH | `/admin/users/{id}/role` | Admin |
-| POST | `/leads/` | Public |
-| GET | `/leads/` | Admin |
+Set `NEXT_PUBLIC_API_URL=http://localhost:8000` and `INTERNAL_API_URL=http://localhost:8000` in the frontend env when not using Compose.
 
 ---
 
-## Project structure
+## Project layout
 
 ```
 olynixx_academy/
-├── .env.example
-├── docker-compose.yml
-├── README.md
+├── .env.example          # copy → .env
+├── docker-compose.yml    # db + backend + frontend
+├── docs/
+│   ├── PRODUCTION_BACKEND.md   # Railway API + Vercel frontend
+│   └── PRODUCTION_AZURE.md     # fuller Azure notes
 ├── backend/
-│   ├── Dockerfile
-│   ├── requirements.txt
+│   ├── app/              # FastAPI app, models, services, APIs
+│   ├── alembic/          # migrations
+│   ├── scripts/          # create_admin.py, etc.
 │   ├── seed.py
-│   ├── alembic/
-│   └── app/
-│       ├── main.py
-│       ├── core/
-│       ├── db/              # models, session
-│       ├── api/endpoints/   # auth, courses, exams, coaches, …
-│       ├── schemas/
-│       ├── services/        # e.g. certification dual-gate
-│       └── workers/tasks/   # certificate PDF stub
+│   └── storage/certificates/
 └── frontend/
-    ├── public/brand/        # Praxis mark assets
-    └── src/
-        ├── app/             # public + learner/coach/admin routes
-        ├── components/brand/
-        └── components/ui/
+    ├── public/brand/
+    └── src/app/          # public + /learner + /coach + /admin
 ```
 
 ---
 
-## Certification & placement model
+## Production
 
-1. **Study**, enroll, complete lessons (progress % from completed lessons / total).
-2. **Written exam**, online attempt; admin approval marks written gate.
-3. **Practical PASS**, recorded by admin under compliance.
-4. **Certificate**, issued only when both gates pass (`ACTIVE` / `EXPIRED` / `REVOKED`).
-5. **Coach upgrade**, successful dual-gate can promote learner → coach.
-6. **Placement**, requires active cert + signed NDA and Code of Conduct (`placement_eligible`) before project assignment.
+| Goal | Doc |
+|------|-----|
+| Keep Vercel demo frontend, host API elsewhere | [`docs/PRODUCTION_BACKEND.md`](docs/PRODUCTION_BACKEND.md) |
+| Azure-oriented full stack notes | [`docs/PRODUCTION_AZURE.md`](docs/PRODUCTION_AZURE.md) |
 
----
+Production checklist (short):
 
-## Deployment guidance
-
-| Component | Recommended host |
-|-----------|------------------|
-| App (FastAPI + Next.js) | Azure App Service / Container Apps (**UAE North**) |
-| PostgreSQL | Azure Database for PostgreSQL (**UAE North**) |
-| Files (materials / PDFs) | Azure Blob Storage (**UAE North**) |
-| Video | Bunny.net Stream |
-| Task queue | Celery + Redis |
-
-Phase 1 intent: sensitive data residency in **UAE North** for PDPL alignment. Local Docker remains the default for development.
+1. Strong unique `SECRET_KEY` and `REFRESH_SECRET_KEY`
+2. Real Postgres (`DATABASE_URL` with `postgresql+asyncpg://…`)
+3. `ENVIRONMENT=production`
+4. `CORS_ORIGINS` = your live frontend origin(s)
+5. Point Vercel `INTERNAL_API_URL` / `NEXT_PUBLIC_API_URL` at the live API
+6. Create an admin with `backend/scripts/create_admin.py` — **do not** demo-seed production
+7. Configure Bunny if learners need video
 
 ---
 
-## Roadmap (deferred)
+## Troubleshooting
 
-- Commerce / Stripe checkout → auto-enrollment
-- Full client / operator self-service portal
-- Production certificate PDF generation + blob storage
-- Expanded Bunny Stream content pipeline
-- Azure UAE North production cutover automation
+| Symptom | What to try |
+|---------|-------------|
+| Frontend 401s calling API | Use `/api/proxy/...` (cookie → Bearer). Hard refresh after login. |
+| `docker compose` build fails | Ensure Docker Desktop is running; retry `docker compose up -d --build`. |
+| Empty portals / no login users | Run migrations, then `python seed.py --force`. |
+| Video missing / 503 | Set Bunny env vars; paste GUID on the lesson; set `NEXT_PUBLIC_BUNNY_LIBRARY_ID`. |
+| DB connection errors | Wait for `olynixx_db` healthy (`docker compose ps`), then restart backend. |
+| Port already in use | Stop other apps on `3000` / `8000` / `5432`, or change ports in `docker-compose.yml`. |
+
+---
+
+## License / ownership
+
+Private RiseUp / Olynixx Praxis project. Do not commit `.env`, certificate PDFs, or local `venv` directories.

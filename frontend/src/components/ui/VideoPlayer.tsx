@@ -8,13 +8,26 @@ interface VideoPlayerProps {
   onComplete?: () => void;
 }
 
+function buildEmbedSrc(videoId: string, autoplay: boolean): string | null {
+  const raw = (videoId || "").trim();
+  if (!raw) return null;
+  const libraryId = (process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID || "").trim();
+  // Accept either "guid" + library env, or "libraryId/guid" pasted as one value.
+  const path = raw.includes("/") ? raw : libraryId ? `${libraryId}/${raw}` : raw;
+  if (!path.includes("/") && !libraryId) {
+    return null;
+  }
+  return `https://iframe.mediadelivery.net/embed/${path}?autoplay=${autoplay ? "true" : "false"}&preload=true`;
+}
+
 export function VideoPlayer({ videoId, title }: VideoPlayerProps) {
   const [loaded, setLoaded] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const embedSrc = buildEmbedSrc(videoId, playing);
 
   const handleLoad = useCallback(() => setLoaded(true), []);
 
-  if (!videoId) {
+  if (!embedSrc) {
     return (
       <div
         className="relative w-full rounded-2xl overflow-hidden"
@@ -37,7 +50,9 @@ export function VideoPlayer({ videoId, title }: VideoPlayerProps) {
             </svg>
           </div>
           <p className="text-[13px] font-medium" style={{ color: "var(--ox-muted)" }}>
-            No video available for this lesson
+            {videoId
+              ? "Set NEXT_PUBLIC_BUNNY_LIBRARY_ID to play this video"
+              : "No video available for this lesson"}
           </p>
         </div>
       </div>
@@ -93,7 +108,7 @@ export function VideoPlayer({ videoId, title }: VideoPlayerProps) {
       )}
 
       <iframe
-        src={`https://iframe.mediadelivery.net/embed/${videoId}?autoplay=${playing ? "true" : "false"}&preload=true`}
+        src={embedSrc}
         className="w-full h-full"
         style={{
           border: "none",

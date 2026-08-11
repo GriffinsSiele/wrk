@@ -21,7 +21,7 @@ from app.db.models import (
 )
 from app.schemas.course import CourseListResponse, CourseCreate, ProgressUpdate
 from app.schemas.admin import LearnerCourseSummary, LearnerDashboardResponse, TalentMixSegment
-from app.api.deps import get_current_user, get_current_active_admin
+from app.api.deps import get_current_user, get_current_user_optional, get_current_active_admin
 from app.services.analytics import daily_bucket_counts, checklist_score
 
 router = APIRouter()
@@ -287,7 +287,12 @@ async def my_enrollments(current_user: User = Depends(get_current_user), db: Asy
 
 
 @router.get("/{course_id}")
-async def get_course(course_id: int, db: AsyncSession = Depends(get_db)):
+async def get_course(
+    course_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user_optional),
+):
+    """Course tree for admin/learner UI. Annotates lesson completion when authenticated."""
     result = await db.execute(
         select(Course)
         .options(selectinload(Course.modules).selectinload(Module.lessons).selectinload(Lesson.materials))
@@ -296,7 +301,62 @@ async def get_course(course_id: int, db: AsyncSession = Depends(get_db)):
     course = result.scalars().first()
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
-    return course
+
+    completed_ids: set[int] = set()
+    if current_user:
+        progress_rows = (
+            await db.execute(
+                select(LessonProgress).where(
+                    LessonProgress.user_id == current_user.id,
+                    LessonProgress.completed == True,
+                )
+            )
+        ).scalars().all()
+        completed_ids = {p.lesson_id for p in progress_rows}
+
+    pct, completed, total = _progress_for_course(course, completed_ids)
+    modules_payload = []
+    for mod in sorted(course.modules or [], key=lambda m: m.order):
+        lessons_payload = []
+        for lesson in sorted(mod.lessons or [], key=lambda l: l.order):
+            secs = lesson.duration_seconds or 0
+            lessons_payload.append(
+                {
+                    "id": lesson.id,
+                    "title": lesson.title,
+                    "order": lesson.order,
+                    "content": lesson.content,
+                    "bunny_video_id": lesson.bunny_video_id,
+                    "video_id": lesson.bunny_video_id,  # alias for learner player
+                    "duration_seconds": lesson.duration_seconds,
+                    "duration_minutes": max(1, round(secs / 60)) if secs else 0,
+                    "completed": lesson.id in completed_ids,
+                    "materials": [
+                        {"id": m.id, "title": m.title, "file_url": m.file_url}
+                        for m in (lesson.materials or [])
+                    ],
+                }
+            )
+        modules_payload.append(
+            {
+                "id": mod.id,
+                "title": mod.title,
+                "order": mod.order,
+                "lessons": lessons_payload,
+            }
+        )
+
+    return {
+        "id": course.id,
+        "title": course.title,
+        "description": course.description,
+        "thumbnail": course.thumbnail,
+        "is_published": course.is_published,
+        "progress": pct,
+        "total_lessons": total,
+        "completed_lessons": completed,
+        "modules": modules_payload,
+    }
 
 
 @router.post("", response_model=CourseListResponse)

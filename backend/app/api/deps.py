@@ -10,6 +10,7 @@ from app.db.models import User, UserRole
 from app.schemas.token import TokenData
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
 
 
 def _role_value(user: User) -> str:
@@ -42,6 +43,19 @@ async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Depe
             detail="Account is inactive or deleted",
             headers={"WWW-Authenticate": "Bearer"},)
     return user
+
+
+async def get_current_user_optional(
+    db: AsyncSession = Depends(get_db),
+    token: str | None = Depends(oauth2_scheme_optional),
+) -> User | None:
+    """Auth when a Bearer token is present; anonymous otherwise (course catalogue)."""
+    if not token:
+        return None
+    try:
+        return await get_current_user(db=db, token=token)
+    except HTTPException:
+        return None
 
 
 async def get_current_active_admin(current_user: User = Depends(get_current_user)) -> User:

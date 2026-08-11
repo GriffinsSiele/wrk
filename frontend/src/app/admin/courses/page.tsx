@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Course = {
   id: number;
@@ -10,13 +10,48 @@ type Course = {
   is_published: boolean;
 };
 
+type Lesson = {
+  id: number;
+  title: string;
+  order: number;
+  content?: string | null;
+  bunny_video_id?: string | null;
+  duration_seconds?: number | null;
+};
+
+type Module = {
+  id: number;
+  title: string;
+  order: number;
+  lessons: Lesson[];
+};
+
+type CourseDetail = Course & {
+  modules: Module[];
+};
+
 type CourseForm = {
   title: string;
   description: string;
   is_published: boolean;
 };
 
+type LessonForm = {
+  title: string;
+  order: number;
+  content: string;
+  bunny_video_id: string;
+  duration_minutes: string;
+};
+
 const emptyForm: CourseForm = { title: "", description: "", is_published: true };
+const emptyLesson: LessonForm = {
+  title: "",
+  order: 1,
+  content: "",
+  bunny_video_id: "",
+  duration_minutes: "",
+};
 
 const fieldStyle = {
   background: "var(--ox-input-bg)",
@@ -24,6 +59,14 @@ const fieldStyle = {
   color: "var(--ox-fg-dark)",
   borderRadius: 2,
 } as const;
+
+function detailError(data: unknown, fallback: string) {
+  if (data && typeof data === "object" && "detail" in data) {
+    const d = (data as { detail: unknown }).detail;
+    if (typeof d === "string") return d;
+  }
+  return fallback;
+}
 
 export default function AdminContentManagementPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -34,15 +77,51 @@ export default function AdminContentManagementPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<CourseForm>(emptyForm);
 
+  const [structureCourseId, setStructureCourseId] = useState("");
+  const [structure, setStructure] = useState<CourseDetail | null>(null);
+  const [structureLoading, setStructureLoading] = useState(false);
+  const [moduleId, setModuleId] = useState("");
+  const [lessonForm, setLessonForm] = useState<LessonForm>(emptyLesson);
+  const [editingLessonId, setEditingLessonId] = useState<number | null>(null);
+
   async function loadCourses() {
     const resp = await fetch("/api/proxy/courses/all", { cache: "no-store" });
     if (resp.ok) setCourses(await resp.json());
   }
 
+  const loadStructure = useCallback(async (courseId: string) => {
+    if (!courseId) {
+      setStructure(null);
+      setModuleId("");
+      return;
+    }
+    setStructureLoading(true);
+    try {
+      const resp = await fetch(`/api/proxy/courses/${courseId}`, { cache: "no-store" });
+      if (!resp.ok) {
+        setStructure(null);
+        setMessage("Failed to load course structure");
+        return;
+      }
+      const data = (await resp.json()) as CourseDetail;
+      setStructure(data);
+      setModuleId((prev) => {
+        if (prev && data.modules?.some((m) => String(m.id) === prev)) return prev;
+        return data.modules?.[0] ? String(data.modules[0].id) : "";
+      });
+    } finally {
+      setStructureLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadCourses();
   }, []);
+
+  useEffect(() => {
+    loadStructure(structureCourseId);
+  }, [structureCourseId, loadStructure]);
 
   async function createCourse() {
     setMessage("");
@@ -85,8 +164,12 @@ export default function AdminContentManagementPage() {
       setMessage("Failed to create module");
       return;
     }
+    const createdCourseId = moduleForm.course_id;
     setModuleForm({ course_id: "", title: "", order: 1 });
     setMessage("Module created");
+    loadCourses();
+    if (structureCourseId === createdCourseId) loadStructure(createdCourseId);
+    else setStructureCourseId(createdCourseId);
   }
 
   function startEdit(course: Course) {
@@ -157,6 +240,86 @@ export default function AdminContentManagementPage() {
     }
   }
 
+  function resetLessonForm(nextOrder = 1) {
+    setEditingLessonId(null);
+    setLessonForm({ ...emptyLesson, order: nextOrder });
+  }
+
+  function startLessonEdit(lesson: Lesson) {
+    setEditingLessonId(lesson.id);
+    setLessonForm({
+      title: lesson.title,
+      order: lesson.order,
+      content: lesson.content || "",
+      bunny_video_id: lesson.bunny_video_id || "",
+      duration_minutes: lesson.duration_seconds
+        ? String(Math.round(lesson.duration_seconds / 60))
+        : "",
+    });
+    setMessage("");
+  }
+
+  async function saveLesson() {
+    setMessage("");
+    if (!moduleId) {
+      setMessage("Select a module first");
+      return;
+    }
+    if (!lessonForm.title.trim()) {
+      setMessage("Lesson title is required");
+      return;
+    }
+    const minutes = lessonForm.duration_minutes.trim()
+      ? Number(lessonForm.duration_minutes)
+      : null;
+    const payload = {
+      title: lessonForm.title.trim(),
+      order: Number(lessonForm.order) || 1,
+      content: lessonForm.content.trim() || null,
+      bunny_video_id: lessonForm.bunny_video_id.trim() || null,
+      duration_seconds:
+        minutes != null && !Number.isNaN(minutes) ? Math.max(0, Math.round(minutes * 60)) : null,
+    };
+
+    setSaving(true);
+    const resp = editingLessonId
+      ? await fetch(`/api/proxy/lessons/${editingLessonId}`, {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+      : await fetch(`/api/proxy/modules/${moduleId}/lessons`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+    const data = await resp.json().catch(() => ({}));
+    setSaving(false);
+    if (!resp.ok) {
+      setMessage(detailError(data, editingLessonId ? "Failed to update lesson" : "Failed to create lesson"));
+      return;
+    }
+    setMessage(editingLessonId ? "Lesson updated" : "Lesson created");
+    const selected = structure?.modules.find((m) => String(m.id) === moduleId);
+    const nextOrder = (selected?.lessons?.length || 0) + (editingLessonId ? 0 : 1) + 1;
+    resetLessonForm(editingLessonId ? (selected?.lessons?.length || 0) + 1 : nextOrder);
+    if (structureCourseId) loadStructure(structureCourseId);
+  }
+
+  async function deleteLesson(lessonId: number) {
+    if (!window.confirm("Delete this lesson? This cannot be undone.")) return;
+    setMessage("");
+    const resp = await fetch(`/api/proxy/lessons/${lessonId}`, { method: "DELETE" });
+    if (!resp.ok) {
+      setMessage("Failed to delete lesson");
+      return;
+    }
+    setMessage("Lesson deleted");
+    if (editingLessonId === lessonId) resetLessonForm();
+    if (structureCourseId) loadStructure(structureCourseId);
+  }
+
+  const selectedModule = structure?.modules.find((m) => String(m.id) === moduleId);
   const publishedCount = courses.filter((c) => c.is_published).length;
   const draftCount = courses.length - publishedCount;
 
@@ -167,14 +330,19 @@ export default function AdminContentManagementPage() {
           Content management
         </h1>
         <p className="font-body text-[14px] mt-2" style={{ color: "var(--ox-muted)" }}>
-          Manage curriculum structure, publish courses, and prepare module quiz flow.
+          Build courses and modules, then add lessons with text content and Bunny Stream video IDs.
         </p>
       </div>
 
       {message && (
         <p
           className="text-sm font-body"
-          style={{ color: message.toLowerCase().includes("fail") || message.includes("required") ? "var(--gold-bright)" : "var(--mint)" }}
+          style={{
+            color:
+              message.toLowerCase().includes("fail") || message.includes("required")
+                ? "var(--gold-bright)"
+                : "var(--mint)",
+          }}
         >
           {message}
         </p>
@@ -250,6 +418,188 @@ export default function AdminContentManagementPage() {
           </button>
         </section>
       </div>
+
+      <section className="p-4 space-y-4" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+        <div>
+          <h2 className="font-display text-[15px]" style={{ fontWeight: 500, color: "var(--cream)" }}>
+            Lessons &amp; video
+          </h2>
+          <p className="font-body text-[13px] mt-1" style={{ color: "var(--ox-muted)" }}>
+            Upload videos in Bunny Stream first, then paste each video GUID here. Lesson text supports HTML.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <select
+            value={structureCourseId}
+            onChange={(e) => {
+              setStructureCourseId(e.target.value);
+              resetLessonForm();
+            }}
+            className="w-full h-9 px-3 text-sm font-body"
+            style={fieldStyle}
+          >
+            <option value="">Select course to manage lessons</option>
+            {courses.map((course) => (
+              <option key={course.id} value={String(course.id)}>
+                {course.title}
+              </option>
+            ))}
+          </select>
+          <select
+            value={moduleId}
+            onChange={(e) => {
+              setModuleId(e.target.value);
+              const mod = structure?.modules.find((m) => String(m.id) === e.target.value);
+              resetLessonForm((mod?.lessons?.length || 0) + 1);
+            }}
+            disabled={!structure?.modules?.length}
+            className="w-full h-9 px-3 text-sm font-body"
+            style={fieldStyle}
+          >
+            <option value="">Select module</option>
+            {(structure?.modules || []).map((mod) => (
+              <option key={mod.id} value={String(mod.id)}>
+                {mod.order}. {mod.title} ({mod.lessons?.length || 0} lessons)
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {structureLoading && (
+          <p className="font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
+            Loading course structure…
+          </p>
+        )}
+
+        {structureCourseId && !structureLoading && !structure?.modules?.length && (
+          <p className="font-body text-[13px]" style={{ color: "var(--ochre)" }}>
+            This course has no modules yet. Create a module above first.
+          </p>
+        )}
+
+        {moduleId && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <h3 className="font-display text-[13px] tracking-[0.12em] uppercase" style={{ color: "var(--ochre)" }}>
+                {editingLessonId ? `Edit lesson #${editingLessonId}` : "Add lesson"}
+              </h3>
+              <input
+                placeholder="Lesson title"
+                value={lessonForm.title}
+                onChange={(e) => setLessonForm((p) => ({ ...p, title: e.target.value }))}
+                className="w-full h-9 px-3 text-sm font-body"
+                style={fieldStyle}
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="Order"
+                  value={lessonForm.order}
+                  onChange={(e) => setLessonForm((p) => ({ ...p, order: Number(e.target.value) }))}
+                  className="w-full h-9 px-3 text-sm font-body"
+                  style={fieldStyle}
+                />
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="Duration (minutes)"
+                  value={lessonForm.duration_minutes}
+                  onChange={(e) => setLessonForm((p) => ({ ...p, duration_minutes: e.target.value }))}
+                  className="w-full h-9 px-3 text-sm font-body"
+                  style={fieldStyle}
+                />
+              </div>
+              <input
+                placeholder="Bunny video GUID"
+                value={lessonForm.bunny_video_id}
+                onChange={(e) => setLessonForm((p) => ({ ...p, bunny_video_id: e.target.value }))}
+                className="w-full h-9 px-3 text-sm font-body"
+                style={fieldStyle}
+              />
+              <textarea
+                placeholder="Lesson content (HTML allowed)"
+                value={lessonForm.content}
+                onChange={(e) => setLessonForm((p) => ({ ...p, content: e.target.value }))}
+                className="w-full px-3 py-2 text-sm font-body"
+                rows={6}
+                style={fieldStyle}
+              />
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={saveLesson}
+                  disabled={saving}
+                  className="ox-cta h-9 px-5 text-[13px] font-semibold"
+                >
+                  {saving ? "Saving…" : editingLessonId ? "Save lesson" : "Create lesson"}
+                </button>
+                {editingLessonId && (
+                  <button
+                    onClick={() => resetLessonForm((selectedModule?.lessons?.length || 0) + 1)}
+                    className="ox-ghost-light h-9 px-5 text-[13px] font-medium"
+                  >
+                    Cancel edit
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-display text-[13px] tracking-[0.12em] uppercase mb-2" style={{ color: "var(--ochre)" }}>
+                Lessons in module
+              </h3>
+              {!selectedModule?.lessons?.length ? (
+                <p className="font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
+                  No lessons yet.
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {[...selectedModule.lessons]
+                    .sort((a, b) => a.order - b.order)
+                    .map((lesson) => (
+                      <li
+                        key={lesson.id}
+                        className="p-3 flex flex-col sm:flex-row sm:items-start justify-between gap-2"
+                        style={{ border: "1px solid var(--ox-line)" }}
+                      >
+                        <div className="min-w-0">
+                          <div className="font-display text-[14px]" style={{ color: "var(--cream)", fontWeight: 500 }}>
+                            {lesson.order}. {lesson.title}
+                          </div>
+                          <p className="font-body text-[12px] mt-1 truncate" style={{ color: "var(--ox-muted)" }}>
+                            {lesson.bunny_video_id
+                              ? `Video: ${lesson.bunny_video_id}`
+                              : "No video ID"}
+                            {lesson.duration_seconds
+                              ? ` · ${Math.round(lesson.duration_seconds / 60)} min`
+                              : ""}
+                          </p>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <button
+                            onClick={() => startLessonEdit(lesson)}
+                            className="h-8 px-3 text-[12px] font-display"
+                            style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--gold)", borderRadius: 2 }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteLesson(lesson.id)}
+                            className="h-8 px-3 text-[12px] font-display"
+                            style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--cream)", borderRadius: 2 }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </section>
 
       <section style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
         <div
@@ -383,6 +733,16 @@ export default function AdminContentManagementPage() {
                               style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--gold)", borderRadius: 2 }}
                             >
                               Edit
+                            </button>
+                            <button
+                              onClick={() => {
+                                setStructureCourseId(String(course.id));
+                                setMessage(`Managing lessons for “${course.title}”`);
+                              }}
+                              className="h-8 px-3 text-[12px] font-display"
+                              style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--mint)", borderRadius: 2 }}
+                            >
+                              Lessons
                             </button>
                             <button
                               onClick={() => togglePublish(course)}

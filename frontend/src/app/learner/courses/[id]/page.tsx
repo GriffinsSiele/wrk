@@ -6,31 +6,62 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { VideoPlayer } from "@/components/ui/VideoPlayer";
 
 interface Lesson {
-  id: string;
+  id: number;
   title: string;
   duration_minutes: number;
   video_id: string;
+  bunny_video_id?: string | null;
   content: string;
   completed: boolean;
   order: number;
 }
 
 interface Module {
-  id: string;
+  id: number;
   title: string;
   order: number;
   lessons: Lesson[];
 }
 
 interface Course {
-  id: string;
+  id: number;
   title: string;
   description: string;
-  level: string;
+  level?: string;
   modules: Module[];
   progress: number;
   total_lessons: number;
   completed_lessons: number;
+}
+
+function normalizeCourse(data: Record<string, unknown>): Course {
+  const modules = ((data.modules as Module[]) || []).map((mod) => ({
+    ...mod,
+    id: Number(mod.id),
+    lessons: (mod.lessons || []).map((lesson) => {
+      const video =
+        (lesson as Lesson).video_id ||
+        (lesson as Lesson).bunny_video_id ||
+        "";
+      return {
+        ...lesson,
+        id: Number(lesson.id),
+        video_id: video,
+        content: lesson.content || "",
+        completed: Boolean(lesson.completed),
+        duration_minutes: lesson.duration_minutes || 0,
+      };
+    }),
+  }));
+  return {
+    id: Number(data.id),
+    title: String(data.title || ""),
+    description: String(data.description || ""),
+    modules,
+    progress: Number(data.progress || 0),
+    total_lessons: Number(data.total_lessons || 0),
+    completed_lessons: Number(data.completed_lessons || 0),
+  };
 }
 
 export default function CourseDetailPage() {
@@ -39,7 +70,7 @@ export default function CourseDetailPage() {
 
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
-  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [expandedModules, setExpandedModules] = useState<Set<number>>(new Set());
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [markingComplete, setMarkingComplete] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -47,22 +78,21 @@ export default function CourseDetailPage() {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        // Prefer /api/proxy elsewhere; this page hits the API URL directly (cookie auth if CORS allows).
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-        const res = await fetch(`${apiUrl}/api/courses/${courseId}`, { credentials: "include" });
+        // Proxy lifts httpOnly cookie → Bearer for the API.
+        const res = await fetch(`/api/proxy/courses/${courseId}`, { cache: "no-store" });
         if (res.ok) {
-          const data = await res.json();
+          const data = normalizeCourse(await res.json());
           setCourse(data);
           if (data.modules?.length > 0) {
             setExpandedModules(new Set([data.modules[0].id]));
             const firstIncomplete = data.modules
-              .flatMap((m: Module) => m.lessons)
-              .find((l: Lesson) => !l.completed);
-            setActiveLesson(firstIncomplete || data.modules[0].lessons[0]);
+              .flatMap((m) => m.lessons)
+              .find((l) => !l.completed);
+            setActiveLesson(firstIncomplete || data.modules[0].lessons[0] || null);
           }
         }
       } catch {
-        /* API unavailable - show demo state */
+        /* API unavailable */
       } finally {
         setLoading(false);
       }
@@ -70,7 +100,7 @@ export default function CourseDetailPage() {
     fetchCourse();
   }, [courseId]);
 
-  const toggleModule = useCallback((moduleId: string) => {
+  const toggleModule = useCallback((moduleId: number) => {
     setExpandedModules((prev) => {
       const next = new Set(prev);
       if (next.has(moduleId)) next.delete(moduleId);
@@ -80,21 +110,31 @@ export default function CourseDetailPage() {
   }, []);
 
   const handleMarkComplete = async () => {
-    if (!activeLesson || markingComplete) return;
+    if (!activeLesson || markingComplete || !course) return;
     setMarkingComplete(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      await fetch(`${apiUrl}/api/lessons/${activeLesson.id}/complete`, {
+      const resp = await fetch(`/api/proxy/courses/${course.id}/progress`, {
         method: "POST",
-        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ lesson_id: activeLesson.id, completed: true }),
       });
+      if (!resp.ok) return;
+      const result = await resp.json().catch(() => ({}));
+      const progress =
+        typeof result.progress === "number" ? result.progress : course.progress;
       setActiveLesson((prev) => (prev ? { ...prev, completed: true } : null));
       setCourse((prev) => {
         if (!prev) return prev;
+        const already = prev.modules
+          .flatMap((m) => m.lessons)
+          .some((l) => l.id === activeLesson.id && l.completed);
+        const completed_lessons = already
+          ? prev.completed_lessons
+          : prev.completed_lessons + 1;
         return {
           ...prev,
-          completed_lessons: prev.completed_lessons + 1,
-          progress: Math.round(((prev.completed_lessons + 1) / prev.total_lessons) * 100),
+          completed_lessons,
+          progress,
           modules: prev.modules.map((m) => ({
             ...m,
             lessons: m.lessons.map((l) =>
@@ -104,7 +144,7 @@ export default function CourseDetailPage() {
         };
       });
     } catch {
-      /* handle error */
+      /* ignore */
     } finally {
       setMarkingComplete(false);
     }
@@ -269,7 +309,7 @@ export default function CourseDetailPage() {
                     className="font-display text-[11px] uppercase tracking-[0.2em]"
                     style={{ color: "var(--ochre)" }}
                   >
-                    {course?.level || "Level 1"}
+                    Lesson {activeLesson.order}
                   </span>
                   <h1
                     className="font-display text-2xl mt-1"
