@@ -1,13 +1,19 @@
 /** Canonical site URL for metadata, sitemap, and JSON-LD. */
 import { PILLARS_INLINE, SITE_POSITIONING, SITE_SPECIALISE } from "@/lib/brand-copy";
 
+/**
+ * Never fall back to VERCEL_URL — that leaks personal/preview hosts into canonical + og:url.
+ * Production must set NEXT_PUBLIC_SITE_URL (e.g. https://olynixx.com).
+ */
 export function getSiteUrl(): string {
-  const fromEnv =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.VERCEL_URL;
+  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL;
   if (fromEnv) {
-    return fromEnv.startsWith("http") ? fromEnv.replace(/\/$/, "") : `https://${fromEnv.replace(/\/$/, "")}`;
+    return fromEnv.startsWith("http")
+      ? fromEnv.replace(/\/$/, "")
+      : `https://${fromEnv.replace(/\/$/, "")}`;
+  }
+  if (process.env.NODE_ENV === "production") {
+    return "https://olynixx.com";
   }
   return "http://localhost:3000";
 }

@@ -11,10 +11,25 @@ type AdminUser = {
   last_name?: string | null;
 };
 
+const fieldStyle = {
+  background: "var(--ox-input-bg)",
+  border: "1px solid var(--ox-line)",
+  color: "var(--ox-fg-dark)",
+  borderRadius: 2,
+} as const;
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [createForm, setCreateForm] = useState({
+    email: "",
+    password: "",
+    first_name: "",
+    last_name: "",
+    role: "learner",
+  });
+  const [resetPassword, setResetPassword] = useState<Record<number, string>>({});
 
   async function load() {
     const resp = await fetch("/api/proxy/admin/users", { cache: "no-store" });
@@ -26,6 +41,53 @@ export default function AdminUsersPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, []);
+
+  async function createUser() {
+    setMessage("");
+    const resp = await fetch("/api/proxy/admin/users", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(createForm),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      setMessage(typeof data.detail === "string" ? data.detail : "Failed to create user");
+      return;
+    }
+    setMessage(`Created ${createForm.email}`);
+    setCreateForm({ email: "", password: "", first_name: "", last_name: "", role: "learner" });
+    load();
+  }
+
+  async function setPassword(userId: number) {
+    setMessage("");
+    const password = resetPassword[userId] || "";
+    const resp = await fetch(`/api/proxy/admin/users/${userId}/set-password`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      setMessage(typeof data.detail === "string" ? data.detail : "Failed to set password");
+      return;
+    }
+    setMessage("Password updated");
+    setResetPassword((p) => ({ ...p, [userId]: "" }));
+  }
+
+  async function purgeDemos() {
+    if (!window.confirm("Purge known demo accounts (Jane/John/demo emails)? This soft-deletes them.")) return;
+    setMessage("");
+    const resp = await fetch("/api/proxy/admin/users/purge-demo", { method: "POST" });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      setMessage("Failed to purge demo accounts");
+      return;
+    }
+    setMessage(`Purged: ${(data.purged || []).join(", ") || "none"}`);
+    load();
+  }
 
   async function updateRole(userId: number, role: string) {
     setMessage("");
@@ -83,9 +145,31 @@ export default function AdminUsersPage() {
     <div className="p-6 space-y-5">
       <h1 className="font-display text-3xl" style={{ fontWeight: 500 }}>User Management</h1>
       <p className="font-body text-[14px]" style={{ color: "var(--ox-muted)" }}>
-        Manage roles and status. Soft-delete anonymises identity while preserving audit history.
+        Admin provisioning, password reset, role/status control. Soft-delete anonymises identity while preserving audit history.
       </p>
       {message && <p className="font-body text-sm" style={{ color: message.toLowerCase().includes("fail") ? "var(--gold-bright)" : "var(--mint)" }}>{message}</p>}
+
+      <section className="p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+        <h2 className="font-display text-[15px]" style={{ color: "var(--cream)", fontWeight: 500 }}>Create user</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <input placeholder="First name" value={createForm.first_name} onChange={(e) => setCreateForm((p) => ({ ...p, first_name: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
+          <input placeholder="Last name" value={createForm.last_name} onChange={(e) => setCreateForm((p) => ({ ...p, last_name: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
+          <input placeholder="Email" value={createForm.email} onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
+          <input type="password" placeholder="Temp password (≥10 chars)" value={createForm.password} onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
+          <select value={createForm.role} onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))} className="h-9 px-2 text-sm" style={fieldStyle}>
+            <option value="learner">learner</option>
+            <option value="coach">coach</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={createUser} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create user</button>
+          <button onClick={purgeDemos} className="h-9 px-5 text-[13px] font-display" style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--cream)", borderRadius: 2 }}>
+            Purge demo accounts
+          </button>
+        </div>
+      </section>
+
       {loading ? (
         <p className="font-body" style={{ color: "var(--ox-muted)" }}>Loading users...</p>
       ) : (
@@ -129,19 +213,24 @@ export default function AdminUsersPage() {
                     </span>
                   </td>
                   <td className="p-3">
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 items-center">
+                      <input
+                        type="password"
+                        placeholder="New password"
+                        value={resetPassword[user.id] || ""}
+                        onChange={(e) => setResetPassword((p) => ({ ...p, [user.id]: e.target.value }))}
+                        className="h-9 px-2 text-[12px] w-36"
+                        style={fieldStyle}
+                      />
+                      <button onClick={() => setPassword(user.id)} className="ox-ghost-light px-3 h-9 text-[12px] font-display">
+                        Set password
+                      </button>
                       {user.is_active ? (
-                        <button
-                          onClick={() => deactivate(user.id)}
-                          className="ox-ghost-light px-3 h-9 text-[12px] font-display"
-                        >
+                        <button onClick={() => deactivate(user.id)} className="ox-ghost-light px-3 h-9 text-[12px] font-display">
                           Deactivate
                         </button>
                       ) : (
-                        <button
-                          onClick={() => activate(user.id)}
-                          className="ox-cta px-3 h-9 text-[12px] font-semibold"
-                        >
+                        <button onClick={() => activate(user.id)} className="ox-cta px-3 h-9 text-[12px] font-semibold">
                           Activate
                         </button>
                       )}

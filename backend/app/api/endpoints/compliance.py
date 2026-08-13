@@ -11,6 +11,7 @@ from app.db.models import (
     AgreementType,
     CoachAgreement,
     PracticalAssessment,
+    PracticalChecklistTemplate,
     PracticalResult,
     User,
 )
@@ -20,6 +21,9 @@ from app.schemas.compliance import (
     CoachAgreementSign,
     PracticalAssessmentCreate,
     PracticalAssessmentResponse,
+    PracticalChecklistTemplateCreate,
+    PracticalChecklistTemplateResponse,
+    PracticalChecklistTemplateUpdate,
 )
 from app.services.certification import (
     ensure_mandatory_agreement_rows,
@@ -28,6 +32,102 @@ from app.services.certification import (
 )
 
 router = APIRouter()
+
+
+def _evaluate_practical_result(
+    template: Optional[PracticalChecklistTemplate],
+    checklist_result: dict,
+    requested: str,
+) -> str:
+    """If template has criteria, derive PASS/FAIL; otherwise honour admin requested result."""
+    result_value = requested.upper()
+    if result_value not in ("PASS", "FAIL"):
+        raise HTTPException(status_code=400, detail="result must be PASS or FAIL")
+    if not template or not template.items:
+        return result_value
+    items = template.items if isinstance(template.items, list) else []
+    required_keys = [i.get("key") for i in items if isinstance(i, dict) and i.get("required", True) and i.get("key")]
+    checked = sum(1 for k in required_keys if checklist_result.get(k))
+    if template.min_required_pass is not None:
+        auto_pass = checked >= int(template.min_required_pass)
+    else:
+        auto_pass = checked >= len(required_keys) and len(required_keys) > 0
+    return "PASS" if auto_pass else "FAIL"
+
+
+@router.get("/checklist-templates", response_model=List[PracticalChecklistTemplateResponse])
+async def list_checklist_templates(
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_active_admin),
+):
+    rows = (
+        await db.execute(select(PracticalChecklistTemplate).order_by(PracticalChecklistTemplate.id))
+    ).scalars().all()
+    return rows
+
+
+@router.get("/checklist-templates/active", response_model=Optional[PracticalChecklistTemplateResponse])
+async def get_active_checklist_template(
+    certification_level: str = "Level 1",
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_active_admin),
+):
+    result = await db.execute(
+        select(PracticalChecklistTemplate)
+        .where(
+            PracticalChecklistTemplate.is_active.is_(True),
+            PracticalChecklistTemplate.certification_level == certification_level,
+        )
+        .order_by(PracticalChecklistTemplate.id.desc())
+    )
+    return result.scalars().first()
+
+
+@router.post("/checklist-templates", response_model=PracticalChecklistTemplateResponse)
+async def create_checklist_template(
+    payload: PracticalChecklistTemplateCreate,
+    _: User = Depends(get_current_active_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    if not payload.items:
+        raise HTTPException(status_code=400, detail="Checklist must include at least one item")
+    tpl = PracticalChecklistTemplate(
+        name=payload.name,
+        certification_level=payload.certification_level,
+        is_active=payload.is_active,
+        items=[i.model_dump() for i in payload.items],
+        min_required_pass=payload.min_required_pass,
+    )
+    db.add(tpl)
+    await db.commit()
+    await db.refresh(tpl)
+    return tpl
+
+
+@router.patch("/checklist-templates/{template_id}", response_model=PracticalChecklistTemplateResponse)
+async def update_checklist_template(
+    template_id: int,
+    payload: PracticalChecklistTemplateUpdate,
+    _: User = Depends(get_current_active_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(PracticalChecklistTemplate).where(PracticalChecklistTemplate.id == template_id))
+    tpl = result.scalars().first()
+    if not tpl:
+        raise HTTPException(status_code=404, detail="Checklist template not found")
+    data = payload.model_dump(exclude_none=True)
+    if "items" in data and data["items"] is not None:
+        data["items"] = [i if isinstance(i, dict) else i for i in data["items"]]
+        # Pydantic already dumped via model_dump for nested? items are dicts from model_dump
+    for field, value in data.items():
+        if field == "items" and value is not None:
+            setattr(tpl, field, value)
+        else:
+            setattr(tpl, field, value)
+    tpl.updated_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(tpl)
+    return tpl
 
 
 @router.get("/practical-assessments", response_model=List[PracticalAssessmentResponse])
@@ -62,19 +162,35 @@ async def create_practical_assessment(
     admin: User = Depends(get_current_active_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    result_value = payload.result.upper()
-    if result_value not in ("PASS", "FAIL"):
-        raise HTTPException(status_code=400, detail="result must be PASS or FAIL")
-
     user_result = await db.execute(select(User).where(User.id == payload.user_id))
     if not user_result.scalars().first():
         raise HTTPException(status_code=404, detail="User not found")
+
+    template = None
+    if payload.template_id:
+        tpl_result = await db.execute(
+            select(PracticalChecklistTemplate).where(PracticalChecklistTemplate.id == payload.template_id)
+        )
+        template = tpl_result.scalars().first()
+    else:
+        tpl_result = await db.execute(
+            select(PracticalChecklistTemplate)
+            .where(
+                PracticalChecklistTemplate.is_active.is_(True),
+                PracticalChecklistTemplate.certification_level == payload.certification_level,
+            )
+            .order_by(PracticalChecklistTemplate.id.desc())
+        )
+        template = tpl_result.scalars().first()
+
+    checklist = payload.checklist_result or {}
+    result_value = _evaluate_practical_result(template, checklist, payload.result)
 
     assessment = PracticalAssessment(
         user_id=payload.user_id,
         assessor_id=admin.id,
         certification_level=payload.certification_level,
-        checklist_result=payload.checklist_result or {},
+        checklist_result=checklist,
         result=PracticalResult(result_value),
         notes=payload.notes,
         assessed_at=datetime.now(timezone.utc),

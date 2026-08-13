@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
 
@@ -25,6 +25,27 @@ class UserAdminResponse(BaseModel):
 
 class RoleUpdate(BaseModel):
     role: str
+
+
+class AdminUserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    first_name: str
+    last_name: str
+    role: str = "learner"
+
+
+class AdminPasswordSet(BaseModel):
+    password: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str
 
 
 class SeriesPoint(BaseModel):

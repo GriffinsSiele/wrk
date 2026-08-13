@@ -33,11 +33,14 @@ from app.schemas.exam import (
     AttemptResultResponse,
     AttemptStartResponse,
     AttemptSubmit,
+    ExamConfigCreate,
+    ExamConfigUpdate,
     ExamSessionResponse,
     QuestionBankCreate,
     QuestionDisplay,
 )
 from app.services import exam_engine as engine
+from app.services.exam_config_helpers import config_to_response, integrity_from_config, merge_integrity_json
 from app.services.certification import has_passed_practical, prerequisite_satisfied, try_issue_certificate
 
 router = APIRouter()
@@ -52,6 +55,92 @@ class ExamSessionCreate(BaseModel):
     exam_config_id: Optional[int] = None
 
 
+@router.get("/configs")
+async def list_exam_configs(
+    _: User = Depends(get_current_active_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    rows = (await db.execute(select(ExamConfig).order_by(ExamConfig.id))).scalars().all()
+    return [config_to_response(c) for c in rows]
+
+
+@router.post("/configs")
+async def create_exam_config(
+    payload: ExamConfigCreate,
+    _: User = Depends(get_current_active_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    data = payload.model_dump()
+    integrity = merge_integrity_json(
+        data.pop("config_json", None) or {},
+        seconds_per_question=data.pop("seconds_per_question"),
+        one_way=data.pop("one_way"),
+        shuffle_options=data.pop("shuffle_options"),
+        max_disconnect_pause_seconds=data.pop("max_disconnect_pause_seconds"),
+        submit_grace_minutes=data.pop("submit_grace_minutes"),
+        anomaly_review_threshold=data.pop("anomaly_review_threshold"),
+    )
+    config = ExamConfig(**data, config_json=integrity)
+    db.add(config)
+    await db.commit()
+    await db.refresh(config)
+    return config_to_response(config)
+
+
+@router.patch("/configs/{config_id}")
+async def update_exam_config(
+    config_id: int,
+    payload: ExamConfigUpdate,
+    _: User = Depends(get_current_active_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(ExamConfig).where(ExamConfig.id == config_id))
+    config = result.scalars().first()
+    if not config:
+        raise HTTPException(status_code=404, detail="Exam config not found")
+    data = payload.model_dump(exclude_none=True)
+    integrity_keys = {
+        "seconds_per_question",
+        "one_way",
+        "shuffle_options",
+        "max_disconnect_pause_seconds",
+        "submit_grace_minutes",
+        "anomaly_review_threshold",
+        "config_json",
+    }
+    integrity_patch = {k: data.pop(k) for k in list(data.keys()) if k in integrity_keys}
+    for field, value in data.items():
+        setattr(config, field, value)
+    if integrity_patch:
+        base = dict(config.config_json or {})
+        extra = integrity_patch.pop("config_json", None)
+        config.config_json = merge_integrity_json(base, extra=extra if isinstance(extra, dict) else None, **integrity_patch)
+        flag_modified(config, "config_json")
+    await db.commit()
+    await db.refresh(config)
+    return config_to_response(config)
+
+
+@router.delete("/configs/{config_id}")
+async def delete_exam_config(
+    config_id: int,
+    _: User = Depends(get_current_active_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(ExamConfig).where(ExamConfig.id == config_id))
+    config = result.scalars().first()
+    if not config:
+        raise HTTPException(status_code=404, detail="Exam config not found")
+    in_use = await db.scalar(
+        select(func.count()).select_from(ExamSession).where(ExamSession.exam_config_id == config_id)
+    )
+    if in_use:
+        raise HTTPException(status_code=400, detail="Config is linked to exam sessions; reassign sessions first")
+    await db.delete(config)
+    await db.commit()
+    return {"message": "Exam config deleted"}
+
+
 def _require_online_mode() -> None:
     if settings.EXAM_DELIVERY_MODE.lower() != "online":
         raise HTTPException(
@@ -60,15 +149,20 @@ def _require_online_mode() -> None:
         )
 
 
-async def _session_time_limit(db: AsyncSession, session_id: Optional[int]) -> int:
+async def _session_exam_config(db: AsyncSession, session_id: Optional[int]):
     if not session_id:
-        return settings.EXAM_TIME_LIMIT_MINUTES
+        return None
     sess_result = await db.execute(
         select(ExamSession).options(selectinload(ExamSession.config)).where(ExamSession.id == session_id)
     )
     sess = sess_result.scalars().first()
-    if sess and sess.config and sess.config.time_limit_minutes:
-        return sess.config.time_limit_minutes
+    return sess.config if sess else None
+
+
+async def _session_time_limit(db: AsyncSession, session_id: Optional[int]) -> int:
+    config = await _session_exam_config(db, session_id)
+    if config and config.time_limit_minutes:
+        return config.time_limit_minutes
     return settings.EXAM_TIME_LIMIT_MINUTES
 
 
@@ -83,9 +177,14 @@ async def _load_attempt(db: AsyncSession, attempt_id: int, user_id: int) -> Exam
 
 
 async def _attach_time_limit(db: AsyncSession, attempt: ExamAttempt) -> int:
-    # Ephemeral: overall_deadline reads attempt._time_limit_minutes (not a DB column).
-    limit = await _session_time_limit(db, attempt.session_id)
+    # Ephemeral runtime fields from ExamConfig (not DB columns on ExamAttempt).
+    config = await _session_exam_config(db, attempt.session_id)
+    limit = config.time_limit_minutes if config and config.time_limit_minutes else settings.EXAM_TIME_LIMIT_MINUTES
+    integrity = integrity_from_config(config)
     attempt._time_limit_minutes = limit  # type: ignore[attr-defined]
+    attempt._anomaly_review_threshold = integrity["anomaly_review_threshold"]  # type: ignore[attr-defined]
+    attempt._max_disconnect_pause_seconds = integrity["max_disconnect_pause_seconds"]  # type: ignore[attr-defined]
+    attempt._submit_grace_minutes = integrity["submit_grace_minutes"]  # type: ignore[attr-defined]
     return limit
 
 
@@ -210,14 +309,19 @@ async def book_exam_slot(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    # Cap is global across all sessions for this user (not per-session).
-    attempts_result = await db.execute(select(ExamAttempt).where(ExamAttempt.user_id == current_user.id))
-    if len(attempts_result.scalars().all()) >= settings.EXAM_MAX_ATTEMPTS:
-        raise HTTPException(status_code=400, detail="Maximum exam attempts reached")
-    session_result = await db.execute(select(ExamSession).where(ExamSession.id == session_id))
+    # Cap from session ExamConfig when present; else global env default.
+    max_attempts = settings.EXAM_MAX_ATTEMPTS
+    session_result = await db.execute(
+        select(ExamSession).options(selectinload(ExamSession.config)).where(ExamSession.id == session_id)
+    )
     exam_session = session_result.scalars().first()
     if not exam_session:
         raise HTTPException(status_code=404, detail="Exam session not found")
+    if exam_session.config and exam_session.config.max_attempts:
+        max_attempts = exam_session.config.max_attempts
+    attempts_result = await db.execute(select(ExamAttempt).where(ExamAttempt.user_id == current_user.id))
+    if len(attempts_result.scalars().all()) >= max_attempts:
+        raise HTTPException(status_code=400, detail="Maximum exam attempts reached")
     booked_count = await db.scalar(
         select(func.count()).select_from(ExamRegistration).where(ExamRegistration.session_id == session_id)
     )
@@ -302,9 +406,9 @@ async def start_exam_attempt(
     time_limit = config.time_limit_minutes if config else settings.EXAM_TIME_LIMIT_MINUTES
     question_count = config.question_count if config else 40
     randomise = config.randomise_questions if config else settings.EXAM_RANDOMISE
-    seconds_per_q = settings.EXAM_SECONDS_PER_QUESTION
-    if config and config.config_json and isinstance(config.config_json, dict):
-        seconds_per_q = int(config.config_json.get("seconds_per_question", seconds_per_q))
+    integrity = integrity_from_config(config)
+    seconds_per_q = integrity["seconds_per_question"]
+    shuffle_options = integrity["shuffle_options"]
 
     q_result = await db.execute(select(QuestionBank).where(QuestionBank.is_active == True))  # noqa: E712
     all_questions = q_result.scalars().all()
@@ -313,8 +417,21 @@ async def start_exam_attempt(
     if len(all_questions) < question_count:
         question_count = len(all_questions)
     selected = random.sample(all_questions, question_count) if randomise else all_questions[:question_count]
-    # Always shuffle answer options per attempt (Phase 1)
-    snapshot = [engine.shuffle_question_options(q) for q in selected]
+    snapshot = [
+        engine.shuffle_question_options(q)
+        if shuffle_options
+        else {
+            "id": q.id,
+            "text": q.text,
+            "option_a": q.option_a,
+            "option_b": q.option_b,
+            "option_c": q.option_c,
+            "option_d": q.option_d,
+            "correct_option": (q.correct_option or "a").strip().lower(),
+            "pillar_tag": q.pillar_tag,
+        }
+        for q in selected
+    ]
 
     now = engine.now_utc()
     attempt = ExamAttempt(
@@ -494,6 +611,7 @@ async def report_anomaly(
     attempt = await _load_attempt(db, attempt_id, current_user.id)
     if attempt.submitted_at:
         return {"message": "Attempt already submitted", "recorded": False}
+    await _attach_time_limit(db, attempt)
     code = (payload.code or "").strip().lower()
     allowed = {"tab_blur", "focus_loss", "visibility_hidden", "client_disconnect", "devtools"}
     if code not in allowed:

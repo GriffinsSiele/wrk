@@ -7,13 +7,19 @@ from typing import List
 from app.db.session import get_db
 from app.db.models import (AssignmentStatus,
     Certificate,
+    CoachAttribute,
     Course,
     Lead,
+    LearnerProfile,
+    PasswordResetToken,
+    Profile,
     Project,
     ProjectAssignment,
     User,
     UserRole,)
 from app.schemas.admin import (AdminDashboardResponse,
+    AdminPasswordSet,
+    AdminUserCreate,
     CoachSnapshot,
     DispatchTrack,
     RoleUpdate,
@@ -21,12 +27,20 @@ from app.schemas.admin import (AdminDashboardResponse,
     TalentMixSegment,
     UserAdminResponse,)
 from app.api.deps import get_current_active_admin
+from app.core.security import get_password_hash
 from app.services.analytics import (count_since,
     period_change,
     sparkline_from_weeks,
     weekly_bucket_counts,)
 
 router = APIRouter()
+
+DEMO_EMAILS = {
+    "learner@olynixx.com",
+    "coach@olynixx.com",
+    "admin@olynixx.com",
+    "maya@olynixx.com",
+}
 
 
 async def _build_stats(db: AsyncSession) -> StatsResponse:
@@ -239,3 +253,99 @@ async def soft_delete_user(user_id: int,
         user.profile.avatar_url = None
     await db.commit()
     return {"message": "User soft-deleted and anonymised. Historical exam/certificate records retained."}
+
+
+@router.post("/users")
+async def create_user(
+    payload: AdminUserCreate,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_active_admin),
+):
+    """Admin provisioning — create learner/coach/admin with an initial password."""
+    if len(payload.password) < 10:
+        raise HTTPException(status_code=400, detail="Password must be at least 10 characters")
+    existing = await db.execute(select(User).where(User.email == payload.email.lower()))
+    if existing.scalars().first():
+        raise HTTPException(status_code=400, detail="User with this email already exists")
+    try:
+        role = UserRole(payload.role.lower())
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid role")
+    full_name = f"{payload.first_name} {payload.last_name}".strip()
+    user = User(
+        email=payload.email.lower().strip(),
+        password_hash=get_password_hash(payload.password),
+        role=role,
+        full_name=full_name,
+        is_active=True,
+    )
+    db.add(user)
+    await db.flush()
+    db.add(Profile(user_id=user.id, first_name=payload.first_name, last_name=payload.last_name))
+    if role == UserRole.LEARNER:
+        db.add(LearnerProfile(user_id=user.id, progress_percentage=0))
+    if role == UserRole.COACH:
+        db.add(
+            CoachAttribute(
+                user_id=user.id,
+                certification_level="Level 1",
+                placement_eligible=False,
+                cec_credits=0,
+                cec_status="Current",
+                availability_status=True,
+            )
+        )
+    await db.commit()
+    await db.refresh(user)
+    return {
+        "id": user.id,
+        "email": user.email,
+        "role": user.role.value if hasattr(user.role, "value") else str(user.role),
+        "message": "User created",
+    }
+
+
+@router.post("/users/{user_id}/set-password")
+async def admin_set_password(
+    user_id: int,
+    payload: AdminPasswordSet,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_active_admin),
+):
+    if len(payload.password) < 10:
+        raise HTTPException(status_code=400, detail="Password must be at least 10 characters")
+    result = await db.execute(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.password_hash = get_password_hash(payload.password)
+    await db.commit()
+    return {"message": "Password updated"}
+
+
+@router.post("/users/purge-demo")
+async def purge_demo_accounts(
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_current_active_admin),
+):
+    """Disable and soft-delete known demo accounts before launch. Never deletes the calling admin."""
+    result = await db.execute(
+        select(User).options(selectinload(User.profile)).where(User.email.in_(DEMO_EMAILS), User.deleted_at.is_(None))
+    )
+    purged = []
+    now = datetime.now(timezone.utc)
+    for user in result.scalars().all():
+        if user.id == admin.id:
+            continue
+        user.is_active = False
+        user.deleted_at = now
+        user.anonymised_at = now
+        purged.append(user.email)
+        user.email = f"anonymised_{user.id}@deleted.local"
+        user.full_name = "Anonymised User"
+        user.password_hash = "!"
+        if user.profile:
+            user.profile.first_name = "Anonymised"
+            user.profile.last_name = "User"
+    await db.commit()
+    return {"message": "Demo accounts purged", "purged": purged}

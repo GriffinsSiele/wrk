@@ -84,7 +84,13 @@ def append_anomaly(attempt, code: str, detail: str = "") -> None:
     }:
         attempt.needs_admin_review = True
     soft = sum(1 for f in flags if f.get("code") in {"tab_blur", "focus_loss", "visibility_hidden"})
-    if soft >= 5:
+    threshold = 5
+    try:
+        # Optional per-attempt override from snapshot metadata if present later
+        threshold = int(getattr(attempt, "_anomaly_review_threshold", 5) or 5)
+    except Exception:
+        threshold = 5
+    if soft >= threshold:
         attempt.needs_admin_review = True
     try:
         # JSON/mutable column: mark dirty so SQLAlchemy persists in-place list edits.
@@ -97,8 +103,9 @@ def append_anomaly(attempt, code: str, detail: str = "") -> None:
 def overall_deadline(attempt) -> datetime:
     started = as_utc(attempt.started_at)
     minutes = getattr(attempt, "_time_limit_minutes", None) or settings.EXAM_TIME_LIMIT_MINUTES
-    # 60m overall ceiling keeps running during disconnect pauses.
-    return started + timedelta(minutes=minutes + settings.EXAM_SUBMIT_GRACE_MINUTES)
+    grace = getattr(attempt, "_submit_grace_minutes", None) or settings.EXAM_SUBMIT_GRACE_MINUTES
+    # Overall ceiling keeps running during disconnect pauses.
+    return started + timedelta(minutes=minutes + grace)
 
 
 def overall_remaining_seconds(attempt, *, now: Optional[datetime] = None) -> int:
@@ -149,7 +156,7 @@ def unpause_attempt(attempt) -> int:
     paused_at = as_utc(attempt.paused_at)
     pause_secs = max(0, int((now - paused_at).total_seconds()))
     already = attempt.total_pause_seconds or 0
-    cap = settings.EXAM_MAX_DISCONNECT_PAUSE_SECONDS
+    cap = getattr(attempt, "_max_disconnect_pause_seconds", None) or settings.EXAM_MAX_DISCONNECT_PAUSE_SECONDS
     remaining_cap = max(0, cap - already)
     applied = min(pause_secs, remaining_cap)
     if pause_secs > remaining_cap:

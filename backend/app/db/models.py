@@ -220,6 +220,8 @@ class ExamConfig(Base):
     randomise_questions = Column(Boolean, default=True)
     question_count = Column(Integer, default=40)
     proctoring_level = Column(String, default="basic")
+    # Integrity + timers: seconds_per_question, one_way, shuffle_options,
+    # max_disconnect_pause_seconds, submit_grace_minutes, anomaly_review_threshold
     config_json = Column(JSON, nullable=True, default=dict)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
@@ -312,6 +314,35 @@ class PracticalAssessment(Base):
 
     user = relationship("User", back_populates="practical_assessments", foreign_keys=[user_id])
     assessor = relationship("User", foreign_keys=[assessor_id])
+
+
+class PracticalChecklistTemplate(Base):
+    """Admin-defined practical checklist + pass criteria (not hardcoded in UI)."""
+    __tablename__ = "practical_checklist_templates"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False, default="Level 1 Practical")
+    certification_level = Column(String, nullable=False, default="Level 1")
+    is_active = Column(Boolean, default=True, nullable=False)
+    # [{ "key": "intake_protocol", "label": "Intake protocol", "required": true }, ...]
+    items = Column(JSON, nullable=False, default=list)
+    # Minimum required items that must be checked for PASS (null = all required items)
+    min_required_pass = Column(Integer, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    token_hash = Column(String, nullable=False, unique=True, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    used_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User")
 
 
 class Certificate(Base):

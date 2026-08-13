@@ -84,7 +84,56 @@ class ExamConfigCreate(BaseModel):
     randomise_questions: bool = True
     question_count: int = 40
     proctoring_level: str = "basic"
+    # Flattened integrity fields; stored into config_json on write
+    seconds_per_question: int = 90
+    one_way: bool = True
+    shuffle_options: bool = True
+    max_disconnect_pause_seconds: int = 300
+    submit_grace_minutes: int = 2
+    anomaly_review_threshold: int = 5
     config_json: Optional[Dict[str, Any]] = None
+
+
+class ExamConfigUpdate(BaseModel):
+    name: Optional[str] = None
+    certification_level: Optional[str] = None
+    pass_mark: Optional[int] = None
+    time_limit_minutes: Optional[int] = None
+    max_attempts: Optional[int] = None
+    randomise_questions: Optional[bool] = None
+    question_count: Optional[int] = None
+    proctoring_level: Optional[str] = None
+    seconds_per_question: Optional[int] = None
+    one_way: Optional[bool] = None
+    shuffle_options: Optional[bool] = None
+    max_disconnect_pause_seconds: Optional[int] = None
+    submit_grace_minutes: Optional[int] = None
+    anomaly_review_threshold: Optional[int] = None
+    config_json: Optional[Dict[str, Any]] = None
+
+
+class ExamConfigResponse(BaseModel):
+    id: int
+    name: str
+    certification_level: Optional[str] = None
+    pass_mark: int
+    time_limit_minutes: int
+    max_attempts: int
+    randomise_questions: bool
+    question_count: int
+    proctoring_level: str
+    seconds_per_question: int = 90
+    one_way: bool = True
+    shuffle_options: bool = True
+    max_disconnect_pause_seconds: int = 300
+    submit_grace_minutes: int = 2
+    anomaly_review_threshold: int = 5
+    config_json: Optional[Dict[str, Any]] = None
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
 
 class QuestionBankCreate(BaseModel):
     text: str

@@ -115,6 +115,12 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <p className="mt-4 text-center">
+            <Link href="/reset-password" className="font-body text-[13px]" style={{ color: "var(--ochre)" }}>
+              Forgot password?
+            </Link>
+          </p>
+
           <div className="mt-6 pt-5 text-center" style={{ borderTop: "1px solid rgba(150,118,43,0.3)" }}>
             <p className="font-body text-[13px]" style={{ color: "rgba(242,237,227,0.5)" }}>
               Need an account?{" "}

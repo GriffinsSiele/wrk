@@ -1,10 +1,15 @@
+from datetime import datetime, timedelta, timezone
+import hashlib
+import secrets
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.db.session import get_db
-from app.db.models import User, Profile, LearnerProfile, UserRole
+from app.db.models import User, Profile, LearnerProfile, UserRole, PasswordResetToken
 from app.schemas.user import UserCreate, UserResponse
+from app.schemas.admin import ForgotPasswordRequest, ResetPasswordRequest
 from app.core.security import (
     verify_password,
     get_password_hash,
@@ -21,6 +26,10 @@ router = APIRouter()
 
 class RefreshRequest(BaseModel):
     refresh_token: str
+
+
+def _hash_reset_token(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()
 
 
 @router.post("/register", response_model=UserResponse)
@@ -83,3 +92,54 @@ async def refresh_token(body: RefreshRequest, db: AsyncSession = Depends(get_db)
     # No refresh rotation yet — only a new access token is returned.
     access_token = create_access_token(data={"sub": user.email, "role": user.role.value})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/forgot-password")
+async def forgot_password(body: ForgotPasswordRequest, request: Request, db: AsyncSession = Depends(get_db)):
+    """Issue a one-time reset token. Email delivery not wired — raw token only in non-production."""
+    limiter.check(f"forgot:{client_ip(request)}", settings.RATE_LIMIT_LOGIN_PER_MINUTE)
+    generic = {"message": "If that email exists, a reset token has been issued."}
+    result = await db.execute(
+        select(User).where(User.email == body.email.lower(), User.deleted_at.is_(None), User.is_active.is_(True))
+    )
+    user = result.scalars().first()
+    if not user:
+        return generic
+    raw = secrets.token_urlsafe(32)
+    db.add(
+        PasswordResetToken(
+            user_id=user.id,
+            token_hash=_hash_reset_token(raw),
+            expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        )
+    )
+    await db.commit()
+    if settings.is_production:
+        return generic
+    return {**generic, "reset_token": raw, "expires_in_minutes": 60}
+
+
+@router.post("/reset-password")
+async def reset_password(body: ResetPasswordRequest, request: Request, db: AsyncSession = Depends(get_db)):
+    limiter.check(f"reset:{client_ip(request)}", settings.RATE_LIMIT_LOGIN_PER_MINUTE)
+    if len(body.password) < 10:
+        raise HTTPException(status_code=400, detail="Password must be at least 10 characters")
+    token_hash = _hash_reset_token(body.token)
+    result = await db.execute(
+        select(PasswordResetToken).where(
+            PasswordResetToken.token_hash == token_hash,
+            PasswordResetToken.used_at.is_(None),
+        )
+    )
+    row = result.scalars().first()
+    now = datetime.now(timezone.utc)
+    if not row or row.expires_at < now:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    user_result = await db.execute(select(User).where(User.id == row.user_id, User.deleted_at.is_(None)))
+    user = user_result.scalars().first()
+    if not user or not user.is_active:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    user.password_hash = get_password_hash(body.password)
+    row.used_at = now
+    await db.commit()
+    return {"message": "Password updated"}

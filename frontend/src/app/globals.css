@@ -77,9 +77,9 @@
   --teal: #1b7a6b;
   --mint: #2aa187;
 
-  /* Page 05, self-hosted serif register */
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-body: "EB Garamond", Georgia, "Times New Roman", serif;
+  /* Brand type via next/font CSS variables (Playfair + EB Garamond). No sans substitution. */
+  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-body: var(--font-eb-garamond), "EB Garamond", Georgia, "Times New Roman", serif;
 
   /* Legacy aliases → brand tokens (portals migrate gradually) */
   --background: var(--cream);
@@ -113,11 +113,11 @@
 
 @theme inline {
   /* Brand type, serif register only (page 05). No sans substitution. */
-  --font-sans: "EB Garamond", Georgia, "Times New Roman", serif;
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-body: "EB Garamond", Georgia, "Times New Roman", serif;
-  --font-outfit: "Playfair Display", Georgia, serif;
+  --font-sans: var(--font-eb-garamond), "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-serif: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-body: var(--font-eb-garamond), "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-outfit: var(--font-playfair), "Playfair Display", Georgia, serif;
 }
 
 *,
@@ -133,21 +133,21 @@ html {
 body {
   background: var(--cream);
   color: var(--ink);
-  font-family: "EB Garamond", Georgia, "Times New Roman", serif;
+  font-family: var(--font-eb-garamond), "EB Garamond", Georgia, "Times New Roman", serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
 .font-display {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
 }
 
 .font-body {
-  font-family: "EB Garamond", Georgia, "Times New Roman", serif;
+  font-family: var(--font-eb-garamond), "EB Garamond", Georgia, "Times New Roman", serif;
 }
 
 .font-outfit {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
 }
 
 /* Portal shell: remaps --ox-* for dark teal (add class on learner/coach/admin layouts). */

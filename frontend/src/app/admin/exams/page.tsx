@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type ExamSession = { id: number; title: string; date: string; location?: string | null; capacity: number };
+type ExamSession = { id: number; title: string; date: string; location?: string | null; capacity: number; exam_config_id?: number | null };
 type ExamQuestion = { id: number; text: string; pillar_tag?: string | null; difficulty?: string | null };
 type ExamAttempt = {
   id: number;
@@ -15,18 +15,54 @@ type ExamAttempt = {
   anomaly_flags?: Array<{ code?: string; detail?: string; at?: string }>;
   name?: string;
 };
+type ExamConfig = {
+  id: number;
+  name: string;
+  certification_level?: string | null;
+  pass_mark: number;
+  time_limit_minutes: number;
+  max_attempts: number;
+  randomise_questions: boolean;
+  question_count: number;
+  seconds_per_question: number;
+  one_way: boolean;
+  shuffle_options: boolean;
+  max_disconnect_pause_seconds: number;
+  submit_grace_minutes: number;
+  anomaly_review_threshold: number;
+};
+
+const emptyConfig = {
+  name: "Level 1 Written",
+  certification_level: "Level 1",
+  pass_mark: 70,
+  time_limit_minutes: 60,
+  max_attempts: 3,
+  randomise_questions: true,
+  question_count: 40,
+  seconds_per_question: 90,
+  one_way: true,
+  shuffle_options: true,
+  max_disconnect_pause_seconds: 300,
+  submit_grace_minutes: 2,
+  anomaly_review_threshold: 5,
+};
 
 export default function AdminExamsPage() {
   const [sessions, setSessions] = useState<ExamSession[]>([]);
   const [questions, setQuestions] = useState<ExamQuestion[]>([]);
   const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
+  const [configs, setConfigs] = useState<ExamConfig[]>([]);
   const [message, setMessage] = useState("");
+  const [configForm, setConfigForm] = useState(emptyConfig);
+  const [editingConfigId, setEditingConfigId] = useState<number | null>(null);
 
   const [sessionForm, setSessionForm] = useState({
     title: "Certification Exam Session",
     date: "",
     location: "Online",
     capacity: 30,
+    exam_config_id: "",
   });
 
   const [questionForm, setQuestionForm] = useState({
@@ -41,20 +77,59 @@ export default function AdminExamsPage() {
   });
 
   async function loadAll() {
-    const [sessionsResp, questionsResp, attemptsResp] = await Promise.all([
+    const [sessionsResp, questionsResp, attemptsResp, configsResp] = await Promise.all([
       fetch("/api/proxy/exams/sessions", { cache: "no-store" }),
       fetch("/api/proxy/exams/questions", { cache: "no-store" }),
       fetch("/api/proxy/exams/attempts", { cache: "no-store" }),
+      fetch("/api/proxy/exams/configs", { cache: "no-store" }),
     ]);
     if (sessionsResp.ok) setSessions(await sessionsResp.json());
     if (questionsResp.ok) setQuestions(await questionsResp.json());
     if (attemptsResp.ok) setAttempts(await attemptsResp.json());
+    if (configsResp.ok) setConfigs(await configsResp.json());
   }
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadAll();
   }, []);
+
+  async function saveConfig() {
+    setMessage("");
+    const url = editingConfigId ? `/api/proxy/exams/configs/${editingConfigId}` : "/api/proxy/exams/configs";
+    const resp = await fetch(url, {
+      method: editingConfigId ? "PATCH" : "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(configForm),
+    });
+    if (!resp.ok) {
+      setMessage("Failed to save exam config");
+      return;
+    }
+    setMessage(editingConfigId ? "Exam config updated" : "Exam config created");
+    setEditingConfigId(null);
+    setConfigForm(emptyConfig);
+    loadAll();
+  }
+
+  function editConfig(c: ExamConfig) {
+    setEditingConfigId(c.id);
+    setConfigForm({
+      name: c.name,
+      certification_level: c.certification_level || "Level 1",
+      pass_mark: c.pass_mark,
+      time_limit_minutes: c.time_limit_minutes,
+      max_attempts: c.max_attempts,
+      randomise_questions: c.randomise_questions,
+      question_count: c.question_count,
+      seconds_per_question: c.seconds_per_question,
+      one_way: c.one_way,
+      shuffle_options: c.shuffle_options,
+      max_disconnect_pause_seconds: c.max_disconnect_pause_seconds,
+      submit_grace_minutes: c.submit_grace_minutes,
+      anomaly_review_threshold: c.anomaly_review_threshold,
+    });
+  }
 
   async function createSession() {
     setMessage("");
@@ -71,6 +146,7 @@ export default function AdminExamsPage() {
         is_online: true,
         location: sessionForm.location,
         capacity: Number(sessionForm.capacity),
+        exam_config_id: sessionForm.exam_config_id ? Number(sessionForm.exam_config_id) : null,
       }),
     });
     if (!resp.ok) {
@@ -78,7 +154,7 @@ export default function AdminExamsPage() {
       return;
     }
     setMessage("Exam session created");
-    setSessionForm({ title: "Certification Exam Session", date: "", location: "Online", capacity: 30 });
+    setSessionForm({ title: "Certification Exam Session", date: "", location: "Online", capacity: 30, exam_config_id: "" });
     loadAll();
   }
 
@@ -152,6 +228,45 @@ export default function AdminExamsPage() {
       </p>
       {message && <p className="font-body text-sm" style={{ color: message.toLowerCase().includes("fail") ? "var(--gold-bright)" : "var(--mint)" }}>{message}</p>}
 
+      <section className="rounded-sm p-4 space-y-3" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
+        <h2 className="font-semibold">{editingConfigId ? `Edit config #${editingConfigId}` : "Exam configuration (admin-configurable)"}</h2>
+        <p className="font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
+          Pass mark, timers, attempt caps, and integrity measures — editable here before REPs UAE specs land.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <input placeholder="Name" value={configForm.name} onChange={(e) => setConfigForm((p) => ({ ...p, name: e.target.value }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input placeholder="Level" value={configForm.certification_level} onChange={(e) => setConfigForm((p) => ({ ...p, certification_level: e.target.value }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input type="number" placeholder="Pass mark %" value={configForm.pass_mark} onChange={(e) => setConfigForm((p) => ({ ...p, pass_mark: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input type="number" placeholder="Overall minutes" value={configForm.time_limit_minutes} onChange={(e) => setConfigForm((p) => ({ ...p, time_limit_minutes: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input type="number" placeholder="Seconds / question" value={configForm.seconds_per_question} onChange={(e) => setConfigForm((p) => ({ ...p, seconds_per_question: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input type="number" placeholder="Question count" value={configForm.question_count} onChange={(e) => setConfigForm((p) => ({ ...p, question_count: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input type="number" placeholder="Max attempts" value={configForm.max_attempts} onChange={(e) => setConfigForm((p) => ({ ...p, max_attempts: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input type="number" placeholder="Disconnect pause cap (s)" value={configForm.max_disconnect_pause_seconds} onChange={(e) => setConfigForm((p) => ({ ...p, max_disconnect_pause_seconds: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <input type="number" placeholder="Blur review threshold" value={configForm.anomaly_review_threshold} onChange={(e) => setConfigForm((p) => ({ ...p, anomaly_review_threshold: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+        </div>
+        <div className="flex flex-wrap gap-4 font-body text-[13px]">
+          <label className="flex items-center gap-2"><input type="checkbox" checked={configForm.randomise_questions} onChange={(e) => setConfigForm((p) => ({ ...p, randomise_questions: e.target.checked }))} /> Randomise questions</label>
+          <label className="flex items-center gap-2"><input type="checkbox" checked={configForm.shuffle_options} onChange={(e) => setConfigForm((p) => ({ ...p, shuffle_options: e.target.checked }))} /> Shuffle options</label>
+          <label className="flex items-center gap-2"><input type="checkbox" checked={configForm.one_way} onChange={(e) => setConfigForm((p) => ({ ...p, one_way: e.target.checked }))} /> One-way (no going back)</label>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={saveConfig} className="ox-cta h-9 px-5 text-[13px] font-semibold">{editingConfigId ? "Save config" : "Create config"}</button>
+          {editingConfigId && (
+            <button onClick={() => { setEditingConfigId(null); setConfigForm(emptyConfig); }} className="ox-ghost-light h-9 px-5 text-[13px]">Cancel</button>
+          )}
+        </div>
+        {configs.length > 0 && (
+          <ul className="space-y-2 mt-2">
+            {configs.map((c) => (
+              <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 font-body text-[13px]" style={{ borderTop: "1px solid var(--ox-line)", paddingTop: 8 }}>
+                <span>#{c.id} {c.name} · {c.pass_mark}% · {c.question_count}q · {c.seconds_per_question}s/q · {c.time_limit_minutes}m</span>
+                <button onClick={() => editConfig(c)} className="h-8 px-3 text-[12px]" style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--gold)", borderRadius: 2 }}>Edit</button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <section className="rounded-sm p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Create Exam Session</h2>
@@ -159,6 +274,12 @@ export default function AdminExamsPage() {
           <input type="datetime-local" value={sessionForm.date} onChange={(e) => setSessionForm((p) => ({ ...p, date: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input value={sessionForm.location} onChange={(e) => setSessionForm((p) => ({ ...p, location: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
           <input type="number" min={1} value={sessionForm.capacity} onChange={(e) => setSessionForm((p) => ({ ...p, capacity: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <select value={sessionForm.exam_config_id} onChange={(e) => setSessionForm((p) => ({ ...p, exam_config_id: e.target.value }))} className="w-full h-9 rounded-sm px-2 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
+            <option value="">Default env settings</option>
+            {configs.map((c) => (
+              <option key={c.id} value={String(c.id)}>#{c.id} {c.name}</option>
+            ))}
+          </select>
           <button onClick={createSession} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create Session</button>
         </section>
 

@@ -162,6 +162,20 @@ Videos are **not** uploaded to this app’s server — only the Bunny GUID is st
 
 ---
 
+## Production hosting gate (Jef / PDPL)
+
+**Railway is demo/engineering only.** Production primary data must reside in **Azure UAE North** with encrypted, geographically redundant backups. Do not place real learner/coach PII on Railway.
+
+| Target | Value |
+|--------|--------|
+| API hostname | `https://api.olynixx.com` |
+| Site canonical | `https://olynixx.com` (set `NEXT_PUBLIC_SITE_URL`) |
+| Region | Azure `uaenorth` — see [`docs/PRODUCTION_AZURE.md`](docs/PRODUCTION_AZURE.md) |
+
+Scratch hosts like `*.up.railway.app` must not appear where partners or accreditors can see them.
+
+---
+
 ## Certification path (dual-gate)
 
 1. Study — enrol and complete lessons  

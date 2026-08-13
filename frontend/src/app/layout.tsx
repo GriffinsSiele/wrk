@@ -1,7 +1,23 @@
 import type { Metadata } from "next";
+import { EB_Garamond, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, getSiteUrl } from "@/lib/seo";
 import { OrganizationJsonLd } from "@/components/seo/OrganizationJsonLd";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const ebGaramond = EB_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-eb-garamond",
+  display: "swap",
+});
 
 const siteUrl = getSiteUrl();
 
@@ -60,9 +76,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${playfair.variable} ${ebGaramond.variable}`}>
       <body
-        className="min-h-screen flex flex-col overflow-x-hidden font-body"
+        className={`min-h-screen flex flex-col overflow-x-hidden font-body ${ebGaramond.className}`}
         style={{ background: "var(--cream)", color: "var(--ink)" }}
       >
         <OrganizationJsonLd />
