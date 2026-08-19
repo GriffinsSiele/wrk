@@ -1,4 +1,12 @@
-"""Dual-gate certification: written (approved) + practical PASS → issue cert / coach role."""
+"""Dual-gate certification.
+
+A certificate is issued only when both gates are complete for the same level:
+1. Written exam passed and admin-approved (`ExamAttempt.approved_at`).
+2. Practical assessment recorded as PASS.
+
+Placement eligibility is computed separately: active certificate + signed NDA
+and Code of Conduct + availability. Coaches cannot self-grant placement.
+"""
 
 from __future__ import annotations
 

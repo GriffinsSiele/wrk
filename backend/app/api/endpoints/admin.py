@@ -35,11 +35,20 @@ from app.services.analytics import (count_since,
 
 router = APIRouter()
 
+# Emails created by backend/seed.py. Purge only these known synthetic accounts.
 DEMO_EMAILS = {
-    "learner@olynixx.com",
-    "coach@olynixx.com",
     "admin@olynixx.com",
+    "coach@olynixx.com",
+    "learner@olynixx.com",
     "maya@olynixx.com",
+    "ahmed@olynixx.com",
+    "fatima@olynixx.com",
+    "marcus@olynixx.com",
+    "layla@olynixx.com",
+    "omar@olynixx.com",
+    "nina@olynixx.com",
+    "james@olynixx.com",
+    "aisha@olynixx.com",
 }
 
 

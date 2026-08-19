@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Field } from "@/components/ui/Field";
 
 type AdminUser = {
   id: number;
@@ -145,22 +146,32 @@ export default function AdminUsersPage() {
     <div className="p-6 space-y-5">
       <h1 className="font-display text-3xl" style={{ fontWeight: 500 }}>User Management</h1>
       <p className="font-body text-[14px]" style={{ color: "var(--ox-muted)" }}>
-        Admin provisioning, password reset, role/status control. Soft-delete anonymises identity while preserving audit history.
+        Create learner, coach, or admin accounts and set passwords. The public reset path at /reset-password works for every active role, including admin. Soft-delete anonymises identity while preserving exam and certificate history.
       </p>
       {message && <p className="font-body text-sm" style={{ color: message.toLowerCase().includes("fail") ? "var(--gold-bright)" : "var(--mint)" }}>{message}</p>}
 
       <section className="p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
         <h2 className="font-display text-[15px]" style={{ color: "var(--cream)", fontWeight: 500 }}>Create user</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <input placeholder="First name" value={createForm.first_name} onChange={(e) => setCreateForm((p) => ({ ...p, first_name: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
-          <input placeholder="Last name" value={createForm.last_name} onChange={(e) => setCreateForm((p) => ({ ...p, last_name: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
-          <input placeholder="Email" value={createForm.email} onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
-          <input type="password" placeholder="Temp password (≥10 chars)" value={createForm.password} onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
-          <select value={createForm.role} onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))} className="h-9 px-2 text-sm" style={fieldStyle}>
-            <option value="learner">learner</option>
-            <option value="coach">coach</option>
-            <option value="admin">admin</option>
-          </select>
+          <Field label="First name">
+            <input placeholder="e.g. Jef" value={createForm.first_name} onChange={(e) => setCreateForm((p) => ({ ...p, first_name: e.target.value }))} className="w-full h-9 px-3 text-sm" style={fieldStyle} />
+          </Field>
+          <Field label="Last name">
+            <input placeholder="e.g. Smith" value={createForm.last_name} onChange={(e) => setCreateForm((p) => ({ ...p, last_name: e.target.value }))} className="w-full h-9 px-3 text-sm" style={fieldStyle} />
+          </Field>
+          <Field label="Email">
+            <input placeholder="name@olynixx.com" value={createForm.email} onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))} className="w-full h-9 px-3 text-sm" style={fieldStyle} />
+          </Field>
+          <Field label="Temporary password">
+            <input type="password" placeholder="At least 10 characters" value={createForm.password} onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))} className="w-full h-9 px-3 text-sm" style={fieldStyle} />
+          </Field>
+          <Field label="Role">
+            <select value={createForm.role} onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))} className="w-full h-9 px-2 text-sm" style={fieldStyle}>
+              <option value="learner">learner</option>
+              <option value="coach">coach</option>
+              <option value="admin">admin</option>
+            </select>
+          </Field>
         </div>
         <div className="flex flex-wrap gap-2">
           <button onClick={createUser} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create user</button>
@@ -216,7 +227,7 @@ export default function AdminUsersPage() {
                     <div className="flex flex-wrap gap-2 items-center">
                       <input
                         type="password"
-                        placeholder="New password"
+                        placeholder="At least 10 characters"
                         value={resetPassword[user.id] || ""}
                         onChange={(e) => setResetPassword((p) => ({ ...p, [user.id]: e.target.value }))}
                         className="h-9 px-2 text-[12px] w-36"

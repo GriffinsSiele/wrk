@@ -93,10 +93,10 @@ async def main() -> int:
                     ExamConfig(
                         name="Level 1 Written Exam",
                         certification_level="Level 1",
-                        pass_mark=70,
+                        pass_mark=78,
                         time_limit_minutes=60,
                         max_attempts=3,
-                        question_count=10,
+                        question_count=40,
                         proctoring_level="basic",
                     )
                 )

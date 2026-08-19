@@ -24,9 +24,13 @@ async def get_coaches(
     availability: Optional[bool] = None,
     specialty: Optional[str] = None,
     placement_eligible: Optional[bool] = None,
+    certification_level: Optional[str] = None,
+    focus_area: Optional[str] = None,
+    cec_status: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_admin),
 ):
+    """List coach records. Filters are exact matches on stored attribute values."""
     result = await db.execute(
         select(User)
         .options(selectinload(User.profile), selectinload(User.coach_attributes))
@@ -43,6 +47,24 @@ async def get_coaches(
         coaches = [
             c for c in coaches
             if c.coach_attributes and c.coach_attributes.placement_eligible == placement_eligible
+        ]
+    if certification_level:
+        wanted = certification_level.strip().lower()
+        coaches = [
+            c for c in coaches
+            if c.coach_attributes and (c.coach_attributes.certification_level or "").strip().lower() == wanted
+        ]
+    if focus_area:
+        wanted = focus_area.strip().lower()
+        coaches = [
+            c for c in coaches
+            if c.coach_attributes and (c.coach_attributes.focus_area or "").strip().lower() == wanted
+        ]
+    if cec_status:
+        wanted = cec_status.strip().lower()
+        coaches = [
+            c for c in coaches
+            if c.coach_attributes and (c.coach_attributes.cec_status or "").strip().lower() == wanted
         ]
     return coaches
 

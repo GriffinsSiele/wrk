@@ -96,7 +96,11 @@ async def refresh_token(body: RefreshRequest, db: AsyncSession = Depends(get_db)
 
 @router.post("/forgot-password")
 async def forgot_password(body: ForgotPasswordRequest, request: Request, db: AsyncSession = Depends(get_db)):
-    """Issue a one-time reset token. Email delivery not wired — raw token only in non-production."""
+    """Issue a one-time reset token for any active role (learner, coach, admin).
+
+    Email delivery is not wired. The raw token is returned only when
+    ENVIRONMENT is not production, or RESET_TOKEN_RETURN_IN_RESPONSE=true.
+    """
     limiter.check(f"forgot:{client_ip(request)}", settings.RATE_LIMIT_LOGIN_PER_MINUTE)
     generic = {"message": "If that email exists, a reset token has been issued."}
     result = await db.execute(
@@ -114,9 +118,10 @@ async def forgot_password(body: ForgotPasswordRequest, request: Request, db: Asy
         )
     )
     await db.commit()
-    if settings.is_production:
+    return_token = settings.RESET_TOKEN_RETURN_IN_RESPONSE or not settings.is_production
+    if not return_token:
         return generic
-    return {**generic, "reset_token": raw, "expires_in_minutes": 60}
+    return {**generic, "reset_token": raw, "expires_in_minutes": 60, "role": user.role.value}
 
 
 @router.post("/reset-password")

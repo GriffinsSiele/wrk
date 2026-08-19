@@ -214,7 +214,7 @@ class ExamConfig(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False, default="Default")
     certification_level = Column(String, nullable=True, default="Level 1")
-    pass_mark = Column(Integer, default=70)
+    pass_mark = Column(Integer, default=78)
     time_limit_minutes = Column(Integer, default=60)
     max_attempts = Column(Integer, default=3)
     randomise_questions = Column(Boolean, default=True)
@@ -311,9 +311,14 @@ class PracticalAssessment(Base):
     result = Column(Enum(PracticalResult, native_enum=False), nullable=False)
     notes = Column(Text, nullable=True)
     assessed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    # Records which template version was used at assessment time.
+    template_id = Column(Integer, ForeignKey("practical_checklist_templates.id"), nullable=True)
+    template_version = Column(Integer, nullable=True)
+    template_snapshot = Column(JSON, nullable=True)
 
     user = relationship("User", back_populates="practical_assessments", foreign_keys=[user_id])
     assessor = relationship("User", foreign_keys=[assessor_id])
+    template = relationship("PracticalChecklistTemplate")
 
 
 class PracticalChecklistTemplate(Base):
@@ -328,6 +333,8 @@ class PracticalChecklistTemplate(Base):
     items = Column(JSON, nullable=False, default=list)
     # Minimum required items that must be checked for PASS (null = all required items)
     min_required_pass = Column(Integer, nullable=True)
+    # Increments when items or pass criteria change. Completed assessments store this value.
+    version = Column(Integer, nullable=False, default=1)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 

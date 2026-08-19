@@ -1,4 +1,9 @@
-"""Helpers to flatten ExamConfig.config_json integrity fields for API responses."""
+"""Helpers to flatten ExamConfig.config_json integrity fields for API responses.
+
+Pass mark, question count, and timers live on ExamConfig columns.
+Integrity / future REPs fields live in config_json so new requirements
+can be stored without a hardcoded exam engine rewrite.
+"""
 
 from __future__ import annotations
 

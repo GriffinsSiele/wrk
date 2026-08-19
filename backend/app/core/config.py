@@ -22,11 +22,17 @@ class Settings(BaseSettings):
     # Optional, only needed if you run async workers. Phase 1 PDF generation is synchronous.
     REDIS_URL: str = ""
     CELERY_BROKER_URL: str = ""
-    EXAM_PASS_MARK: int = 70
+    # Working defaults until REPs UAE issues a proctoring/exam-security spec.
+    # Admin ExamConfig rows override these per session. Do not treat as locked.
+    EXAM_PASS_MARK: int = 78
+    EXAM_QUESTION_COUNT: int = 40
     EXAM_TIME_LIMIT_MINUTES: int = 60
     EXAM_MAX_ATTEMPTS: int = 3
     EXAM_RANDOMISE: bool = True
     EXAM_DELIVERY_MODE: str = "online"
+    # Demo stacks may return the raw reset token in the API response.
+    # Production must keep this false and deliver tokens by email.
+    RESET_TOKEN_RETURN_IN_RESPONSE: bool = False
     # Grace minutes after time_limit before submit is rejected (clock skew / network).
     EXAM_SUBMIT_GRACE_MINUTES: int = 2
     # Phase 1 integrity (Jef): 90s/question, one-way, resume on disconnect.

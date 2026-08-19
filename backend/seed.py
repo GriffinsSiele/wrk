@@ -136,10 +136,10 @@ async def seed_minimal(force: bool = False) -> None:
         session.add(Profile(user_id=admin.id, first_name="Olynixx", last_name="Admin", bio="System Administrator"))
         session.add(ExamConfig(name="Level 1 Written Exam",
                 certification_level="Level 1",
-                pass_mark=70,
+                pass_mark=78,
                 time_limit_minutes=60,
                 max_attempts=3,
-                question_count=10,
+                question_count=40,
                 proctoring_level="basic",))
         await session.commit()
         print("Minimal seed complete: admin@olynixx.com / admin123")
@@ -446,10 +446,10 @@ async def seed_data(force: bool = False, mode: str | None = None) -> None:
         # ── Exam stack ─────────────────────────────────────────
         exam_config = ExamConfig(name="Level 1 Written Exam",
             certification_level="Level 1",
-            pass_mark=70,
+            pass_mark=78,
             time_limit_minutes=60,
             max_attempts=3,
-            question_count=10,
+            question_count=40,
             proctoring_level="basic",)
         session.add(exam_config)
         await session.flush()

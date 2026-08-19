@@ -185,5 +185,6 @@ def score_attempt(attempt) -> tuple[int, bool, int]:
             correct += 1
     total = len(snapshot)
     score = int((correct / total) * 100) if total else 0
+    # Fallback only. Session ExamConfig.pass_mark overrides this in _finalize_attempt.
     pass_mark = settings.EXAM_PASS_MARK
     return score, score >= pass_mark, pass_mark

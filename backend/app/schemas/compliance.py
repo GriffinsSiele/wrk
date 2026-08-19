@@ -32,6 +32,7 @@ class PracticalChecklistTemplateResponse(BaseModel):
     is_active: bool
     items: List[Dict[str, Any]]
     min_required_pass: Optional[int] = None
+    version: int = 1
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
@@ -57,6 +58,9 @@ class PracticalAssessmentResponse(BaseModel):
     result: str
     notes: Optional[str] = None
     assessed_at: Optional[datetime] = None
+    template_id: Optional[int] = None
+    template_version: Optional[int] = None
+    template_snapshot: Optional[Dict[str, Any]] = None
 
     class Config:
         from_attributes = True

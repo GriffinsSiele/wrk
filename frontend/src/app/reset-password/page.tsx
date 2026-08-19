@@ -54,7 +54,7 @@ function ResetForm() {
             Reset password
           </h1>
           <p className="font-body text-[14px] mt-2" style={{ color: "var(--ox-muted)" }}>
-            Request a reset token, then set a new password (≥10 characters). Production email delivery will replace token display.
+            Works for learner, coach, and admin accounts. Request a reset token, then set a new password (at least 10 characters). On the demo stack the token is shown here. Production must deliver the token by email and must not print it in the response.
           </p>
         </div>
         {message && (
@@ -68,10 +68,13 @@ function ResetForm() {
           </p>
         )}
         <form onSubmit={requestToken} className="space-y-2">
+          <label className="block font-display text-[11px] tracking-[0.12em] uppercase" style={{ color: "var(--ochre)" }}>
+            Email
+          </label>
           <input
             type="email"
             required
-            placeholder="Email"
+            placeholder="you@olynixx.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full h-10 px-3 font-body text-sm"
@@ -82,19 +85,25 @@ function ResetForm() {
           </button>
         </form>
         <form onSubmit={resetPassword} className="space-y-2">
+          <label className="block font-display text-[11px] tracking-[0.12em] uppercase" style={{ color: "var(--ochre)" }}>
+            Reset token
+          </label>
           <input
             required
-            placeholder="Reset token"
+            placeholder="Paste the token from email or the demo response"
             value={token}
             onChange={(e) => setToken(e.target.value)}
             className="w-full h-10 px-3 font-body text-sm"
             style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}
           />
+          <label className="block font-display text-[11px] tracking-[0.12em] uppercase pt-2" style={{ color: "var(--ochre)" }}>
+            New password
+          </label>
           <input
             type="password"
             required
             minLength={10}
-            placeholder="New password"
+            placeholder="At least 10 characters"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full h-10 px-3 font-body text-sm"

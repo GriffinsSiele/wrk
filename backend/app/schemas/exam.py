@@ -78,7 +78,7 @@ class AttemptResultResponse(BaseModel):
 class ExamConfigCreate(BaseModel):
     name: str = "Default"
     certification_level: str = "Level 1"
-    pass_mark: int = 70
+    pass_mark: int = 78
     time_limit_minutes: int = 60
     max_attempts: int = 3
     randomise_questions: bool = True

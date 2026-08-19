@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Field } from "@/components/ui/Field";
 
 type Course = {
   id: number;
@@ -353,21 +354,25 @@ export default function AdminContentManagementPage() {
           <h2 className="font-display text-[15px]" style={{ fontWeight: 500, color: "var(--cream)" }}>
             Create course
           </h2>
-          <input
-            placeholder="Course title"
-            value={courseForm.title}
-            onChange={(e) => setCourseForm((p) => ({ ...p, title: e.target.value }))}
-            className="w-full h-9 px-3 text-sm font-body"
-            style={fieldStyle}
-          />
-          <textarea
-            placeholder="Description"
-            value={courseForm.description}
-            onChange={(e) => setCourseForm((p) => ({ ...p, description: e.target.value }))}
-            className="w-full px-3 py-2 text-sm font-body"
-            rows={3}
-            style={fieldStyle}
-          />
+          <Field label="Course title">
+            <input
+              placeholder="e.g. Human Readiness Level 1"
+              value={courseForm.title}
+              onChange={(e) => setCourseForm((p) => ({ ...p, title: e.target.value }))}
+              className="w-full h-9 px-3 text-sm font-body"
+              style={fieldStyle}
+            />
+          </Field>
+          <Field label="Description">
+            <textarea
+              placeholder="Short course description for the catalogue"
+              value={courseForm.description}
+              onChange={(e) => setCourseForm((p) => ({ ...p, description: e.target.value }))}
+              className="w-full px-3 py-2 text-sm font-body"
+              rows={3}
+              style={fieldStyle}
+            />
+          </Field>
           <label className="flex items-center gap-2 text-sm font-body" style={{ color: "var(--ox-muted)" }}>
             <input
               type="checkbox"
@@ -385,34 +390,41 @@ export default function AdminContentManagementPage() {
           <h2 className="font-display text-[15px]" style={{ fontWeight: 500, color: "var(--cream)" }}>
             Create module
           </h2>
-          <select
-            value={moduleForm.course_id}
-            onChange={(e) => setModuleForm((p) => ({ ...p, course_id: e.target.value }))}
-            className="w-full h-9 px-3 text-sm font-body"
-            style={fieldStyle}
-          >
-            <option value="">Select course</option>
-            {courses.map((course) => (
-              <option key={course.id} value={String(course.id)}>
-                {course.title}
-              </option>
-            ))}
-          </select>
-          <input
-            placeholder="Module title"
-            value={moduleForm.title}
-            onChange={(e) => setModuleForm((p) => ({ ...p, title: e.target.value }))}
-            className="w-full h-9 px-3 text-sm font-body"
-            style={fieldStyle}
-          />
-          <input
-            type="number"
-            min={1}
-            value={moduleForm.order}
-            onChange={(e) => setModuleForm((p) => ({ ...p, order: Number(e.target.value) }))}
-            className="w-full h-9 px-3 text-sm font-body"
-            style={fieldStyle}
-          />
+          <Field label="Course">
+            <select
+              value={moduleForm.course_id}
+              onChange={(e) => setModuleForm((p) => ({ ...p, course_id: e.target.value }))}
+              className="w-full h-9 px-3 text-sm font-body"
+              style={fieldStyle}
+            >
+              <option value="">Select course</option>
+              {courses.map((course) => (
+                <option key={course.id} value={String(course.id)}>
+                  {course.title}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Module title">
+            <input
+              placeholder="e.g. Intake and readiness"
+              value={moduleForm.title}
+              onChange={(e) => setModuleForm((p) => ({ ...p, title: e.target.value }))}
+              className="w-full h-9 px-3 text-sm font-body"
+              style={fieldStyle}
+            />
+          </Field>
+          <Field label="Order">
+            <input
+              type="number"
+              min={1}
+              placeholder="1"
+              value={moduleForm.order}
+              onChange={(e) => setModuleForm((p) => ({ ...p, order: Number(e.target.value) }))}
+              className="w-full h-9 px-3 text-sm font-body"
+              style={fieldStyle}
+            />
+          </Field>
           <button onClick={createModule} className="ox-ghost-light h-9 px-5 text-[13px] font-medium">
             Create module
           </button>
@@ -430,40 +442,44 @@ export default function AdminContentManagementPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <select
-            value={structureCourseId}
-            onChange={(e) => {
-              setStructureCourseId(e.target.value);
-              resetLessonForm();
-            }}
-            className="w-full h-9 px-3 text-sm font-body"
-            style={fieldStyle}
-          >
-            <option value="">Select course to manage lessons</option>
-            {courses.map((course) => (
-              <option key={course.id} value={String(course.id)}>
-                {course.title}
-              </option>
-            ))}
-          </select>
-          <select
-            value={moduleId}
-            onChange={(e) => {
-              setModuleId(e.target.value);
-              const mod = structure?.modules.find((m) => String(m.id) === e.target.value);
-              resetLessonForm((mod?.lessons?.length || 0) + 1);
-            }}
-            disabled={!structure?.modules?.length}
-            className="w-full h-9 px-3 text-sm font-body"
-            style={fieldStyle}
-          >
-            <option value="">Select module</option>
-            {(structure?.modules || []).map((mod) => (
-              <option key={mod.id} value={String(mod.id)}>
-                {mod.order}. {mod.title} ({mod.lessons?.length || 0} lessons)
-              </option>
-            ))}
-          </select>
+          <Field label="Course">
+            <select
+              value={structureCourseId}
+              onChange={(e) => {
+                setStructureCourseId(e.target.value);
+                resetLessonForm();
+              }}
+              className="w-full h-9 px-3 text-sm font-body"
+              style={fieldStyle}
+            >
+              <option value="">Select course to manage lessons</option>
+              {courses.map((course) => (
+                <option key={course.id} value={String(course.id)}>
+                  {course.title}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Module">
+            <select
+              value={moduleId}
+              onChange={(e) => {
+                setModuleId(e.target.value);
+                const mod = structure?.modules.find((m) => String(m.id) === e.target.value);
+                resetLessonForm((mod?.lessons?.length || 0) + 1);
+              }}
+              disabled={!structure?.modules?.length}
+              className="w-full h-9 px-3 text-sm font-body"
+              style={fieldStyle}
+            >
+              <option value="">Select module</option>
+              {(structure?.modules || []).map((mod) => (
+                <option key={mod.id} value={String(mod.id)}>
+                  {mod.order}. {mod.title} ({mod.lessons?.length || 0} lessons)
+                </option>
+              ))}
+            </select>
+          </Field>
         </div>
 
         {structureLoading && (
@@ -484,48 +500,58 @@ export default function AdminContentManagementPage() {
               <h3 className="font-display text-[13px] tracking-[0.12em] uppercase" style={{ color: "var(--ochre)" }}>
                 {editingLessonId ? `Edit lesson #${editingLessonId}` : "Add lesson"}
               </h3>
-              <input
-                placeholder="Lesson title"
-                value={lessonForm.title}
-                onChange={(e) => setLessonForm((p) => ({ ...p, title: e.target.value }))}
-                className="w-full h-9 px-3 text-sm font-body"
-                style={fieldStyle}
-              />
+              <Field label="Lesson title">
+                <input
+                  placeholder="e.g. Session structure"
+                  value={lessonForm.title}
+                  onChange={(e) => setLessonForm((p) => ({ ...p, title: e.target.value }))}
+                  className="w-full h-9 px-3 text-sm font-body"
+                  style={fieldStyle}
+                />
+              </Field>
               <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="number"
-                  min={1}
-                  placeholder="Order"
-                  value={lessonForm.order}
-                  onChange={(e) => setLessonForm((p) => ({ ...p, order: Number(e.target.value) }))}
-                  className="w-full h-9 px-3 text-sm font-body"
-                  style={fieldStyle}
-                />
-                <input
-                  type="number"
-                  min={0}
-                  placeholder="Duration (minutes)"
-                  value={lessonForm.duration_minutes}
-                  onChange={(e) => setLessonForm((p) => ({ ...p, duration_minutes: e.target.value }))}
-                  className="w-full h-9 px-3 text-sm font-body"
-                  style={fieldStyle}
-                />
+                <Field label="Order">
+                  <input
+                    type="number"
+                    min={1}
+                    placeholder="1"
+                    value={lessonForm.order}
+                    onChange={(e) => setLessonForm((p) => ({ ...p, order: Number(e.target.value) }))}
+                    className="w-full h-9 px-3 text-sm font-body"
+                    style={fieldStyle}
+                  />
+                </Field>
+                <Field label="Duration (minutes)">
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="15"
+                    value={lessonForm.duration_minutes}
+                    onChange={(e) => setLessonForm((p) => ({ ...p, duration_minutes: e.target.value }))}
+                    className="w-full h-9 px-3 text-sm font-body"
+                    style={fieldStyle}
+                  />
+                </Field>
               </div>
-              <input
-                placeholder="Bunny video GUID"
-                value={lessonForm.bunny_video_id}
-                onChange={(e) => setLessonForm((p) => ({ ...p, bunny_video_id: e.target.value }))}
-                className="w-full h-9 px-3 text-sm font-body"
-                style={fieldStyle}
-              />
-              <textarea
-                placeholder="Lesson content (HTML allowed)"
-                value={lessonForm.content}
-                onChange={(e) => setLessonForm((p) => ({ ...p, content: e.target.value }))}
-                className="w-full px-3 py-2 text-sm font-body"
-                rows={6}
-                style={fieldStyle}
-              />
+              <Field label="Bunny video GUID">
+                <input
+                  placeholder="Paste the Stream video GUID"
+                  value={lessonForm.bunny_video_id}
+                  onChange={(e) => setLessonForm((p) => ({ ...p, bunny_video_id: e.target.value }))}
+                  className="w-full h-9 px-3 text-sm font-body"
+                  style={fieldStyle}
+                />
+              </Field>
+              <Field label="Lesson content">
+                <textarea
+                  placeholder="Lesson body (HTML allowed)"
+                  value={lessonForm.content}
+                  onChange={(e) => setLessonForm((p) => ({ ...p, content: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm font-body"
+                  rows={6}
+                  style={fieldStyle}
+                />
+              </Field>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={saveLesson}
@@ -658,21 +684,25 @@ export default function AdminContentManagementPage() {
                       <td className="px-5 py-4 align-top" style={{ minWidth: 280 }}>
                         {isEditing ? (
                           <div className="space-y-2 max-w-lg">
-                            <input
-                              value={editForm.title}
-                              onChange={(e) => setEditForm((p) => ({ ...p, title: e.target.value }))}
-                              className="w-full h-9 px-3 text-sm font-body"
-                              style={fieldStyle}
-                              placeholder="Course title"
-                            />
-                            <textarea
-                              value={editForm.description}
-                              onChange={(e) => setEditForm((p) => ({ ...p, description: e.target.value }))}
-                              className="w-full px-3 py-2 text-sm font-body"
-                              rows={3}
-                              style={fieldStyle}
-                              placeholder="Description"
-                            />
+                            <Field label="Course title">
+                              <input
+                                value={editForm.title}
+                                onChange={(e) => setEditForm((p) => ({ ...p, title: e.target.value }))}
+                                className="w-full h-9 px-3 text-sm font-body"
+                                style={fieldStyle}
+                                placeholder="e.g. Human Readiness Level 1"
+                              />
+                            </Field>
+                            <Field label="Description">
+                              <textarea
+                                value={editForm.description}
+                                onChange={(e) => setEditForm((p) => ({ ...p, description: e.target.value }))}
+                                className="w-full px-3 py-2 text-sm font-body"
+                                rows={3}
+                                style={fieldStyle}
+                                placeholder="Short course description"
+                              />
+                            </Field>
                             <label className="flex items-center gap-2 text-[13px]" style={{ color: "var(--ox-muted)" }}>
                               <input
                                 type="checkbox"

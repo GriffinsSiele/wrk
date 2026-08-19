@@ -404,7 +404,7 @@ async def start_exam_attempt(
     exam_session = session_result.scalars().first()
     config = exam_session.config if exam_session and exam_session.config else None
     time_limit = config.time_limit_minutes if config else settings.EXAM_TIME_LIMIT_MINUTES
-    question_count = config.question_count if config else 40
+    question_count = config.question_count if config else settings.EXAM_QUESTION_COUNT
     randomise = config.randomise_questions if config else settings.EXAM_RANDOMISE
     integrity = integrity_from_config(config)
     seconds_per_q = integrity["seconds_per_question"]

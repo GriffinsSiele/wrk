@@ -164,7 +164,7 @@ Videos are **not** uploaded to this app’s server — only the Bunny GUID is st
 
 ## Production hosting gate (Jef / PDPL)
 
-**Railway is demo/engineering only.** Production primary data must reside in **Azure UAE North** with encrypted, geographically redundant backups. Do not place real learner/coach PII on Railway.
+**Railway is demo/engineering only.** Production primary data must reside in **Azure UAE North** with encrypted, geographically redundant backups (confirm in Azure — [`docs/PRODUCTION_BACKUPS.md`](docs/PRODUCTION_BACKUPS.md)). Do not place real learner/coach PII on Railway ([`docs/RAILWAY_PII_CONFIRMATION.md`](docs/RAILWAY_PII_CONFIRMATION.md)).
 
 | Target | Value |
 |--------|--------|
@@ -221,8 +221,11 @@ Full template: **`.env.example`**. Copy to `.env` and edit.
 | `BUNNY_LIBRARY_ID` | Bunny Stream library | empty |
 | `NEXT_PUBLIC_BUNNY_LIBRARY_ID` | Same ID for iframe player | empty |
 | `BUNNY_API_KEY` / `BUNNY_CDN_HOSTNAME` / `BUNNY_TOKEN_AUTH_KEY` | Signed streaming | empty |
+| `EXAM_PASS_MARK` | Fallback pass mark if no ExamConfig | `78` (admin-configurable) |
+| `EXAM_QUESTION_COUNT` | Fallback question count if no ExamConfig | `40` (admin-configurable) |
 | `EXAM_SECONDS_PER_QUESTION` | Phase 1 per-question timer | `90` |
 | `EXAM_TIME_LIMIT_MINUTES` | Overall exam ceiling | `60` |
+| `RESET_TOKEN_RETURN_IN_RESPONSE` | Return raw reset token in API (demo only) | `false` |
 | `CERTIFICATE_STORAGE_DIR` | Generated PDF path | `storage/certificates` |
 
 Production refuses weak default secrets and SQLite. See deployment docs below.
@@ -270,8 +273,12 @@ olynixx_academy/
 ├── .env.example          # copy → .env
 ├── docker-compose.yml    # db + backend + frontend
 ├── docs/
-│   ├── PRODUCTION_BACKEND.md   # Railway API + Vercel frontend
-│   └── PRODUCTION_AZURE.md     # fuller Azure notes
+│   ├── ARCHITECTURE.md             # system map for a second developer
+│   ├── AZURE_MIGRATION_PLAN.md     # sequence, dependencies, Railway cutover
+│   ├── PRODUCTION_BACKUPS.md       # encryption / geo-redundancy / residency
+│   ├── RAILWAY_PII_CONFIRMATION.md # demo data vs operator Railway checks
+│   ├── PRODUCTION_BACKEND.md       # Railway API + Vercel frontend (demo)
+│   └── PRODUCTION_AZURE.md         # Azure UAE North resource steps
 ├── backend/
 │   ├── app/              # FastAPI app, models, services, APIs
 │   ├── alembic/          # migrations
@@ -289,8 +296,12 @@ olynixx_academy/
 
 | Goal | Doc |
 |------|-----|
+| Understand the system cold | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Azure UAE North migration (sequence + cutover) | [`docs/AZURE_MIGRATION_PLAN.md`](docs/AZURE_MIGRATION_PLAN.md) |
+| Production backup encryption and residency | [`docs/PRODUCTION_BACKUPS.md`](docs/PRODUCTION_BACKUPS.md) |
+| Railway PII confirmation (demo only) | [`docs/RAILWAY_PII_CONFIRMATION.md`](docs/RAILWAY_PII_CONFIRMATION.md) |
 | Keep Vercel demo frontend, host API elsewhere | [`docs/PRODUCTION_BACKEND.md`](docs/PRODUCTION_BACKEND.md) |
-| Azure-oriented full stack notes | [`docs/PRODUCTION_AZURE.md`](docs/PRODUCTION_AZURE.md) |
+| Azure resource create steps | [`docs/PRODUCTION_AZURE.md`](docs/PRODUCTION_AZURE.md) |
 
 Production checklist (short):
 

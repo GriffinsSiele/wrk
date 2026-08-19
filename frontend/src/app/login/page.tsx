@@ -80,7 +80,7 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                placeholder="••••••••"
+                placeholder="Your password"
                 className="w-full px-4 py-3 text-[14px] font-body outline-none"
                 style={{
                   background: "rgba(12,15,18,0.5)",

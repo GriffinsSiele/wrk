@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Field } from "@/components/ui/Field";
 
 type ExamSession = { id: number; title: string; date: string; location?: string | null; capacity: number; exam_config_id?: number | null };
 type ExamQuestion = { id: number; text: string; pillar_tag?: string | null; difficulty?: string | null };
@@ -30,16 +31,18 @@ type ExamConfig = {
   max_disconnect_pause_seconds: number;
   submit_grace_minutes: number;
   anomaly_review_threshold: number;
+  proctoring_level?: string;
 };
 
 const emptyConfig = {
   name: "Level 1 Written",
   certification_level: "Level 1",
-  pass_mark: 70,
+  pass_mark: 78,
   time_limit_minutes: 60,
   max_attempts: 3,
   randomise_questions: true,
   question_count: 40,
+  proctoring_level: "basic",
   seconds_per_question: 90,
   one_way: true,
   shuffle_options: true,
@@ -128,6 +131,7 @@ export default function AdminExamsPage() {
       max_disconnect_pause_seconds: c.max_disconnect_pause_seconds,
       submit_grace_minutes: c.submit_grace_minutes,
       anomaly_review_threshold: c.anomaly_review_threshold,
+      proctoring_level: c.proctoring_level || "basic",
     });
   }
 
@@ -231,18 +235,39 @@ export default function AdminExamsPage() {
       <section className="rounded-sm p-4 space-y-3" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
         <h2 className="font-semibold">{editingConfigId ? `Edit config #${editingConfigId}` : "Exam configuration (admin-configurable)"}</h2>
         <p className="font-body text-[13px]" style={{ color: "var(--ox-muted)" }}>
-          Pass mark, timers, attempt caps, and integrity measures — editable here before REPs UAE specs land.
+          Working defaults are 40 questions at 78% pass mark. Every value here is editable. REPs UAE has not issued a proctoring specification; store additional requirements in proctoring level and integrity fields rather than hardcoding them.
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-          <input placeholder="Name" value={configForm.name} onChange={(e) => setConfigForm((p) => ({ ...p, name: e.target.value }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input placeholder="Level" value={configForm.certification_level} onChange={(e) => setConfigForm((p) => ({ ...p, certification_level: e.target.value }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="number" placeholder="Pass mark %" value={configForm.pass_mark} onChange={(e) => setConfigForm((p) => ({ ...p, pass_mark: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="number" placeholder="Overall minutes" value={configForm.time_limit_minutes} onChange={(e) => setConfigForm((p) => ({ ...p, time_limit_minutes: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="number" placeholder="Seconds / question" value={configForm.seconds_per_question} onChange={(e) => setConfigForm((p) => ({ ...p, seconds_per_question: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="number" placeholder="Question count" value={configForm.question_count} onChange={(e) => setConfigForm((p) => ({ ...p, question_count: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="number" placeholder="Max attempts" value={configForm.max_attempts} onChange={(e) => setConfigForm((p) => ({ ...p, max_attempts: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="number" placeholder="Disconnect pause cap (s)" value={configForm.max_disconnect_pause_seconds} onChange={(e) => setConfigForm((p) => ({ ...p, max_disconnect_pause_seconds: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="number" placeholder="Blur review threshold" value={configForm.anomaly_review_threshold} onChange={(e) => setConfigForm((p) => ({ ...p, anomaly_review_threshold: Number(e.target.value) }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Field label="Config name">
+            <input placeholder="e.g. Level 1 Written" value={configForm.name} onChange={(e) => setConfigForm((p) => ({ ...p, name: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Certification level">
+            <input placeholder="e.g. Level 1" value={configForm.certification_level} onChange={(e) => setConfigForm((p) => ({ ...p, certification_level: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Pass mark %">
+            <input type="number" placeholder="78" value={configForm.pass_mark} onChange={(e) => setConfigForm((p) => ({ ...p, pass_mark: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Proctoring level">
+            <input placeholder="e.g. basic" value={configForm.proctoring_level} onChange={(e) => setConfigForm((p) => ({ ...p, proctoring_level: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Overall time (minutes)">
+            <input type="number" placeholder="60" value={configForm.time_limit_minutes} onChange={(e) => setConfigForm((p) => ({ ...p, time_limit_minutes: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Seconds per question">
+            <input type="number" placeholder="90" value={configForm.seconds_per_question} onChange={(e) => setConfigForm((p) => ({ ...p, seconds_per_question: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Question count">
+            <input type="number" placeholder="40" value={configForm.question_count} onChange={(e) => setConfigForm((p) => ({ ...p, question_count: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Max attempts">
+            <input type="number" placeholder="3" value={configForm.max_attempts} onChange={(e) => setConfigForm((p) => ({ ...p, max_attempts: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Disconnect pause cap (seconds)">
+            <input type="number" placeholder="300" value={configForm.max_disconnect_pause_seconds} onChange={(e) => setConfigForm((p) => ({ ...p, max_disconnect_pause_seconds: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Blur review threshold">
+            <input type="number" placeholder="5" value={configForm.anomaly_review_threshold} onChange={(e) => setConfigForm((p) => ({ ...p, anomaly_review_threshold: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
         </div>
         <div className="flex flex-wrap gap-4 font-body text-[13px]">
           <label className="flex items-center gap-2"><input type="checkbox" checked={configForm.randomise_questions} onChange={(e) => setConfigForm((p) => ({ ...p, randomise_questions: e.target.checked }))} /> Randomise questions</label>
@@ -259,7 +284,7 @@ export default function AdminExamsPage() {
           <ul className="space-y-2 mt-2">
             {configs.map((c) => (
               <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 font-body text-[13px]" style={{ borderTop: "1px solid var(--ox-line)", paddingTop: 8 }}>
-                <span>#{c.id} {c.name} · {c.pass_mark}% · {c.question_count}q · {c.seconds_per_question}s/q · {c.time_limit_minutes}m</span>
+                <span>#{c.id} {c.name} · {c.pass_mark}% · {c.question_count}q · {c.seconds_per_question}s/q · {c.time_limit_minutes}m · {c.proctoring_level || "basic"}</span>
                 <button onClick={() => editConfig(c)} className="h-8 px-3 text-[12px]" style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--gold)", borderRadius: 2 }}>Edit</button>
               </li>
             ))}
@@ -270,33 +295,56 @@ export default function AdminExamsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <section className="rounded-sm p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Create Exam Session</h2>
-          <input value={sessionForm.title} onChange={(e) => setSessionForm((p) => ({ ...p, title: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="datetime-local" value={sessionForm.date} onChange={(e) => setSessionForm((p) => ({ ...p, date: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input value={sessionForm.location} onChange={(e) => setSessionForm((p) => ({ ...p, location: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <input type="number" min={1} value={sessionForm.capacity} onChange={(e) => setSessionForm((p) => ({ ...p, capacity: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          <select value={sessionForm.exam_config_id} onChange={(e) => setSessionForm((p) => ({ ...p, exam_config_id: e.target.value }))} className="w-full h-9 rounded-sm px-2 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
-            <option value="">Default env settings</option>
-            {configs.map((c) => (
-              <option key={c.id} value={String(c.id)}>#{c.id} {c.name}</option>
-            ))}
-          </select>
+          <Field label="Session title">
+            <input placeholder="e.g. Certification Exam Session" value={sessionForm.title} onChange={(e) => setSessionForm((p) => ({ ...p, title: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Date and time">
+            <input type="datetime-local" value={sessionForm.date} onChange={(e) => setSessionForm((p) => ({ ...p, date: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Location">
+            <input placeholder="e.g. Online" value={sessionForm.location} onChange={(e) => setSessionForm((p) => ({ ...p, location: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Capacity">
+            <input type="number" min={1} placeholder="30" value={sessionForm.capacity} onChange={(e) => setSessionForm((p) => ({ ...p, capacity: Number(e.target.value) }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          <Field label="Exam config">
+            <select value={sessionForm.exam_config_id} onChange={(e) => setSessionForm((p) => ({ ...p, exam_config_id: e.target.value }))} className="w-full h-9 rounded-sm px-2 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
+              <option value="">Default env settings</option>
+              {configs.map((c) => (
+                <option key={c.id} value={String(c.id)}>#{c.id} {c.name}</option>
+              ))}
+            </select>
+          </Field>
           <button onClick={createSession} className="ox-cta h-9 px-5 text-[13px] font-semibold">Create Session</button>
         </section>
 
         <section className="rounded-sm p-4 space-y-2" style={{ background: "var(--ox-surface)", border: "1px solid var(--ox-line)" }}>
           <h2 className="font-semibold">Add Question</h2>
-          <textarea placeholder="Question text" value={questionForm.text} onChange={(e) => setQuestionForm((p) => ({ ...p, text: e.target.value }))} className="w-full rounded-sm px-3 py-2 text-sm" rows={3} style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
-          {(["option_a", "option_b", "option_c", "option_d"] as const).map((opt) => (
-            <input key={opt} placeholder={opt} value={questionForm[opt]} onChange={(e) => setQuestionForm((p) => ({ ...p, [opt]: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          <Field label="Question text">
+            <textarea placeholder="Enter the question stem" value={questionForm.text} onChange={(e) => setQuestionForm((p) => ({ ...p, text: e.target.value }))} className="w-full rounded-sm px-3 py-2 text-sm" rows={3} style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+          </Field>
+          {([
+            ["option_a", "Option A"],
+            ["option_b", "Option B"],
+            ["option_c", "Option C"],
+            ["option_d", "Option D"],
+          ] as const).map(([opt, label]) => (
+            <Field key={opt} label={label}>
+              <input placeholder={`Answer ${label.slice(-1)}`} value={questionForm[opt]} onChange={(e) => setQuestionForm((p) => ({ ...p, [opt]: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+            </Field>
           ))}
           <div className="grid grid-cols-2 gap-2">
-            <select value={questionForm.correct_option} onChange={(e) => setQuestionForm((p) => ({ ...p, correct_option: e.target.value }))} className="h-9 rounded-sm px-2 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
-              <option value="a">Correct: A</option>
-              <option value="b">Correct: B</option>
-              <option value="c">Correct: C</option>
-              <option value="d">Correct: D</option>
-            </select>
-            <input value={questionForm.pillar_tag} onChange={(e) => setQuestionForm((p) => ({ ...p, pillar_tag: e.target.value }))} className="h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+            <Field label="Correct option">
+              <select value={questionForm.correct_option} onChange={(e) => setQuestionForm((p) => ({ ...p, correct_option: e.target.value }))} className="w-full h-9 rounded-sm px-2 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }}>
+                <option value="a">A</option>
+                <option value="b">B</option>
+                <option value="c">C</option>
+                <option value="d">D</option>
+              </select>
+            </Field>
+            <Field label="Pillar tag">
+              <input placeholder="e.g. execution" value={questionForm.pillar_tag} onChange={(e) => setQuestionForm((p) => ({ ...p, pillar_tag: e.target.value }))} className="w-full h-9 rounded-sm px-3 text-sm" style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)" }} />
+            </Field>
           </div>
           <button
             onClick={createQuestion}

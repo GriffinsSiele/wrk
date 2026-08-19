@@ -189,6 +189,7 @@ export default function CoachProfilePage() {
               <input
                 value={value as string}
                 onChange={(e) => (onChange as (v: string) => void)(e.target.value)}
+                placeholder={label as string}
                 className="w-full h-10 rounded-sm px-3 text-sm outline-none"
                 style={fieldStyle}
               />
@@ -295,6 +296,7 @@ export default function CoachProfilePage() {
               <input
                 value={value as string}
                 onChange={(e) => (onChange as (v: string) => void)(e.target.value)}
+                placeholder={label as string}
                 className="w-full h-10 rounded-sm px-3 text-sm outline-none"
                 style={fieldStyle}
               />

@@ -97,6 +97,7 @@ async def create_checklist_template(
         is_active=payload.is_active,
         items=[i.model_dump() for i in payload.items],
         min_required_pass=payload.min_required_pass,
+        version=1,
     )
     db.add(tpl)
     await db.commit()
@@ -118,12 +119,15 @@ async def update_checklist_template(
     data = payload.model_dump(exclude_none=True)
     if "items" in data and data["items"] is not None:
         data["items"] = [i if isinstance(i, dict) else i for i in data["items"]]
-        # Pydantic already dumped via model_dump for nested? items are dicts from model_dump
+    criteria_changed = False
+    if "items" in data and data["items"] != (tpl.items or []):
+        criteria_changed = True
+    if "min_required_pass" in data and data["min_required_pass"] != tpl.min_required_pass:
+        criteria_changed = True
     for field, value in data.items():
-        if field == "items" and value is not None:
-            setattr(tpl, field, value)
-        else:
-            setattr(tpl, field, value)
+        setattr(tpl, field, value)
+    if criteria_changed:
+        tpl.version = int(tpl.version or 1) + 1
     tpl.updated_at = datetime.now(timezone.utc)
     await db.commit()
     await db.refresh(tpl)
@@ -185,6 +189,16 @@ async def create_practical_assessment(
 
     checklist = payload.checklist_result or {}
     result_value = _evaluate_practical_result(template, checklist, payload.result)
+    snapshot = None
+    if template:
+        snapshot = {
+            "id": template.id,
+            "name": template.name,
+            "version": int(template.version or 1),
+            "certification_level": template.certification_level,
+            "items": template.items,
+            "min_required_pass": template.min_required_pass,
+        }
 
     assessment = PracticalAssessment(
         user_id=payload.user_id,
@@ -194,6 +208,9 @@ async def create_practical_assessment(
         result=PracticalResult(result_value),
         notes=payload.notes,
         assessed_at=datetime.now(timezone.utc),
+        template_id=template.id if template else None,
+        template_version=int(template.version or 1) if template else None,
+        template_snapshot=snapshot,
     )
     db.add(assessment)
     await db.flush()

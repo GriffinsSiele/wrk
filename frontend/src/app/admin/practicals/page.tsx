@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Field } from "@/components/ui/Field";
 
 type Practical = {
   id: number;
@@ -9,6 +10,8 @@ type Practical = {
   result: string;
   notes?: string | null;
   assessed_at?: string | null;
+  template_id?: number | null;
+  template_version?: number | null;
 };
 
 type UserRow = {
@@ -28,6 +31,7 @@ type ChecklistTemplate = {
   is_active: boolean;
   items: ChecklistItem[];
   min_required_pass?: number | null;
+  version?: number;
 };
 
 const fieldStyle = {
@@ -56,6 +60,7 @@ export default function AdminPracticalsPage() {
     min_required_pass: "",
     itemsText: "intake_protocol|Intake protocol|true\nethics|Ethics|true",
   });
+  const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
 
   const activeTemplate = useMemo(() => {
     if (form.template_id) {
@@ -108,8 +113,11 @@ export default function AdminPracticalsPage() {
       setMessage("Add at least one checklist item (key|label|required)");
       return;
     }
-    const resp = await fetch("/api/proxy/compliance/checklist-templates", {
-      method: "POST",
+    const url = editingTemplateId
+      ? `/api/proxy/compliance/checklist-templates/${editingTemplateId}`
+      : "/api/proxy/compliance/checklist-templates";
+    const resp = await fetch(url, {
+      method: editingTemplateId ? "PATCH" : "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         name: tplForm.name,
@@ -123,8 +131,26 @@ export default function AdminPracticalsPage() {
       setMessage("Failed to save checklist template");
       return;
     }
-    setMessage("Checklist template saved");
+    const saved = await resp.json();
+    setMessage(
+      editingTemplateId
+        ? `Template updated to version ${saved.version}`
+        : `Checklist template saved as version ${saved.version || 1}`
+    );
+    setEditingTemplateId(null);
     load();
+  }
+
+  function editTemplate(t: ChecklistTemplate) {
+    setEditingTemplateId(t.id);
+    setTplForm({
+      name: t.name,
+      certification_level: t.certification_level,
+      min_required_pass: t.min_required_pass != null ? String(t.min_required_pass) : "",
+      itemsText: (t.items || [])
+        .map((i) => `${i.key}|${i.label}|${i.required === false ? "false" : "true"}`)
+        .join("\n"),
+    });
   }
 
   async function savePractical() {
@@ -162,7 +188,7 @@ export default function AdminPracticalsPage() {
           Practical assessments
         </h1>
         <p className="font-body text-[14px] mt-2" style={{ color: "var(--ox-muted)" }}>
-          Configurable checklist + pass criteria. Dual-gate still requires written approval + practical PASS.
+          Configurable checklist and pass criteria. Changing items or the pass threshold increments the template version. Each completed assessment stores the version used. Dual-gate still requires written approval and practical PASS.
         </p>
       </div>
       {message && (
@@ -179,26 +205,62 @@ export default function AdminPracticalsPage() {
           One item per line: <code>key|Label|true</code> (required flag). Leave min pass blank to require all required items.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-          <input value={tplForm.name} onChange={(e) => setTplForm((p) => ({ ...p, name: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} placeholder="Template name" />
-          <input value={tplForm.certification_level} onChange={(e) => setTplForm((p) => ({ ...p, certification_level: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} placeholder="Level" />
-          <input type="number" value={tplForm.min_required_pass} onChange={(e) => setTplForm((p) => ({ ...p, min_required_pass: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} placeholder="Min required to PASS (optional)" />
+          <Field label="Template name">
+            <input value={tplForm.name} onChange={(e) => setTplForm((p) => ({ ...p, name: e.target.value }))} className="w-full h-9 px-3 text-sm" style={fieldStyle} placeholder="e.g. Level 1 Practical" />
+          </Field>
+          <Field label="Certification level">
+            <input value={tplForm.certification_level} onChange={(e) => setTplForm((p) => ({ ...p, certification_level: e.target.value }))} className="w-full h-9 px-3 text-sm" style={fieldStyle} placeholder="e.g. Level 1" />
+          </Field>
+          <Field label="Min required to PASS">
+            <input type="number" value={tplForm.min_required_pass} onChange={(e) => setTplForm((p) => ({ ...p, min_required_pass: e.target.value }))} className="w-full h-9 px-3 text-sm" style={fieldStyle} placeholder="Leave blank for all required items" />
+          </Field>
         </div>
-        <textarea
-          rows={6}
-          value={tplForm.itemsText}
-          onChange={(e) => setTplForm((p) => ({ ...p, itemsText: e.target.value }))}
-          className="w-full px-3 py-2 text-sm font-body"
-          style={fieldStyle}
-        />
-        <button onClick={saveTemplate} className="ox-cta h-9 px-5 text-[13px] font-semibold">
-          Save template
-        </button>
+        <Field label="Checklist items">
+          <textarea
+            rows={6}
+            value={tplForm.itemsText}
+            onChange={(e) => setTplForm((p) => ({ ...p, itemsText: e.target.value }))}
+            placeholder={"key|Label|true\nethics|Ethics|true"}
+            className="w-full px-3 py-2 text-sm font-body"
+            style={fieldStyle}
+          />
+        </Field>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={saveTemplate} className="ox-cta h-9 px-5 text-[13px] font-semibold">
+            {editingTemplateId ? `Save as next version (#${editingTemplateId})` : "Create template"}
+          </button>
+          {editingTemplateId && (
+            <button
+              onClick={() => {
+                setEditingTemplateId(null);
+                setTplForm({
+                  name: "Level 1 Practical",
+                  certification_level: "Level 1",
+                  min_required_pass: "",
+                  itemsText: "intake_protocol|Intake protocol|true\nethics|Ethics|true",
+                });
+              }}
+              className="ox-ghost-light h-9 px-5 text-[13px]"
+            >
+              Cancel edit
+            </button>
+          )}
+        </div>
         {templates.length > 0 && (
           <ul className="font-body text-[13px] space-y-1 mt-2" style={{ color: "var(--ox-muted)" }}>
             {templates.map((t) => (
-              <li key={t.id}>
-                #{t.id} {t.name} · {t.certification_level} · {t.items?.length || 0} items
-                {t.is_active ? " · active" : ""}
+              <li key={t.id} className="flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  #{t.id} {t.name} · {t.certification_level} · v{t.version || 1} · {t.items?.length || 0} items
+                  {t.is_active ? " · active" : ""}
+                </span>
+                <button
+                  onClick={() => editTemplate(t)}
+                  className="h-8 px-3 text-[12px]"
+                  style={{ border: "1px solid rgba(150,118,43,0.45)", color: "var(--gold)", borderRadius: 2 }}
+                >
+                  Edit
+                </button>
               </li>
             ))}
           </ul>
@@ -210,41 +272,53 @@ export default function AdminPracticalsPage() {
           Record practical result
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <select value={form.user_id} onChange={(e) => setForm((p) => ({ ...p, user_id: e.target.value }))} className="h-9 px-2 text-sm" style={fieldStyle}>
-            <option value="">Select learner</option>
-            {users
-              .filter((u) => u.role === "learner" || u.role === "coach")
-              .map((u) => (
-                <option key={u.id} value={String(u.id)}>
-                  {[u.first_name, u.last_name].filter(Boolean).join(" ") || u.email} (#{u.id})
+          <Field label="Learner">
+            <select value={form.user_id} onChange={(e) => setForm((p) => ({ ...p, user_id: e.target.value }))} className="w-full h-9 px-2 text-sm" style={fieldStyle}>
+              <option value="">Select learner</option>
+              {users
+                .filter((u) => u.role === "learner" || u.role === "coach")
+                .map((u) => (
+                  <option key={u.id} value={String(u.id)}>
+                    {[u.first_name, u.last_name].filter(Boolean).join(" ") || u.email} (#{u.id})
+                  </option>
+                ))}
+            </select>
+          </Field>
+          <Field label="Checklist template">
+            <select value={form.template_id} onChange={(e) => setForm((p) => ({ ...p, template_id: e.target.value }))} className="w-full h-9 px-2 text-sm" style={fieldStyle}>
+              <option value="">Active template for level</option>
+              {templates.map((t) => (
+                <option key={t.id} value={String(t.id)}>
+                  #{t.id} {t.name} (v{t.version || 1})
                 </option>
               ))}
-          </select>
-          <select value={form.template_id} onChange={(e) => setForm((p) => ({ ...p, template_id: e.target.value }))} className="h-9 px-2 text-sm" style={fieldStyle}>
-            <option value="">Active template for level</option>
-            {templates.map((t) => (
-              <option key={t.id} value={String(t.id)}>
-                #{t.id} {t.name}
-              </option>
-            ))}
-          </select>
-          <input value={form.certification_level} onChange={(e) => setForm((p) => ({ ...p, certification_level: e.target.value }))} className="h-9 px-3 text-sm" style={fieldStyle} />
-          <select value={form.result} onChange={(e) => setForm((p) => ({ ...p, result: e.target.value }))} className="h-9 px-2 text-sm" style={fieldStyle}>
-            <option value="PASS">Requested PASS (overridden by criteria if template set)</option>
-            <option value="FAIL">Requested FAIL</option>
-          </select>
+            </select>
+          </Field>
+          <Field label="Certification level">
+            <input placeholder="e.g. Level 1" value={form.certification_level} onChange={(e) => setForm((p) => ({ ...p, certification_level: e.target.value }))} className="w-full h-9 px-3 text-sm" style={fieldStyle} />
+          </Field>
+          <Field label="Requested result">
+            <select value={form.result} onChange={(e) => setForm((p) => ({ ...p, result: e.target.value }))} className="w-full h-9 px-2 text-sm" style={fieldStyle}>
+              <option value="PASS">Requested PASS (overridden by criteria if template set)</option>
+              <option value="FAIL">Requested FAIL</option>
+            </select>
+          </Field>
         </div>
-        <textarea
-          placeholder="Assessor notes"
-          value={form.notes}
-          onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
-          rows={3}
-          className="w-full px-3 py-2 text-sm"
-          style={fieldStyle}
-        />
+        <Field label="Assessor notes">
+          <textarea
+            placeholder="Observations, conditions, or follow-up"
+            value={form.notes}
+            onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
+            rows={3}
+            className="w-full px-3 py-2 text-sm"
+            style={fieldStyle}
+          />
+        </Field>
         <div>
           <h3 className="font-display text-[12px] tracking-[0.12em] uppercase mb-2" style={{ color: "var(--ochre)" }}>
-            {activeTemplate ? activeTemplate.name : "No template — tick optional notes only"}
+            {activeTemplate
+              ? `${activeTemplate.name} · version ${activeTemplate.version || 1}`
+              : "No template — tick optional notes only"}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {(activeTemplate?.items || []).map((item) => (
@@ -278,6 +352,7 @@ export default function AdminPracticalsPage() {
                 <th className="text-left px-5 py-2">ID</th>
                 <th className="text-left px-5 py-2">User</th>
                 <th className="text-left px-5 py-2">Level</th>
+                <th className="text-left px-5 py-2">Template</th>
                 <th className="text-left px-5 py-2">Result</th>
                 <th className="text-left px-5 py-2">Assessed</th>
               </tr>
@@ -288,13 +363,16 @@ export default function AdminPracticalsPage() {
                   <td className="px-5 py-2">{p.id}</td>
                   <td className="px-5 py-2">{p.user_id}</td>
                   <td className="px-5 py-2">{p.certification_level}</td>
+                  <td className="px-5 py-2">
+                    {p.template_id != null ? `#${p.template_id} v${p.template_version ?? "—"}` : "—"}
+                  </td>
                   <td className="px-5 py-2">{p.result}</td>
                   <td className="px-5 py-2">{p.assessed_at ? new Date(p.assessed_at).toLocaleString() : "—"}</td>
                 </tr>
               ))}
               {practicals.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-8 text-center" style={{ color: "var(--ox-muted)" }}>
+                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: "var(--ox-muted)" }}>
                     No practical assessments yet.
                   </td>
                 </tr>

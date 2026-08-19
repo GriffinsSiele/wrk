@@ -46,6 +46,7 @@ export default function CoachCecsPage() {
             <input
               value={certLevel}
               onChange={(e) => setCertLevel(e.target.value)}
+              placeholder="e.g. Level 1"
               className="w-full h-10 rounded-sm px-3 text-sm outline-none"
               style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", color: "var(--ox-fg-dark)" }}
             />
@@ -56,6 +57,7 @@ export default function CoachCecsPage() {
               type="number"
               value={cecCredits}
               onChange={(e) => setCecCredits(Number(e.target.value))}
+              placeholder="0"
               className="w-full h-10 rounded-sm px-3 text-sm outline-none"
               style={{ background: "var(--ox-input-bg)", border: "1px solid var(--ox-line)", color: "var(--ox-fg-dark)" }}
             />
